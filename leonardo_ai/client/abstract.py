@@ -93,6 +93,10 @@ class AbstractClient:
     pass
 
   @abstractmethod
+  def removeBackground(self, generationId: str) -> str:
+    pass
+
+  @abstractmethod
   def createImageGeneration(self,
                             prompt: str,
                             width: int,

@@ -238,6 +238,20 @@ fragment ModelParts on custom_models {
       SDVersion=response['sdVersion'],
     )
 
+  @abstractmethod
+  def removeBackground(self, generationId: str) -> str:
+    response = self._doGraphqlCall(
+      "CreateNoBGJob",
+      """mutation CreateNoBGJob($arg1: SDNobgJobInput!) {
+    sdNobgJob(arg1: $arg1) {
+        id
+    }
+}""",
+      {"id": generationId},
+    )
+
+    return response['sdNobgJob']['id']
+
   def _prepareUpload(self, includeMask: bool) -> (uploadImageInfo, uploadImageInfo | None):
     response = self._doGraphqlCall(
       "uploadCanvasInitImage",
