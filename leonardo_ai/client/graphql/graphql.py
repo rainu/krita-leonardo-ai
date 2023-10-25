@@ -81,7 +81,7 @@ class GraphqlClient(AbstractClient):
                 offset: int = 0,
                 limit: int = 50) -> List[Model]:
     response = self._doGraphqlCall(
-      "",
+      "GetFeedModels",
       """query GetFeedModels($order_by: [custom_models_order_by!] = [ { createdAt: desc }], $where: custom_models_bool_exp, $limit: Int, $offset: Int) {
     custom_models(order_by: $order_by
     where: $where
@@ -138,6 +138,7 @@ fragment ModelParts on custom_models {
         Public=model['public'],
         Height=model['modelHeight'],
         Width=model['modelWidth'],
+        StableDiffusionVersion=model['sdVersion'],
         TrainingStrength=model['trainingStrength'],
         User=UserInfo(
           Id=model['user']['id'],
@@ -149,6 +150,51 @@ fragment ModelParts on custom_models {
         ) if model['generated_image'] is not None else None
       )
       for model in response
+    ]
+
+  def getElements(self, query: str = "%%", baseModel: str | None = None, offset: int = 0, limit: int = 64) -> List[Element]:
+    response = self._doGraphqlCall(
+      "GetElementsForModal",
+      """query GetElementsForModal($offset: Int, $limit: Int, $where: loras_bool_exp) {
+    loras(offset: $offset
+    limit: $limit
+    where: $where
+    order_by: [ {
+        sortOrder: asc
+    }]) {
+        akUUID
+        name
+        description
+        urlImage
+        baseModel
+        weightDefault
+        weightMin
+        weightMax
+    }
+}""",
+      {
+        "where": {
+          "name": {"_like": query},
+          **({"baseModel": {"_eq": baseModel}} if baseModel is not None else {}),
+        },
+        "offset": offset,
+        "limit": limit,
+      }
+    )
+
+    response = response['loras']
+    return [
+      Element(
+        Id=element['akUUID'],
+        Name=element['name'],
+        Description=element['description'],
+        PreviewImageUrl=element['urlImage'],
+        BaseModel=element['baseModel'],
+        WeightDefault=element['weightDefault'],
+        WeightMin=element['weightMin'],
+        WeightMax=element['weightMax'],
+      )
+      for element in response
     ]
 
   def getGenerationById(self, generationId: str):
@@ -429,4 +475,4 @@ if __name__ == '__main__':
 
   client = GraphqlClient(os.environ.get("USERNAME"), os.environ.get("PASSWORD"))
 
-  print(client.getModels())
+  print(client.getElements())

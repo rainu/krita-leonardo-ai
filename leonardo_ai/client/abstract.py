@@ -56,7 +56,18 @@ class Model:
   PreviewImage: Image | None
   User: UserInfo
   TrainingStrength: str
+  StableDiffusionVersion: str
 
+@dataclass
+class Element:
+  Id: str
+  Name: str
+  Description: str
+  PreviewImageUrl: str
+  BaseModel: str
+  WeightDefault: float
+  WeightMin: float
+  WeightMax: float
 
 class AbstractClient:
   @abstractmethod
@@ -71,6 +82,10 @@ class AbstractClient:
                 notSaveForWork: bool | None = None,
                 offset: int = 0,
                 limit: int = 50) -> List[Model]:
+    pass
+
+  @abstractmethod
+  def getElements(self, query: str = "%%", baseModel: str | None = None, offset: int = 0, limit: int = 64) -> List[Element]:
     pass
 
   @abstractmethod
