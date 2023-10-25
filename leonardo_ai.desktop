@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Service
+ServiceTypes=Krita/PythonPlugin
+X-KDE-Library=leonardo_ai
+X-Python-2-Compatible=false
+X-Krita-Manual=manual.html
+Name=Leonardo AI Image manipulation
+Comment=Workflows supported by generative AI (Leonardo AI)
