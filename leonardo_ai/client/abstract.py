@@ -7,9 +7,17 @@ from PyQt5.QtGui import QImage
 
 
 @dataclass
+class TokenBalance:
+  GPT: int
+  Model: int
+  General: int
+  Paid: int
+
+@dataclass
 class UserInfo:
   Id: str
   Name: str
+  Token: TokenBalance | None
 
 
 @dataclass

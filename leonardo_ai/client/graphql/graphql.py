@@ -61,16 +61,28 @@ class GraphqlClient(AbstractClient):
     response = self._doGraphqlCall(
       "GetUserDetails",
       """query GetUserDetails($userSub: String) {
-          users(where: {user_details: {cognitoId: {_eq: $userSub}}}) {
-              id
-              username
-          }
-      }""",
+  users(where: {user_details: {cognitoId: {_eq: $userSub}}}) {
+    id
+    username
+  }
+  user_details(where: {cognitoId: { _eq: $userSub }}) {
+    subscriptionGptTokens
+    subscriptionModelTokens
+    subscriptionTokens
+    paidTokens
+  }
+}""",
       {"userSub": self.userSub})
 
     return UserInfo(
       response['users'][0]['id'],
       response['users'][0]['username'],
+      TokenBalance(
+        response['user_details'][0]['subscriptionGptTokens'],
+        response['user_details'][0]['subscriptionModelTokens'],
+        response['user_details'][0]['subscriptionTokens'],
+        response['user_details'][0]['paidTokens'],
+      ),
     )
 
   def getModels(self,
@@ -143,6 +155,7 @@ fragment ModelParts on custom_models {
         User=UserInfo(
           Id=model['user']['id'],
           Name=model['user']['username'],
+          Token=None,
         ),
         PreviewImage=Image(
           Id=model['generated_image']['id'],
@@ -489,4 +502,4 @@ if __name__ == '__main__':
 
   client = GraphqlClient(os.environ.get("USERNAME"), os.environ.get("PASSWORD"))
 
-  print(client.getElements())
+  print(client.getUserInfo())
