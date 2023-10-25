@@ -1,4 +1,6 @@
 from dataclasses import dataclass
+from typing import List
+
 
 @dataclass
 class uploadImageInfo:
@@ -38,6 +40,11 @@ class controlNetParameter:
   Weight: float
 
 @dataclass
+class elementParameter:
+  Id: str
+  Weight: float
+
+@dataclass
 class generationParameter:
   Prompt: str
   NegativePrompt: str
@@ -51,12 +58,14 @@ class generationParameter:
   Public: bool
   NotSaveForWork: bool
   LeonardoMagic: bool | None = None
+  PresetStyle: str = "NONE"
   Alchemy: bool | None = None
   Tiling: bool | None = None
   Canvas: canvasParameter | None = None
   PromptMagic: promptMagicParameter | None = None
   PhotoReal: photoRealParameter | None = None
   ControlNet: controlNetParameter | None = None
+  Elements: List[elementParameter] = None
   Scheduler: str | None = None
   Seed: int | None = None
 
@@ -71,12 +80,13 @@ class generationParameter:
       "num_inference_steps": self.InferenceSteps,
       "guidance_scale": self.GuidanceScale,
       "sd_version": self.StableDiffusionVersion,
+      "presetStyle": self.PresetStyle,
       "scheduler": self.Scheduler if self.Scheduler is not None else "LEONARDO",
       "public": self.Public,
       "tiling": self.Tiling if self.Tiling is not None else False,
       "leonardoMagic": self.LeonardoMagic if self.LeonardoMagic is not None else False,
       "poseToImage": self.ControlNet is not None,
-      "elements": [],
+      "elements": self.Elements if self.Elements is not None else [],
       **({"alchemy": self.Alchemy } if self.Alchemy is not None else {}),
       **({"modelId": self.ModelId } if self.ModelId is not None else {}),
       **({"seed": self.Seed} if self.Seed is not None else {}),

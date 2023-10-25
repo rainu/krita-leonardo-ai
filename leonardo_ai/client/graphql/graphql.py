@@ -73,6 +73,84 @@ class GraphqlClient(AbstractClient):
       response['users'][0]['username'],
     )
 
+  def getModels(self,
+                query: str = "%%",
+                official: bool | None = None,
+                complete: bool | None = None,
+                notSaveForWork: bool | None = None,
+                offset: int = 0,
+                limit: int = 50) -> List[Model]:
+    response = self._doGraphqlCall(
+      "",
+      """query GetFeedModels($order_by: [custom_models_order_by!] = [ { createdAt: desc }], $where: custom_models_bool_exp, $limit: Int, $offset: Int) {
+    custom_models(order_by: $order_by
+    where: $where
+    limit: $limit
+    offset: $offset) {
+        ...ModelParts
+    }
+}
+
+fragment ModelParts on custom_models {
+    id
+    name
+    description
+    modelHeight
+    modelWidth
+    coreModel
+    createdAt
+    sdVersion
+    type
+    nsfw
+    public
+    trainingStrength
+    user {
+        id
+        username
+    }
+    generated_image {
+        id
+        url
+    }
+}""",
+      {
+        "where": {
+          "public": { "_eq": True },
+          "name": { "_like": query },
+          **({ "official": { "_eq": official } } if official is not None else {}),
+          **({ "nsfw": { "_eq": notSaveForWork } } if notSaveForWork is not None else {}),
+          **({ "status": {
+            **({"_eq": "COMPLETE"} if complete else { "_ne": "COMPLETE" } )
+          }} if complete is not None else {}),
+        },
+        "offset": offset,
+        "limit": limit,
+      }
+    )
+
+    response = response['custom_models']
+    return [
+      Model(
+        Id=model['id'],
+        Name=model['name'],
+        Description=model['description'],
+        NotSaveForWork=model['nsfw'],
+        Public=model['public'],
+        Height=model['modelHeight'],
+        Width=model['modelWidth'],
+        TrainingStrength=model['trainingStrength'],
+        User=UserInfo(
+          Id=model['user']['id'],
+          Name=model['user']['username'],
+        ),
+        PreviewImage=Image(
+          Id=model['generated_image']['id'],
+          Url=model['generated_image']['url'],
+        ) if model['generated_image'] is not None else None
+      )
+      for model in response
+    ]
+
   def getGenerationById(self, generationId: str):
     response = self._doGraphqlCall(
       "GetAIGenerationFeed",
@@ -138,7 +216,6 @@ class GraphqlClient(AbstractClient):
       uploadImageInfo(response['initImageId'], response['initKey'], response['initUrl'], json.loads(response['initFields'])),
       uploadImageInfo(response['masksImageId'], response['masksKey'], response['masksUrl'], json.loads(response['masksFields'])) if includeMask else None,
     )
-
 
   def _uploadImage(self, url: str, name: str, image: QImage, fields: dict) -> requests.Response:
     rawImage = QByteArray()
@@ -352,5 +429,4 @@ if __name__ == '__main__':
 
   client = GraphqlClient(os.environ.get("USERNAME"), os.environ.get("PASSWORD"))
 
-  user = client.getUserInfo()
-  print(user)
+  print(client.getModels())

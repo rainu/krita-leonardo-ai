@@ -44,10 +44,33 @@ class Generation:
   NegativePrompt: str
   SDVersion: str
 
+@dataclass
+class Model:
+  Id: str
+  Name: str
+  Description: str
+  NotSaveForWork: bool
+  Public: bool
+  Height: int
+  Width: int
+  PreviewImage: Image | None
+  User: UserInfo
+  TrainingStrength: str
+
 
 class AbstractClient:
   @abstractmethod
   def getUserInfo(self) -> UserInfo | None:
+    pass
+
+  @abstractmethod
+  def getModels(self,
+                query: str = "%%",
+                official: bool | None = None,
+                complete: bool | None = None,
+                notSaveForWork: bool | None = None,
+                offset: int = 0,
+                limit: int = 50) -> List[Model]:
     pass
 
   @abstractmethod
@@ -120,6 +143,7 @@ class AbstractClient:
                                   ) -> str:
     pass
 
+  @abstractmethod
   def createSketch2ImageGeneration(self,
                                    prompt: str,
                                    image: QImage,
