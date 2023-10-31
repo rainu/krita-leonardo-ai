@@ -19,12 +19,17 @@ else:
 class GraphqlClient(AbstractClient):
 
   def __init__(self, username, password):
+    self.username = username
+    self.password = password
+    self.loginResponse = None
+
+  def login(self):
     response = requests.get('https://app.leonardo.ai/api/auth/csrf')
     cookies = response.cookies
 
     response = requests.post('https://app.leonardo.ai/api/auth/callback/credentials?', data={
-      "username": username,
-      "password": password,
+      "username": self.username,
+      "password": self.password,
       "csrfToken": response.json()["csrfToken"],
       "json": 'true',
     }, cookies=cookies)
@@ -33,8 +38,21 @@ class GraphqlClient(AbstractClient):
     response = requests.get('https://app.leonardo.ai/api/auth/session', cookies=cookies)
 
     responseAsJson = response.json()
-    self.accessToken = responseAsJson['accessToken']
-    self.userSub = responseAsJson['user']['sub']
+    self.loginResponse = responseAsJson
+
+  @property
+  def accessToken(self):
+    if self.loginResponse is None:
+      self.login()
+
+    return self.loginResponse['accessToken']
+
+  @property
+  def userSub(self):
+    if self.loginResponse is None:
+      self.login()
+
+    return self.loginResponse['user']['sub']
 
   def _doGraphqlCall(self, operation: str, query: str, variables: dict):
     print(operation, query, variables)

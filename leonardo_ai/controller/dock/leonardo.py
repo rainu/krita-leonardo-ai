@@ -11,7 +11,7 @@ from .ui_sketch2image import Sketch2Image
 from ...client.abstract import JobStatus, AbstractClient
 from ...client.graphql.graphql import GraphqlClient
 from ...view.dock import Ui_LeonardoAI
-
+from ...config import Config
 
 class BalanceUpdater(QThread):
 
@@ -28,18 +28,21 @@ class LeonardoDock(Sketch2Image):
 
   def __init__(self):
     super().__init__()
+    self.config = Config.instance()
 
     self.ui.btnGenerate.clicked.connect(self.onGenerate)
 
-    # TODO: read from config or something else...
-    self.leonardoAI = GraphqlClient("username", "password")
+    self.leonardoAI = GraphqlClient(self.config.get("leonardo.client.gql.username"), self.config.get("leonardo.client.gql.password"))
 
     self.balanceUpdater = BalanceUpdater(self.leonardoAI, self.ui)
-    self.balanceUpdater.start()
-
+    self.updateBalance()
 
   def canvasChanged(self, canvas):
     pass
+
+  def updateBalance(self):
+    if self.balanceUpdater.isRunning(): return
+    self.balanceUpdater.start()
 
   def onGenerate(self):
     if self.ui.tabType.currentWidget() == self.ui.tabTxt2Img:
