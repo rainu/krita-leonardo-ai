@@ -33,7 +33,7 @@ class AdvancedSettings(BaseDock):
   @property
   def seed(self):
     if not self.ui.inSeed.isVisible(): return None
-    return self.ui.inSeed.text()
+    return int(self.ui.inSeed.text())
 
   @property
   def scheduler(self):

@@ -25,7 +25,11 @@ class Text2Image(AdvancedSettings):
     def onDimSwap(): w = self.ui.inDimWidth.value(); self.ui.inDimWidth.setValue(self.ui.inDimHeight.value()); self.ui.inDimHeight.setValue(w)
     self.ui.btnDimSwap.clicked.connect(onDimSwap)
 
-    def onPhotoRealChanged(): self.ui.grpPhotoReal.setVisible(self.ui.chkPhotoReal.isChecked())
+    def onPhotoRealChanged():
+      self.ui.grpPhotoReal.setVisible(self.ui.chkPhotoReal.isChecked())
+      if self.ui.chkPhotoReal.isChecked():
+        self.ui.chkAlchemy.setChecked(True)
+
     self.ui.chkPhotoReal.stateChanged.connect(onPhotoRealChanged)
     onPhotoRealChanged()
 
@@ -66,10 +70,36 @@ class Text2Image(AdvancedSettings):
 
   def onAlchemyChange(self):
     self.ui.grpAlchemy.setVisible(self.ui.chkAlchemy.isChecked())
+    if not self.ui.chkAlchemy.isChecked():
+      self.ui.chkPhotoReal.setChecked(False)
+
+  @property
+  def dimWidth(self):
+      return int(self.ui.inDimWidth.text())
+
+  @property
+  def dimHeight(self):
+      return int(self.ui.inDimHeight.text())
+
+  @property
+  def photoRealStyle(self):
+    if self.ui.chkPhotoReal.isChecked():
+      return self.ui.cmbPhotoRealStyle.currentText().upper()
+
+    return None
 
   @property
   def photoRealDepthOfField(self):
     return self.ui.cmbPhotoRealDepthOfField.currentText().upper()
+
+  @property
+  def photoRealStrength(self):
+    if self.ui.chkPhotoReal.isChecked():
+      if self.photoRealDepthOfField == "HIGH": return 0.45
+      if self.photoRealDepthOfField == "MEDIUM": return 0.5
+      if self.photoRealDepthOfField == "LOW": return 0.55
+
+    return None
 
   @property
   def photoRealRawMode(self):
@@ -94,17 +124,25 @@ class Text2Image(AdvancedSettings):
     return None
 
   @property
-  def alchemyPromptMagicV2Strength(self):
-    return self.ui.slAlchemyPromptMagicStrengthV2.value() / 100
+  def alchemyPromptMagicStrength(self):
+    if self.ui.radAlchemyPromptMagicV2.isChecked(): return self.alchemyPromptMagicV2Strength
+    if self.ui.radAlchemyPromptMagicV3.isChecked(): return self.alchemyPromptMagicV3Strength
+    return None
 
   @property
   def alchemyHighContrast(self):
-    return self.ui.chkAlchemyHighContrast.isChecked()
+    if self.ui.radAlchemyPromptMagicV2.isChecked(): return self.ui.chkAlchemyHighContrast.isChecked()
+    if self.ui.radAlchemyPromptMagicV3.isChecked(): return not self.ui.chkAlchemyRawMode.isChecked()
+    return None
+
+  @property
+  def alchemyPromptMagicV2Strength(self):
+    return self.ui.slAlchemyPromptMagicStrengthV2.value() / 100
 
   @property
   def alchemyPromptMagicV3Strength(self):
     return self.ui.slAlchemyPromptMagicStrengthV3.value() / 100
 
   @property
-  def alchemyRawMode(self):
-    return self.ui.chkAlchemyRawMode.isChecked()
+  def t2iTiling(self):
+    return self.ui.chkText2ImageTiling.isChecked()

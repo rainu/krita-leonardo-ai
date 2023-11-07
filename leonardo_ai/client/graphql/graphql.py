@@ -344,12 +344,14 @@ fragment ModelParts on custom_models {
                             inferenceSteps: int = 10,
                             guidanceScale: int = 7,
                             photoRealStrength: float | None = None,
-                            photoRealContrastRatio: float | None = None,
+                            photoRealHighContrast: bool = False,
                             photoRealStyle: str = "CINEMATIC",
                             promptMagicStrength: float | None = None,
                             promptMagicHighContrast: bool | None = None,
                             promptMagicVersion: str = "v2",
-                            useAlchemy: bool = False,
+                            alchemyHighResolution: bool | None = None,
+                            alchemyContrastBoost: float | None = None,
+                            alchemyResonance: int | None = None,
                             tiling: bool = False,
                             sdVersion: str = "v1_5",
                             modelId: str | None = None,
@@ -361,16 +363,22 @@ fragment ModelParts on custom_models {
       Prompt=prompt, NegativePrompt=negativePrompt, ModelId=modelId, StableDiffusionVersion=sdVersion,
       ImageCount=numberOfImages,
       ImageWidth=multipleOf(width, 8), ImageHeight=multipleOf(height, 8),
-      InferenceSteps=inferenceSteps, GuidanceScale=guidanceScale, Alchemy=useAlchemy,
+      InferenceSteps=inferenceSteps, GuidanceScale=guidanceScale,
       Scheduler=scheduler, Seed=seed, NotSaveForWork=notSaveForWork, Public=public,
     )
     if photoRealStrength is not None:
       gp.PhotoReal = photoRealParameter(
         Strength=photoRealStrength,
-        ContrastRatio=photoRealContrastRatio,
+        HighContrast=photoRealHighContrast,
         Style=photoRealStyle,
       )
-      gp.Alchemy = True #photoreal needs alchemy
+
+    if alchemyContrastBoost is not None:
+      gp.Alchemy = alchemyParameter(
+        HighResolution=alchemyHighResolution,
+        ContrastBoost=alchemyContrastBoost,
+        Resonance=alchemyResonance,
+      )
 
     if promptMagicStrength is not None:
       gp.PromptMagic = promptMagicParameter(

@@ -31,10 +31,21 @@ class Settings(QtWidgets.QFrame):
     self.ui.inClientPassword.setText(self.config.get(ConfigRegistry.LEONARDO_CLIENT_GQL_PASSWORD))
     self.ui.inClientKey.setText(self.config.get(ConfigRegistry.LEONARDO_CLIENT_REST_KEY))
 
+    self.ui.chkNSFW.setChecked(self.config.get(ConfigRegistry.GENERAL_NSFW, False))
+    self.ui.chkPublic.setChecked(self.config.get(ConfigRegistry.GENERAL_PUBLIC, True))
+
     self.ui.btnTestGQL.clicked.connect(self.onTestGql)
     self.ui.btnTestREST.clicked.connect(self.onTestRest)
     self.ui.btnClose.clicked.connect(self.onClose)
     self.ui.btnApply.clicked.connect(self.onApply)
+
+  @property
+  def nsfw(self):
+    return self.ui.chkNSFW.isChecked()
+
+  @property
+  def public(self):
+    return self.ui.chkPublic.isChecked()
 
   def onTestGql(self):
     self.ui.lblTestGQL.setText("")
@@ -66,6 +77,8 @@ class Settings(QtWidgets.QFrame):
     self.config.set(ConfigRegistry.LEONARDO_CLIENT_GQL_USERNAME, self.ui.inClientUsername.text())
     self.config.set(ConfigRegistry.LEONARDO_CLIENT_GQL_PASSWORD, self.ui.inClientPassword.text())
     self.config.set(ConfigRegistry.LEONARDO_CLIENT_REST_KEY, self.ui.inClientKey.text())
+    self.config.set(ConfigRegistry.GENERAL_NSFW, self.nsfw)
+    self.config.set(ConfigRegistry.GENERAL_PUBLIC, self.public)
 
     self.config.save()
     self.applyCallback()

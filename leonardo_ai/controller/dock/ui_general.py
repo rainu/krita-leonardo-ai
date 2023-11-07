@@ -40,6 +40,14 @@ class BaseDock(DockWidget):
   def numberOfImages(self):
     return self.ui.inNumberOfImages.value()
 
+  @property
+  def nsfw(self):
+    return self.ui.settings.nsfw
+
+  @property
+  def public(self):
+    return self.ui.settings.public
+
   def onPromptChange(self):
     self.ui.btnGenerate.setEnabled(self.prompt != "")
 

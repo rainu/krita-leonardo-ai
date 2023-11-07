@@ -9,6 +9,9 @@ class ConfigRegistry(Enum):
   LEONARDO_CLIENT_GQL_PASSWORD = "leonardo.client.gql.password"
   LEONARDO_CLIENT_REST_KEY = "leonardo.client.rest.key"
 
+  GENERAL_NSFW = "general.nsfw"
+  GENERAL_PUBLIC = "general.public"
+
 class Config:
   __instance = None
   __configLocation = None

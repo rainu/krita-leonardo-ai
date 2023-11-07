@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Settings(object):
     def setupUi(self, Settings):
         Settings.setObjectName("Settings")
-        Settings.resize(400, 227)
+        Settings.resize(400, 279)
         self.formLayout = QtWidgets.QFormLayout(Settings)
         self.formLayout.setObjectName("formLayout")
         self.label = QtWidgets.QLabel(Settings)
@@ -93,10 +93,24 @@ class Ui_Settings(object):
         self.formLayout.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.grpClientRest)
         self.btnApply = QtWidgets.QPushButton(Settings)
         self.btnApply.setObjectName("btnApply")
-        self.formLayout.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.btnApply)
+        self.formLayout.setWidget(6, QtWidgets.QFormLayout.FieldRole, self.btnApply)
         self.btnClose = QtWidgets.QPushButton(Settings)
         self.btnClose.setObjectName("btnClose")
-        self.formLayout.setWidget(3, QtWidgets.QFormLayout.LabelRole, self.btnClose)
+        self.formLayout.setWidget(6, QtWidgets.QFormLayout.LabelRole, self.btnClose)
+        self.label_5 = QtWidgets.QLabel(Settings)
+        self.label_5.setObjectName("label_5")
+        self.formLayout.setWidget(4, QtWidgets.QFormLayout.LabelRole, self.label_5)
+        self.chkNSFW = QtWidgets.QCheckBox(Settings)
+        self.chkNSFW.setText("")
+        self.chkNSFW.setObjectName("chkNSFW")
+        self.formLayout.setWidget(4, QtWidgets.QFormLayout.FieldRole, self.chkNSFW)
+        self.label_6 = QtWidgets.QLabel(Settings)
+        self.label_6.setObjectName("label_6")
+        self.formLayout.setWidget(5, QtWidgets.QFormLayout.LabelRole, self.label_6)
+        self.chkPublic = QtWidgets.QCheckBox(Settings)
+        self.chkPublic.setText("")
+        self.chkPublic.setObjectName("chkPublic")
+        self.formLayout.setWidget(5, QtWidgets.QFormLayout.FieldRole, self.chkPublic)
 
         self.retranslateUi(Settings)
         QtCore.QMetaObject.connectSlotsByName(Settings)
@@ -117,6 +131,8 @@ class Ui_Settings(object):
         self.btnTestREST.setText(_translate("Settings", "Test"))
         self.btnApply.setText(_translate("Settings", "Apply Settings"))
         self.btnClose.setText(_translate("Settings", "Close"))
+        self.label_5.setText(_translate("Settings", "Not Safe For Work"))
+        self.label_6.setText(_translate("Settings", "Public"))
 
 
 if __name__ == "__main__":

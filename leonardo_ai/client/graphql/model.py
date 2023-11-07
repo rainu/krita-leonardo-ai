@@ -24,8 +24,14 @@ class promptMagicParameter:
 @dataclass
 class photoRealParameter:
   Strength: float
-  ContrastRatio: float
+  HighContrast: bool
   Style: str
+
+@dataclass
+class alchemyParameter:
+  HighResolution: bool
+  ContrastBoost: float
+  Resonance: int
 
 @dataclass
 class canvasParameter:
@@ -59,11 +65,11 @@ class generationParameter:
   NotSaveForWork: bool
   LeonardoMagic: bool | None = None
   PresetStyle: str = "NONE"
-  Alchemy: bool | None = None
   Tiling: bool | None = None
   Canvas: canvasParameter | None = None
   PromptMagic: promptMagicParameter | None = None
   PhotoReal: photoRealParameter | None = None
+  Alchemy: alchemyParameter | None = None
   ControlNet: controlNetParameter | None = None
   Elements: List[elementParameter] = None
   Scheduler: str | None = None
@@ -87,7 +93,6 @@ class generationParameter:
       "leonardoMagic": self.LeonardoMagic if self.LeonardoMagic is not None else False,
       "poseToImage": self.ControlNet is not None,
       "elements": self.Elements if self.Elements is not None else [],
-      **({"alchemy": self.Alchemy } if self.Alchemy is not None else {}),
       **({"modelId": self.ModelId } if self.ModelId is not None else {}),
       **({"seed": self.Seed} if self.Seed is not None else {}),
     }
@@ -121,7 +126,18 @@ class generationParameter:
         "photoReal": True,
         "photoRealStrength": self.PhotoReal.Strength,
         "presetStyle": self.PhotoReal.Style,
-        "contrastRatio": self.PhotoReal.ContrastRatio,
+      })
+
+    if self.Alchemy is not None:
+      content.update({
+        "alchemy": True,
+        "highResolution": self.Alchemy.HighResolution,
+        "contrastRatio": self.Alchemy.ContrastBoost,
+        "guidance_scale": self.Alchemy.Resonance,
+      })
+    else:
+      content.update({
+        "alchemy": False,
       })
 
     return content

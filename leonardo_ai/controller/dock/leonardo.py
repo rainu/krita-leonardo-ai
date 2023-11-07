@@ -84,7 +84,17 @@ class LeonardoDock(Sketch2Image):
     document = Krita.instance().activeDocument()
     selection = document.selection()
 
-    genId = self.leonardoAI.createImageGeneration(self.prompt, 512, 512, negativePrompt=self.negativePrompt, numberOfImages=self.numberOfImages)
+    genId = self.leonardoAI.createImageGeneration(
+      prompt=self.prompt, negativePrompt=self.negativePrompt,
+      notSaveForWork=self.nsfw, numberOfImages=self.numberOfImages,
+      width=self.dimWidth, height=self.dimHeight,
+      guidanceScale=self.guidanceScale, seed=self.seed, scheduler=self.scheduler, public=self.public,
+      photoRealStrength=self.photoRealStrength, photoRealHighContrast=not self.photoRealRawMode, photoRealStyle=self.photoRealStyle,
+      alchemyHighResolution=self.alchemyHighResolution, alchemyContrastBoost=self.alchemyContrastBoost, alchemyResonance=self.alchemyResonance,
+      promptMagicVersion=self.alchemyPromptMagicVersion, promptMagicStrength=self.alchemyPromptMagicStrength, promptMagicHighContrast=self.alchemyHighContrast,
+      tiling=self.t2iTiling,
+      #TODO: sdVersion & modelId
+    )
     images = None
 
     while True:
