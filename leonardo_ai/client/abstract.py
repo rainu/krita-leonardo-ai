@@ -17,7 +17,7 @@ class TokenBalance:
 class UserInfo:
   Id: str
   Name: str
-  Token: TokenBalance | None
+  Token: TokenBalance | None = None
 
 
 @dataclass

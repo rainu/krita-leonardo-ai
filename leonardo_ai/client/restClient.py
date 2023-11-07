@@ -9,7 +9,7 @@ else:
 class RestClient(AbstractClient):
 
   def __init__(self, token: str):
-    self.sdk = leonardoaisdk.LeonardoAiSDK(bearer_auth=token)
+    self.sdk = leonardoaisdk.LeonardoAiSDK(token)
 
   def getUserInfo(self) -> UserInfo | None:
     response = self.sdk.user.get_user_self()

@@ -10,8 +10,10 @@ from krita import DockWidget, Node, Document, Selection
 from .ui_sketch2image import Sketch2Image
 from ...client.abstract import JobStatus, AbstractClient
 from ...client.graphql.graphql import GraphqlClient
+from ...client.restClient import RestClient
 from ...view.dock import Ui_LeonardoAI
-from ...config import Config
+from ...config import Config, ConfigRegistry
+
 
 class BalanceUpdater(QThread):
 
@@ -32,13 +34,27 @@ class LeonardoDock(Sketch2Image):
 
     self.ui.btnGenerate.clicked.connect(self.onGenerate)
 
-    self.leonardoAI = GraphqlClient(self.config.get("leonardo.client.gql.username"), self.config.get("leonardo.client.gql.password"))
+    self._initialiseSDK()
 
     self.balanceUpdater = BalanceUpdater(self.leonardoAI, self.ui)
     self.updateBalance()
 
+  def _initialiseSDK(self):
+    if self.config.get(ConfigRegistry.LEONARDO_CLIENT_TYPE) == "gql":
+      self.leonardoAI = GraphqlClient(
+        self.config.get(ConfigRegistry.LEONARDO_CLIENT_GQL_USERNAME),
+        self.config.get(ConfigRegistry.LEONARDO_CLIENT_GQL_PASSWORD),
+      )
+    else:
+      self.leonardoAI = RestClient(self.config.get(ConfigRegistry.LEONARDO_CLIENT_REST_KEY))
+
   def canvasChanged(self, canvas):
     pass
+
+  def onSettingsChanged(self):
+    super().onSettingsChanged()
+    self._initialiseSDK()
+
 
   def updateBalance(self):
     if self.balanceUpdater.isRunning(): return

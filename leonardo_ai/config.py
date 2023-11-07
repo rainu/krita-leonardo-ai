@@ -1,6 +1,13 @@
 import json
 import logging
 import os.path
+from enum import Enum
+
+class ConfigRegistry(Enum):
+  LEONARDO_CLIENT_TYPE = "leonardo.client.type"
+  LEONARDO_CLIENT_GQL_USERNAME = "leonardo.client.gql.username"
+  LEONARDO_CLIENT_GQL_PASSWORD = "leonardo.client.gql.password"
+  LEONARDO_CLIENT_REST_KEY = "leonardo.client.rest.key"
 
 class Config:
   __instance = None
@@ -33,15 +40,21 @@ class Config:
   def save(self):
     try:
       with open(self.__configLocation, 'w') as file:
-        json.dump(self.__data, file)
+        json.dump(self.__data, file, indent=2)
     except Exception as e:
       logging.warning("Unable to save config file.", e)
 
 
-  def set(self, key: str, value: any):
+  def set(self, key: str | ConfigRegistry, value: any):
+    if isinstance(key, ConfigRegistry):
+      key = key.value
+
     self.__data[key] = value
     self.save()
 
-  def get(self, key: str, default: any = None) -> any:
+  def get(self, key: str | ConfigRegistry, default: any = None) -> any:
+    if isinstance(key, ConfigRegistry):
+      key = key.value
+
     if key in self.__data: return self.__data[key]
     return default

@@ -1,6 +1,7 @@
 from krita import DockWidget
 
 from ...view.dock import Ui_LeonardoAI
+from .ui_settings import Settings
 
 class BaseDock(DockWidget):
 
@@ -14,6 +15,17 @@ class BaseDock(DockWidget):
     self.ui.inPrompt.textChanged.connect(self.onPromptChange)
 
     self.ui.tabType.currentChanged.connect(self.onTabChange)
+
+    self.ui.settings = Settings(self.onSettingsChanged)
+
+    def onSettingsClick():
+      self.ui.settings.show()
+      self.ui.settings.setVisible(True)
+
+    self.ui.btnSettings.clicked.connect(onSettingsClick)
+
+  def onSettingsChanged(self):
+    pass
 
   @property
   def prompt(self):
