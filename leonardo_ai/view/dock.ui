@@ -167,7 +167,7 @@
           <enum>QLCDNumber::Flat</enum>
          </property>
          <property name="value" stdset="0">
-          <double>8500.000000000000000</double>
+          <double>0.000000000000000</double>
          </property>
         </widget>
        </item>

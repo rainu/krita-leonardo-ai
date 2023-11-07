@@ -80,7 +80,7 @@ class Ui_LeonardoAI(object):
         self.lcdBalance = QtWidgets.QLCDNumber(self.frame_17)
         self.lcdBalance.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.lcdBalance.setSegmentStyle(QtWidgets.QLCDNumber.Flat)
-        self.lcdBalance.setProperty("value", 8500.0)
+        self.lcdBalance.setProperty("value", 0.0)
         self.lcdBalance.setObjectName("lcdBalance")
         self.horizontalLayout_15.addWidget(self.lcdBalance, 0, QtCore.Qt.AlignRight)
         self.verticalLayout.addWidget(self.frame_17)

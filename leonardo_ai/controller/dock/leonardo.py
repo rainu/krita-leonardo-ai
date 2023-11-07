@@ -1,5 +1,6 @@
 import time
 import requests
+from typing import Callable
 
 from PyQt5.QtGui import QImage
 from PyQt5.QtWidgets import QListWidgetItem
@@ -17,14 +18,16 @@ from ...config import Config, ConfigRegistry
 
 class BalanceUpdater(QThread):
 
-  def __init__(self, leonardoClient: AbstractClient, ui: Ui_LeonardoAI):
+  def __init__(self, leonardoClient: Callable[[], AbstractClient], ui: Ui_LeonardoAI):
     super().__init__()
 
-    self.leonardoAI = leonardoClient
+    self.getLeonardoAI = leonardoClient
     self.ui = ui
 
   def run(self):
-    self.ui.lcdBalance.display(str(self.leonardoAI.getUserInfo().Token.General))
+    leonardoAI = self.getLeonardoAI()
+    if leonardoAI is not None:
+      self.ui.lcdBalance.display(str(leonardoAI.getUserInfo().Token.General))
 
 class LeonardoDock(Sketch2Image):
 
@@ -36,17 +39,21 @@ class LeonardoDock(Sketch2Image):
 
     self._initialiseSDK()
 
-    self.balanceUpdater = BalanceUpdater(self.leonardoAI, self.ui)
+    def getLeonardoAI(): return self.leonardoAI
+    self.balanceUpdater = BalanceUpdater(getLeonardoAI, self.ui)
     self.updateBalance()
 
   def _initialiseSDK(self):
-    if self.config.get(ConfigRegistry.LEONARDO_CLIENT_TYPE) == "gql":
+    clientType = self.config.get(ConfigRegistry.LEONARDO_CLIENT_TYPE)
+    if clientType == "gql":
       self.leonardoAI = GraphqlClient(
         self.config.get(ConfigRegistry.LEONARDO_CLIENT_GQL_USERNAME),
         self.config.get(ConfigRegistry.LEONARDO_CLIENT_GQL_PASSWORD),
       )
-    else:
+    elif clientType == "rest":
       self.leonardoAI = RestClient(self.config.get(ConfigRegistry.LEONARDO_CLIENT_REST_KEY))
+    else:
+      self.leonardoAI = None
 
   def canvasChanged(self, canvas):
     pass
@@ -54,10 +61,11 @@ class LeonardoDock(Sketch2Image):
   def onSettingsChanged(self):
     super().onSettingsChanged()
     self._initialiseSDK()
+    self.updateBalance()
 
 
   def updateBalance(self):
-    if self.balanceUpdater.isRunning(): return
+    if self.balanceUpdater.isRunning() and not self.balanceUpdater.isFinished(): return
     self.balanceUpdater.start()
 
   def onGenerate(self):
