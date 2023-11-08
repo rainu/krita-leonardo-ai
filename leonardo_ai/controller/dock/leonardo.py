@@ -2,14 +2,14 @@ import time
 import requests
 from typing import Callable
 
+from PyQt5 import QtCore
 from PyQt5.QtGui import QImage
-from PyQt5.QtWidgets import QListWidgetItem
 from PyQt5.QtCore import QByteArray, QThread
 
 from krita import DockWidget, Node, Document, Selection
 
 from .ui_sketch2image import Sketch2Image
-from ...client.abstract import JobStatus, AbstractClient
+from ...client.abstract import JobStatus, AbstractClient, Generation
 from ...client.graphql.graphql import GraphqlClient
 from ...client.restClient import RestClient
 from ...view.dock import Ui_LeonardoAI
@@ -31,10 +31,16 @@ class BalanceUpdater(QThread):
       self.ui.lcdBalance.display(str(leonardoAI.getUserInfo().Token.General))
 
 class LeonardoDock(Sketch2Image):
+  generationThread: Thread = None
+  sigGenerationFailed = QtCore.pyqtSignal(Generation)
+  sigGenerationDoneText2Image = QtCore.pyqtSignal(Generation)
 
   def __init__(self):
     super().__init__()
     self.config = Config.instance()
+
+    self.sigGenerationFailed.connect(self.onGenerationFailed)
+    self.sigGenerationDoneText2Image.connect(self.onGenerationDoneText2Image)
 
     self.ui.btnGenerate.clicked.connect(self.onGenerate)
 
@@ -97,42 +103,83 @@ class LeonardoDock(Sketch2Image):
     elif self.ui.tabType.currentWidget() == self.ui.tabSketch2Img:
       self.onSketch2Image()
 
+  def generate(self, genFunc: Callable[[...], str], genArgs: dict, signal: QtCore.pyqtBoundSignal):
+    self.ui.btnGenerate.setEnabled(False)
+
+    if self.generationThread is not None and self.generationThread.isRunning():
+      self.generationThread.terminate()
+
+    def run():
+      genId = genFunc(**genArgs)
+
+      while True:
+        time.sleep(1)
+        job = self.leonardoAI.getGenerationById(genId)
+
+        if job.Status == JobStatus.COMPLETE:
+          signal.emit(job)
+          break
+        if job.Status == JobStatus.FAILED:
+          self.onGenerationFailed.emit(job)
+          break
+
+      self.updateBalance()
+
+    self.generationThread = Thread(run)
+    self.generationThread.start()
+
   def onImage(self):
+    args = {
+      "modelId": self.model.Id, "sdVersion": self.model.StableDiffusionVersion,
+      "prompt": self.prompt, "negativePrompt": self.negativePrompt,
+      "notSaveForWork": self.nsfw, "public": self.public, "numberOfImages": self.numberOfImages,
+      "width": self.dimWidth, "height": self.dimHeight,
+      "tiling": self.t2iTiling,
+    }
+    if self.ui.grpAdvancedSettings.isVisible():
+      args.update({
+        "guidanceScale": self.guidanceScale, "seed": self.seed, "scheduler": self.scheduler,
+      })
+    if self.ui.chkPhotoReal.isChecked():
+      args.update({
+        "photoRealStrength": self.photoRealStrength, "photoRealHighContrast": not self.photoRealRawMode, "photoRealStyle": self.photoRealStyle,
+      })
+    if self.ui.chkAlchemy.isChecked():
+      args.update({
+        "alchemyHighResolution": self.alchemyHighResolution, "alchemyContrastBoost": self.alchemyContrastBoost, "alchemyResonance": self.alchemyResonance,
+        "promptMagicVersion": self.alchemyPromptMagicVersion, "promptMagicStrength": self.alchemyPromptMagicStrength, "promptMagicHighContrast": self.alchemyHighContrast,
+      })
+
+    self.generate(self.leonardoAI.createImageGeneration, args, self.sigGenerationDoneText2Image)
+
+  @QtCore.pyqtSlot(Generation)
+  def onGenerationFailed(self, generation: Generation):
+    self.ui.btnGenerate.setEnabled(True)
+    print("Generation failed!", generation)
+
+  @QtCore.pyqtSlot(Generation)
+  def onGenerationDoneText2Image(self, generation: Generation):
+    self.ui.btnGenerate.setEnabled(True)
+
     document = Krita.instance().activeDocument()
-    selection = document.selection()
+    name = f"""AI - {generation.Prompt}"""
+    if generation.NegativePrompt != "":
+      name += f"""(! {generation.NegativePrompt})"""
+    name += f""" - {generation.Seed}"""
 
-    genId = self.leonardoAI.createImageGeneration(
-      prompt=self.prompt, negativePrompt=self.negativePrompt,
-      notSaveForWork=self.nsfw, numberOfImages=self.numberOfImages,
-      width=self.dimWidth, height=self.dimHeight,
-      guidanceScale=self.guidanceScale, seed=self.seed, scheduler=self.scheduler, public=self.public,
-      photoRealStrength=self.photoRealStrength, photoRealHighContrast=not self.photoRealRawMode, photoRealStyle=self.photoRealStyle,
-      alchemyHighResolution=self.alchemyHighResolution, alchemyContrastBoost=self.alchemyContrastBoost, alchemyResonance=self.alchemyResonance,
-      promptMagicVersion=self.alchemyPromptMagicVersion, promptMagicStrength=self.alchemyPromptMagicStrength, promptMagicHighContrast=self.alchemyHighContrast,
-      tiling=self.t2iTiling,
-      #TODO: sdVersion & modelId
-    )
-    images = None
+    grpLayer = document.createGroupLayer(name)
+    document.rootNode().addChildNode(grpLayer, None)
 
-    while True:
-      job = self.leonardoAI.getGenerationById(genId)
+    for generatedImage in generation.GeneratedImages:
+      image = QImage.fromData(requests.get(generatedImage.Url).content)
+      layer = document.createNode(generatedImage.Id, "paintlayer")
+      grpLayer.addChildNode(layer, None)
 
-      if job.Status == JobStatus.COMPLETE:
-        images = job.GeneratedImages
-        break
-      if job.Status == JobStatus.FAILED:
-        raise Exception("leonardo generation job failed")
+      ptr = image.bits()
+      ptr.setsize(image.byteCount())
+      layer.setPixelData(QByteArray(ptr.asstring()), 0, 0, image.width(), image.height())
 
-      time.sleep(1)
-
-    image = QImage.fromData(requests.get(images[0].Url).content)
-    layer = document.createNode("Leonardo-AI", "paintlayer")
-    document.rootNode().addChildNode(layer, None)
-
-    ptr = image.bits()
-    ptr.setsize(image.byteCount())
-    layer.setPixelData(QByteArray(ptr.asstring()), 0, 0, image.width(), image.height())
-
+    document.crop(0, 0, max(document.width(), generation.ImageWidth), max(document.height(), generation.ImageHeight))
     document.refreshProjection()
 
   def onInpaint(self):

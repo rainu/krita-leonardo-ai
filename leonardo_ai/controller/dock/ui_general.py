@@ -21,7 +21,8 @@ class BaseDock(DockWidget):
     self.ui = Ui_LeonardoAI()
     self.ui.setupUi(self)
 
-    self.ui.inPrompt.textChanged.connect(self.onPromptChange)
+    self.ui.lstModel.itemSelectionChanged.connect(self.onMandatoryInputChanges)
+    self.ui.inPrompt.textChanged.connect(self.onMandatoryInputChanges)
     self.ui.tabType.currentChanged.connect(self.onTabChange)
     self.ui.settings = Settings(self.onSettingsChanged)
 
@@ -33,6 +34,11 @@ class BaseDock(DockWidget):
 
   def onSettingsChanged(self):
     pass
+
+  @property
+  def model(self) -> Model | None:
+    selectedItem = self.ui.lstModel.itemWidget(self.ui.lstModel.currentItem())
+    return selectedItem.model if selectedItem is not None else None
 
   @property
   def prompt(self):
@@ -69,8 +75,8 @@ class BaseDock(DockWidget):
     self.ui.lstModel.addItem(wItem)
     self.ui.lstModel.setItemWidget(wItem, item)
 
-  def onPromptChange(self):
-    self.ui.btnGenerate.setEnabled(self.prompt != "")
+  def onMandatoryInputChanges(self):
+    self.ui.btnGenerate.setEnabled(self.prompt != "" and self.model is not None)
 
   def onTabChange(self):
     if self.ui.tabType.currentIndex() == 0: self.onTabText2ImageActivate()
