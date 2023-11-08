@@ -68,12 +68,10 @@ class LeonardoDock(Sketch2Image):
 
     def loadModels():
       models = self.leonardoAI.getModels(favorites=True)
-      for model in models:
-        self.sigAddModel.emit(model)
+      for model in models: self.sigAddModel.emit(model)
 
       models = self.leonardoAI.getModels(official=True)
-      for model in models:
-        self.sigAddModel.emit(model)
+      for model in models: self.sigAddModel.emit(model)
 
     self.modelLoadingThread = Thread(loadModels)
     self.modelLoadingThread.start()
@@ -162,12 +160,7 @@ class LeonardoDock(Sketch2Image):
     self.ui.btnGenerate.setEnabled(True)
 
     document = Krita.instance().activeDocument()
-    name = f"""AI - {generation.Prompt}"""
-    if generation.NegativePrompt != "":
-      name += f"""(! {generation.NegativePrompt})"""
-    name += f""" - {generation.Seed}"""
-
-    grpLayer = document.createGroupLayer(name)
+    grpLayer = document.createGroupLayer(f"""AI - {generation.Prompt} - {generation.Id}""")
     document.rootNode().addChildNode(grpLayer, None)
 
     for generatedImage in generation.GeneratedImages:
