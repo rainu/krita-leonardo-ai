@@ -8,8 +8,8 @@ if __name__ == '__main__':
   import sys
   sys.path.append("..")
 
-  from client.abstract import *
-  from client.utils import *
+  from abstract import *
+  from utils import *
   from model import *
 else:
   from ..abstract import *
@@ -105,19 +105,77 @@ class GraphqlClient(AbstractClient):
 
   def getModels(self,
                 query: str = "%%",
+                ids: List[str] | None = None,
                 official: bool | None = None,
                 complete: bool | None = None,
+                favorites: bool | None = None,
                 notSaveForWork: bool | None = None,
+                orderByCreatedAsc: bool | None = None,
                 offset: int = 0,
                 limit: int = 50) -> List[Model]:
+
+    if ids is not None and len(ids) > 0:
+      variables = {
+        "where": {
+          "id": {
+            "_in": ids
+          }
+        },
+        "offset": 0,
+        "limit": len(ids)
+      }
+    else:
+      variables = {
+        "where": {
+          "public": {"_eq": True},
+          "name": {"_like": query},
+          **({"official": {"_eq": official}} if official is not None else {}),
+          **({"nsfw": {"_eq": notSaveForWork}} if notSaveForWork is not None else {}),
+          **({"status": {
+            **({"_eq": "COMPLETE"} if complete else {"_ne": "COMPLETE"})
+          }} if complete is not None else {}),
+        },
+        "offset": offset,
+        "limit": limit,
+      }
+
+    if orderByCreatedAsc is not None:
+      variables.update({
+        "order_by": {
+          "createdAt": "asc" if orderByCreatedAsc else "desc"
+        }
+      })
+
+    if favorites is not None:
+      variables.get("where").update({
+        "user_favourite_custom_models": {
+          "userId": {
+            "_eq": self.getUserInfo().Id
+          }
+        }
+      })
+
+    variables.update({
+      "generationsWhere": {
+        "generated_images": {}
+      }
+    })
+
     response = self._doGraphqlCall(
       "GetFeedModels",
-      """query GetFeedModels($order_by: [custom_models_order_by!] = [ { createdAt: desc }], $where: custom_models_bool_exp, $limit: Int, $offset: Int) {
-    custom_models(order_by: $order_by
-    where: $where
-    limit: $limit
-    offset: $offset) {
+      """query GetFeedModels($order_by: [custom_models_order_by!] = [{ createdAt: desc }], $where: custom_models_bool_exp, $generationsWhere: generations_bool_exp, $limit: Int, $offset: Int) {
+    custom_models(
+      order_by: $order_by
+      where: $where
+      limit: $limit
+      offset: $offset) {
         ...ModelParts
+        generations(where: $generationsWhere, limit: 1, order_by: [{ createdAt: asc }]) {
+            generated_images(limit: 1, order_by: [{ likeCount: desc }]) {
+                id
+                url
+            }
+        }
     }
 }
 
@@ -143,22 +201,27 @@ fragment ModelParts on custom_models {
         url
     }
 }""",
-      {
-        "where": {
-          "public": { "_eq": True },
-          "name": { "_like": query },
-          **({ "official": { "_eq": official } } if official is not None else {}),
-          **({ "nsfw": { "_eq": notSaveForWork } } if notSaveForWork is not None else {}),
-          **({ "status": {
-            **({"_eq": "COMPLETE"} if complete else { "_ne": "COMPLETE" } )
-          }} if complete is not None else {}),
-        },
-        "offset": offset,
-        "limit": limit,
-      }
+      variables
     )
-
     response = response['custom_models']
+
+    def getPreviewImage(model):
+      if model['generated_image'] is not None:
+        return Image(
+          Id=model['generated_image']['id'],
+          Url=model['generated_image']['url'],
+        )
+      if model['generations'] is not None and len(model['generations']) > 0:
+        firstGen = model['generations'][0]
+        if firstGen['generated_images'] is not None and len(firstGen['generated_images']) > 0:
+          firstGen = firstGen['generated_images'][0]
+          return Image(
+            Id=firstGen['id'],
+            Url=firstGen['url'],
+          )
+
+      return None
+
     return [
       Model(
         Id=model['id'],
@@ -175,10 +238,7 @@ fragment ModelParts on custom_models {
           Name=model['user']['username'],
           Token=None,
         ),
-        PreviewImage=Image(
-          Id=model['generated_image']['id'],
-          Url=model['generated_image']['url'],
-        ) if model['generated_image'] is not None else None
+        PreviewImage=getPreviewImage(model)
       )
       for model in response
     ]

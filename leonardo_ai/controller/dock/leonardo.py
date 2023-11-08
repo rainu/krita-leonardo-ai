@@ -14,6 +14,7 @@ from ...client.graphql.graphql import GraphqlClient
 from ...client.restClient import RestClient
 from ...view.dock import Ui_LeonardoAI
 from ...config import Config, ConfigRegistry
+from ...util.thread import Thread
 
 
 class BalanceUpdater(QThread):
@@ -37,6 +38,7 @@ class LeonardoDock(Sketch2Image):
 
     self.ui.btnGenerate.clicked.connect(self.onGenerate)
 
+    self.modelLoadingThread = None
     self._initialiseSDK()
 
     def getLeonardoAI(): return self.leonardoAI
@@ -54,6 +56,21 @@ class LeonardoDock(Sketch2Image):
       self.leonardoAI = RestClient(self.config.get(ConfigRegistry.LEONARDO_CLIENT_REST_KEY))
     else:
       self.leonardoAI = None
+
+    if self.modelLoadingThread is not None:
+      return
+
+    def loadModels():
+      models = self.leonardoAI.getModels(favorites=True)
+      for model in models:
+        self.sigAddModel.emit(model)
+
+      models = self.leonardoAI.getModels(official=True)
+      for model in models:
+        self.sigAddModel.emit(model)
+
+    self.modelLoadingThread = Thread(loadModels)
+    self.modelLoadingThread.start()
 
   def canvasChanged(self, canvas):
     pass
