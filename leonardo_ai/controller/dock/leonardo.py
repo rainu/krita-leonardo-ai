@@ -34,6 +34,7 @@ class LeonardoDock(Sketch2Image):
   generationThread: Thread = None
   sigGenerationFailed = QtCore.pyqtSignal(Generation)
   sigGenerationDoneText2Image = QtCore.pyqtSignal(Generation)
+  sigGenerationDoneInpaint = QtCore.pyqtSignal(Generation)
 
   def __init__(self):
     super().__init__()
@@ -41,6 +42,7 @@ class LeonardoDock(Sketch2Image):
 
     self.sigGenerationFailed.connect(self.onGenerationFailed)
     self.sigGenerationDoneText2Image.connect(self.onGenerationDoneText2Image)
+    self.sigGenerationDoneInpaint.connect(self.onGenerationDoneInpaint)
 
     self.ui.btnGenerate.clicked.connect(self.onGenerate)
 
@@ -126,6 +128,31 @@ class LeonardoDock(Sketch2Image):
     self.generationThread = Thread(run)
     self.generationThread.start()
 
+  def loadGeneratedImages(self, generation: Generation, document, selection = None):
+    grpLayer = document.createGroupLayer(f"""AI - {generation.Prompt} - {generation.Id}""")
+    document.rootNode().addChildNode(grpLayer, None)
+    for generatedImage in generation.GeneratedImages:
+      image = QImage.fromData(requests.get(generatedImage.Url).content)
+      layer = document.createNode(generatedImage.Id, "paintlayer")
+      grpLayer.addChildNode(layer, None)
+
+      ptr = image.bits()
+      ptr.setsize(image.byteCount())
+      layer.setPixelData(
+        QByteArray(ptr.asstring()),
+        0 if selection is None else selection.x(),
+        0 if selection is None else selection.y(),
+        image.width(),
+        image.height(),
+      )
+
+      if selection is not None:
+        layer.cropNode(selection.x(), selection.y(), selection.width(), selection.height())
+
+        invertedSelection = selection.duplicate()
+        invertedSelection.invert()
+        invertedSelection.cut(layer)
+
   def onImage(self):
     args = {
       "modelId": self.model.Id, "sdVersion": self.model.StableDiffusionVersion,
@@ -160,17 +187,7 @@ class LeonardoDock(Sketch2Image):
     self.ui.btnGenerate.setEnabled(True)
 
     document = Krita.instance().activeDocument()
-    grpLayer = document.createGroupLayer(f"""AI - {generation.Prompt} - {generation.Id}""")
-    document.rootNode().addChildNode(grpLayer, None)
-
-    for generatedImage in generation.GeneratedImages:
-      image = QImage.fromData(requests.get(generatedImage.Url).content)
-      layer = document.createNode(generatedImage.Id, "paintlayer")
-      grpLayer.addChildNode(layer, None)
-
-      ptr = image.bits()
-      ptr.setsize(image.byteCount())
-      layer.setPixelData(QByteArray(ptr.asstring()), 0, 0, image.width(), image.height())
+    self.loadGeneratedImages(generation, document)
 
     document.crop(0, 0, max(document.width(), generation.ImageWidth), max(document.height(), generation.ImageHeight))
     document.refreshProjection()
@@ -182,22 +199,27 @@ class LeonardoDock(Sketch2Image):
     img = self.partFromSelection(document, selection)
     mask = self.maskFromSelection(selection)
 
-    genId = self.leonardoAI.createInpaintGeneration(self.prompt, img, mask, negativePrompt=self.negativePrompt, numberOfImages=self.numberOfImages, imageStrength=0.2)
-    images = None
+    args = {
+      "modelId": self.model.Id, "sdVersion": self.model.StableDiffusionVersion,
+      "prompt": self.prompt, "negativePrompt": self.negativePrompt,
+      "notSaveForWork": self.nsfw, "public": self.public, "numberOfImages": self.numberOfImages,
+      "imageStrength": 1.0 - self.inpaintStrength,
+      "image": img, "mask": mask,
+    }
+    if self.ui.grpAdvancedSettings.isVisible():
+      args.update({
+        "guidanceScale": self.guidanceScale, "seed": self.seed, "scheduler": self.scheduler,
+      })
 
-    while True:
-      job = self.leonardoAI.getGenerationById(genId)
+    self.generate(self.leonardoAI.createInpaintGeneration, args, self.sigGenerationDoneInpaint)
 
-      if job.Status == JobStatus.COMPLETE:
-        images = job.GeneratedImages
-        break
-      if job.Status == JobStatus.FAILED:
-        raise Exception("leonardo generation job failed")
+  @QtCore.pyqtSlot(Generation)
+  def onGenerationDoneInpaint(self, generation: Generation):
+    self.ui.btnGenerate.setEnabled(True)
 
-      time.sleep(1)
-
-    genImg = QImage.fromData(requests.get(images[0].Url).content)
-    self.insert(genImg, document, selection)
+    document = Krita.instance().activeDocument()
+    selection = document.selection()
+    self.loadGeneratedImages(generation, document, selection)
 
     document.refreshProjection()
 
