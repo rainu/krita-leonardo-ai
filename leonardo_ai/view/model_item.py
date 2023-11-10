@@ -31,12 +31,6 @@ class Ui_modelItem(object):
         self.gridLayout = QtWidgets.QGridLayout(self.frame)
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
         self.gridLayout.setObjectName("gridLayout")
-        self.lblName = QtWidgets.QLabel(self.frame)
-        font = QtGui.QFont()
-        font.setPointSize(18)
-        self.lblName.setFont(font)
-        self.lblName.setObjectName("lblName")
-        self.gridLayout.addWidget(self.lblName, 1, 0, 1, 1)
         self.lblBase = QtWidgets.QLabel(self.frame)
         font = QtGui.QFont()
         font.setPointSize(12)
@@ -46,6 +40,12 @@ class Ui_modelItem(object):
         self.lblModelDim = QtWidgets.QLabel(self.frame)
         self.lblModelDim.setObjectName("lblModelDim")
         self.gridLayout.addWidget(self.lblModelDim, 0, 1, 1, 1, QtCore.Qt.AlignRight)
+        self.lblName = QtWidgets.QLabel(self.frame)
+        font = QtGui.QFont()
+        font.setPointSize(18)
+        self.lblName.setFont(font)
+        self.lblName.setObjectName("lblName")
+        self.gridLayout.addWidget(self.lblName, 1, 0, 1, 1)
         self.horizontalLayout.addWidget(self.frame)
 
         self.retranslateUi(modelItem)
@@ -55,9 +55,9 @@ class Ui_modelItem(object):
         _translate = QtCore.QCoreApplication.translate
         modelItem.setWindowTitle(_translate("modelItem", "Form"))
         self.gfxIcon.setText(_translate("modelItem", "TextLabel"))
-        self.lblName.setText(_translate("modelItem", "Leonardo Vision XL"))
         self.lblBase.setText(_translate("modelItem", "SL_21"))
         self.lblModelDim.setText(_translate("modelItem", "1024x768"))
+        self.lblName.setText(_translate("modelItem", "Leonardo Vision XL"))
 
 
 if __name__ == "__main__":

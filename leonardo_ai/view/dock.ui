@@ -388,7 +388,7 @@
     <item>
      <widget class="QTabWidget" name="tabType">
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="tabTxt2Img">
        <attribute name="title">
@@ -422,9 +422,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
-             <width>292</width>
-             <height>782</height>
+             <y>-429</y>
+             <width>296</width>
+             <height>796</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -595,13 +595,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QFrame" name="frame_3">
-              <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
-              </property>
-              <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
-              </property>
+             <widget class="QGroupBox" name="groupBox_3">
               <layout class="QVBoxLayout" name="verticalLayout_2">
                <item alignment="Qt::AlignTop">
                 <widget class="QCheckBox" name="chkPhotoReal">
@@ -730,13 +724,7 @@
                 <number>0</number>
                </property>
                <item>
-                <widget class="QFrame" name="frmAlchemy">
-                 <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
-                 </property>
-                 <property name="frameShadow">
-                  <enum>QFrame::Raised</enum>
-                 </property>
+                <widget class="QGroupBox" name="frmAlchemy">
                  <layout class="QVBoxLayout" name="verticalLayout_4">
                   <item>
                    <widget class="QCheckBox" name="chkAlchemy">
@@ -1182,13 +1170,7 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_6">
         <item>
-         <widget class="QFrame" name="frame_10">
-          <property name="frameShape">
-           <enum>QFrame::StyledPanel</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
-          </property>
+         <widget class="QGroupBox" name="groupBox_10">
           <layout class="QFormLayout" name="formLayout_5">
            <item row="0" column="0">
             <widget class="QLabel" name="label_13">
@@ -1289,20 +1271,14 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
+             <y>-180</y>
              <width>292</width>
-             <height>214</height>
+             <height>398</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_7">
             <item>
-             <widget class="QFrame" name="frame_15">
-              <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
-              </property>
-              <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
-              </property>
+             <widget class="QGroupBox" name="groupBox_15">
               <layout class="QFormLayout" name="formLayout_6">
                <item row="0" column="0">
                 <widget class="QLabel" name="label_14">
@@ -1392,13 +1368,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QFrame" name="grpControlNet">
-                 <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
-                 </property>
-                 <property name="frameShadow">
-                  <enum>QFrame::Raised</enum>
-                 </property>
+                <widget class="QGroupBox" name="grpControlNet">
                  <layout class="QFormLayout" name="formLayout_8">
                   <item row="0" column="1">
                    <widget class="QComboBox" name="cmbControlNet">
@@ -1502,6 +1472,189 @@
                <property name="bottomMargin">
                 <number>0</number>
                </property>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QGroupBox" name="groupBox">
+              <layout class="QVBoxLayout" name="verticalLayout_15">
+               <item>
+                <widget class="QCheckBox" name="chkI2IAlchemy">
+                 <property name="toolTip">
+                  <string>Leonardo Alchemy is our powerful new image generation pipeline. Click the question mark for more info.</string>
+                 </property>
+                 <property name="text">
+                  <string>Alchemy</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QGroupBox" name="grpI2IAlchemy">
+                 <property name="title">
+                  <string/>
+                 </property>
+                 <layout class="QFormLayout" name="formLayout_13">
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="label_29">
+                    <property name="toolTip">
+                     <string>This boosts the output resolution of Leonardo Alchemy. Higher resolution outputs will be somewhat different to the normal resolution outputs due to the diffusion process, so do not expect this to act as an upscaler.</string>
+                    </property>
+                    <property name="text">
+                     <string>High Resolution</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QCheckBox" name="chkI2IAlchemyHighResolution">
+                    <property name="text">
+                     <string/>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QLabel" name="label_30">
+                    <property name="toolTip">
+                     <string>This will adjust the dynamic range of your image. The default is 1, but you may find reducing it is helpful depending on your subject matter.</string>
+                    </property>
+                    <property name="text">
+                     <string>Contrast Boost</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="QFrame" name="frame_21">
+                    <property name="frameShape">
+                     <enum>QFrame::NoFrame</enum>
+                    </property>
+                    <property name="lineWidth">
+                     <number>0</number>
+                    </property>
+                    <layout class="QHBoxLayout" name="horizontalLayout_21">
+                     <property name="leftMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>0</number>
+                     </property>
+                     <item>
+                      <widget class="QSlider" name="slI2IAlchemyContrastBoost">
+                       <property name="maximum">
+                        <number>100</number>
+                       </property>
+                       <property name="singleStep">
+                        <number>25</number>
+                       </property>
+                       <property name="value">
+                        <number>50</number>
+                       </property>
+                       <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLabel" name="lblI2IAlchemyContrastBoost">
+                       <property name="text">
+                        <string>0.5</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="3" column="0">
+                   <widget class="QLabel" name="label_31">
+                    <property name="toolTip">
+                     <string>This scale dictates how much detail is in the image, and how prompt adherent it is. Higher numbers can create images that are extremely busy. Around 13-15 is a good balance.</string>
+                    </property>
+                    <property name="text">
+                     <string>Resonance</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="1">
+                   <widget class="QFrame" name="frame_22">
+                    <property name="frameShape">
+                     <enum>QFrame::NoFrame</enum>
+                    </property>
+                    <property name="lineWidth">
+                     <number>0</number>
+                    </property>
+                    <layout class="QHBoxLayout" name="horizontalLayout_22">
+                     <property name="leftMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>0</number>
+                     </property>
+                     <item>
+                      <widget class="QSlider" name="slI2IAlchemyResonance">
+                       <property name="minimum">
+                        <number>2</number>
+                       </property>
+                       <property name="maximum">
+                        <number>30</number>
+                       </property>
+                       <property name="singleStep">
+                        <number>1</number>
+                       </property>
+                       <property name="value">
+                        <number>15</number>
+                       </property>
+                       <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLabel" name="lblI2IAlchemyResonance">
+                       <property name="text">
+                        <string>15</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="4" column="1">
+                   <widget class="QFrame" name="frame_23">
+                    <property name="frameShape">
+                     <enum>QFrame::NoFrame</enum>
+                    </property>
+                    <property name="frameShadow">
+                     <enum>QFrame::Raised</enum>
+                    </property>
+                    <layout class="QHBoxLayout" name="horizontalLayout_23">
+                     <property name="leftMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>0</number>
+                     </property>
+                    </layout>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
               </layout>
              </widget>
             </item>

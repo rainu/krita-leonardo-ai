@@ -500,7 +500,6 @@ fragment ModelParts on custom_models {
                                   image: QImage,
                                   negativePrompt: str = "",
                                   notSaveForWork: bool = True,
-                                  useAlchemy: bool = False,
                                   numberOfImages: int = 4,
                                   inferenceSteps: int = 10,
                                   guidanceScale: int = 7,
@@ -509,6 +508,9 @@ fragment ModelParts on custom_models {
                                   poseToImage: PoseToImageType | None = None,
                                   controlnetWeight: float = 0.75,
                                   tiling: bool = False,
+                                  alchemyHighResolution: bool | None = None,
+                                  alchemyContrastBoost: float | None = None,
+                                  alchemyResonance: int | None = None,
                                   scheduler: str = "LEONARDO",
                                   public: bool = False,
                                   imageStrength: float = 0.1,
@@ -527,12 +529,19 @@ fragment ModelParts on custom_models {
       Canvas=canvasParameter(
         InitId=iImage.Id, Strength=imageStrength, RequestType="IMG2IMG",
       ),
-      Tiling=tiling, Alchemy=useAlchemy,
+      Tiling=tiling,
       InferenceSteps=inferenceSteps, GuidanceScale=guidanceScale,
       Scheduler=scheduler, Seed=seed, NotSaveForWork=notSaveForWork, Public=public,
     )
     if poseToImage is not None:
       gp.ControlNet = controlNetParameter(Type=poseToImage, Weight=controlnetWeight)
+
+    if alchemyContrastBoost is not None:
+      gp.Alchemy = alchemyParameter(
+        HighResolution=alchemyHighResolution,
+        ContrastBoost=alchemyContrastBoost,
+        Resonance=alchemyResonance,
+      )
 
     return self._createGenerationJob(gp)
 

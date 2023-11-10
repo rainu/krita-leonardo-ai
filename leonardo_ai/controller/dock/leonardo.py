@@ -32,10 +32,11 @@ class BalanceUpdater(QThread):
 
 class LeonardoDock(Sketch2Image):
   generationThread: Thread = None
-  sigGenerationFailed = QtCore.pyqtSignal(Generation)
+  sigGenerationFailed = QtCore.pyqtSignal(Exception)
   sigGenerationDoneText2Image = QtCore.pyqtSignal(Generation)
   sigGenerationDoneInpaint = QtCore.pyqtSignal(Generation)
   sigGenerationDoneOutpaint = QtCore.pyqtSignal(Generation)
+  sigGenerationDoneImage2Image = QtCore.pyqtSignal(Generation)
 
   def __init__(self):
     super().__init__()
@@ -45,6 +46,7 @@ class LeonardoDock(Sketch2Image):
     self.sigGenerationDoneText2Image.connect(self.onGenerationDoneText2Image)
     self.sigGenerationDoneInpaint.connect(self.onGenerationDoneInpaint)
     self.sigGenerationDoneOutpaint.connect(self.onGenerationDoneOutpaint)
+    self.sigGenerationDoneImage2Image.connect(self.onGenerationDoneImage2Image)
 
     self.ui.btnGenerate.clicked.connect(self.onGenerate)
 
@@ -112,7 +114,11 @@ class LeonardoDock(Sketch2Image):
       self.generationThread.terminate()
 
     def run():
-      genId = genFunc(**genArgs)
+      try:
+        genId = genFunc(**genArgs)
+      except Exception as e:
+        self.sigGenerationFailed.emit(e)
+        return
 
       while True:
         time.sleep(1)
@@ -122,7 +128,7 @@ class LeonardoDock(Sketch2Image):
           signal.emit(job)
           break
         if job.Status == JobStatus.FAILED:
-          self.onGenerationFailed.emit(job)
+          self.sigGenerationFailed.emit(Exception(f"""Job failed: {job.Id}"""))
           break
 
       self.updateBalance()
@@ -180,9 +186,9 @@ class LeonardoDock(Sketch2Image):
     self.generate(self.leonardoAI.createImageGeneration, args, self.sigGenerationDoneText2Image)
 
   @QtCore.pyqtSlot(Generation)
-  def onGenerationFailed(self, generation: Generation):
+  def onGenerationFailed(self, error: Exception):
     self.ui.btnGenerate.setEnabled(True)
-    print("Generation failed!", generation)
+    print("Generation failed!", error)
 
   @QtCore.pyqtSlot(Generation)
   def onGenerationDoneText2Image(self, generation: Generation):
@@ -267,22 +273,36 @@ class LeonardoDock(Sketch2Image):
 
     img = self.partFromSelection(document, selection)
 
-    genId = self.leonardoAI.createImage2ImageGeneration(self.prompt, img, negativePrompt=self.negativePrompt, numberOfImages=self.numberOfImages)
-    images = None
+    args = {
+      "modelId": self.model.Id, "sdVersion": self.model.StableDiffusionVersion,
+      "prompt": self.prompt, "negativePrompt": self.negativePrompt,
+      "notSaveForWork": self.nsfw, "public": self.public, "numberOfImages": self.numberOfImages,
+      "image": img,
+      "imageStrength": self.imageStrength, "tiling": self.tiling,
+    }
+    if self.ui.grpAdvancedSettings.isVisible():
+      args.update({
+        "guidanceScale": self.guidanceScale, "seed": self.seed, "scheduler": self.scheduler,
+      })
+    if self.controlNet:
+      args.update({
+        "poseToImage": self.controlNetType,
+        "controlnetWeight": self.controlNetWeight,
+      })
+    if self.ui.chkI2IAlchemy.isChecked():
+      args.update({
+        "alchemyHighResolution": self.alchemyI2IHighResolution, "alchemyContrastBoost": self.alchemyI2IContrastBoost, "alchemyResonance": self.alchemyI2IResonance,
+      })
 
-    while True:
-      job = self.leonardoAI.getGenerationById(genId)
+    self.generate(self.leonardoAI.createImage2ImageGeneration, args, self.sigGenerationDoneImage2Image)
 
-      if job.Status == JobStatus.COMPLETE:
-        images = job.GeneratedImages
-        break
-      if job.Status == JobStatus.FAILED:
-        raise Exception("leonardo generation job failed")
+  @QtCore.pyqtSlot(Generation)
+  def onGenerationDoneImage2Image(self, generation: Generation):
+    self.ui.btnGenerate.setEnabled(True)
 
-      time.sleep(1)
-
-    genImg = QImage.fromData(requests.get(images[0].Url).content)
-    self.insert(genImg, document, selection)
+    document = Krita.instance().activeDocument()
+    selection = document.selection()
+    self.loadGeneratedImages(generation, document, selection)
 
     document.refreshProjection()
 

@@ -33,8 +33,13 @@ class Text2Image(AdvancedSettings):
     self.ui.chkPhotoReal.stateChanged.connect(onPhotoRealChanged)
     onPhotoRealChanged()
 
-    self.ui.chkAlchemy.stateChanged.connect(self.onAlchemyChange)
-    self.onAlchemyChange()
+    def onAlchemyChange():
+      self.ui.grpAlchemy.setVisible(self.ui.chkAlchemy.isChecked())
+      if not self.ui.chkAlchemy.isChecked():
+        self.ui.chkPhotoReal.setChecked(False)
+
+    self.ui.chkAlchemy.stateChanged.connect(onAlchemyChange)
+    onAlchemyChange()
 
     def onContrastBoostChange(): self.ui.lblAlchemyContrastBoost.setText(str(self.alchemyContrastBoost))
     self.ui.slAlchemyContrastBoost.valueChanged.connect(onContrastBoostChange)
@@ -67,11 +72,6 @@ class Text2Image(AdvancedSettings):
 
   def onTabText2ImageActivate(self):
     self.ui.conText2ImageAlchemy.layout().addWidget(self.ui.frmAlchemy)
-
-  def onAlchemyChange(self):
-    self.ui.grpAlchemy.setVisible(self.ui.chkAlchemy.isChecked())
-    if not self.ui.chkAlchemy.isChecked():
-      self.ui.chkPhotoReal.setChecked(False)
 
   @property
   def dimWidth(self):

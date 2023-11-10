@@ -10,7 +10,7 @@ class Image2Image(Outpaint):
 
     def onControlNetChange():
       self.ui.grpControlNet.setVisible(self.controlNet)
-      if self.controlNet: self.ui.chkAlchemy.setChecked(False)
+      if self.controlNet: self.ui.chkI2IAlchemy.setChecked(False)
 
     self.ui.chkControlNet.stateChanged.connect(onControlNetChange)
     onControlNetChange()
@@ -18,14 +18,22 @@ class Image2Image(Outpaint):
     def onWeightChange(): self.ui.lblControlNetWeight.setText(str(self.controlNetWeight))
     self.ui.slControlNetWeight.valueChanged.connect(onWeightChange)
 
+    def onAlchemyChange():
+      self.ui.grpI2IAlchemy.setVisible(self.ui.chkI2IAlchemy.isChecked())
+      if self.ui.chkI2IAlchemy.isChecked():
+        self.ui.chkControlNet.setChecked(False)
+
+    self.ui.chkI2IAlchemy.stateChanged.connect(onAlchemyChange)
+    onAlchemyChange()
+
+    def onContrastBoostChange(): self.ui.lblI2IAlchemyContrastBoost.setText(str(self.alchemyI2IContrastBoost))
+    self.ui.slI2IAlchemyContrastBoost.valueChanged.connect(onContrastBoostChange)
+
+    def onResonanceChange(): self.ui.lblI2IAlchemyResonance.setText(str(self.alchemyI2IResonance))
+    self.ui.slI2IAlchemyResonance.valueChanged.connect(onResonanceChange)
+
   def onTabImage2ImageActivate(self):
     self.ui.conImage2ImageAlchemy.layout().addWidget(self.ui.frmAlchemy)
-
-  def onAlchemyChange(self):
-    super().onAlchemyChange()
-
-    if self.ui.chkAlchemy.isChecked():
-      self.ui.chkControlNet.setChecked(False)
 
   @property
   def imageStrength(self):
@@ -50,3 +58,15 @@ class Image2Image(Outpaint):
   @property
   def controlNetWeight(self):
     return self.ui.slControlNetWeight.value() / 100
+
+  @property
+  def alchemyI2IHighResolution(self):
+    return self.ui.chkI2IAlchemyHighResolution.isChecked()
+
+  @property
+  def alchemyI2IContrastBoost(self):
+    return self.ui.slI2IAlchemyContrastBoost.value() / 100
+
+  @property
+  def alchemyI2IResonance(self):
+    return self.ui.slI2IAlchemyResonance.value()
