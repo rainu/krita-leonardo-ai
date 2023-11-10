@@ -37,6 +37,7 @@ class LeonardoDock(Sketch2Image):
   sigGenerationDoneInpaint = QtCore.pyqtSignal(Generation)
   sigGenerationDoneOutpaint = QtCore.pyqtSignal(Generation)
   sigGenerationDoneImage2Image = QtCore.pyqtSignal(Generation)
+  sigGenerationDoneSketch2Image = QtCore.pyqtSignal(Generation)
 
   def __init__(self):
     super().__init__()
@@ -47,6 +48,7 @@ class LeonardoDock(Sketch2Image):
     self.sigGenerationDoneInpaint.connect(self.onGenerationDoneInpaint)
     self.sigGenerationDoneOutpaint.connect(self.onGenerationDoneOutpaint)
     self.sigGenerationDoneImage2Image.connect(self.onGenerationDoneImage2Image)
+    self.sigGenerationDoneSketch2Image.connect(self.onGenerationDoneSketch2Image)
 
     self.ui.btnGenerate.clicked.connect(self.onGenerate)
 
@@ -311,48 +313,34 @@ class LeonardoDock(Sketch2Image):
     selection = document.selection()
 
     img = self.partFromSelection(document, selection)
-
     mask = self.maskFromSelection(selection)
 
-    genId = self.leonardoAI.createSketch2ImageGeneration(self.prompt, img, mask, negativePrompt=self.negativePrompt, numberOfImages=self.numberOfImages)
-    images = None
+    args = {
+      "modelId": self.model.Id, "sdVersion": self.model.StableDiffusionVersion,
+      "prompt": self.prompt, "negativePrompt": self.negativePrompt,
+      "notSaveForWork": self.nsfw, "public": self.public, "numberOfImages": self.numberOfImages,
+      "image": img, "mask": mask,
+    }
+    if self.ui.chkOverrideDefaults.isChecked():
+      args.update({
+        "imageStrength": self.inputStrength
+      })
+    if self.ui.grpAdvancedSettings.isVisible():
+      args.update({
+        "guidanceScale": self.guidanceScale, "seed": self.seed, "scheduler": self.scheduler,
+      })
 
-    while True:
-      job = self.leonardoAI.getGenerationById(genId)
+    self.generate(self.leonardoAI.createSketch2ImageGeneration, args, self.sigGenerationDoneImage2Image)
 
-      if job.Status == JobStatus.COMPLETE:
-        images = job.GeneratedImages
-        break
-      if job.Status == JobStatus.FAILED:
-        raise Exception("leonardo generation job failed")
+  @QtCore.pyqtSlot(Generation)
+  def onGenerationDoneSketch2Image(self, generation: Generation):
+    self.ui.btnGenerate.setEnabled(True)
 
-      time.sleep(1)
-
-    genImg = QImage.fromData(requests.get(images[0].Url).content)
-    self.insert(genImg, document, selection)
+    document = Krita.instance().activeDocument()
+    selection = document.selection()
+    self.loadGeneratedImages(generation, document, selection)
 
     document.refreshProjection()
-
-  def insert(self, image: QImage,
-             document: Document | None = None,
-             selection: Selection | None = None) -> Node:
-
-    document = document if document is not None else Krita.instance().instance().activeDocument()
-    selection = selection if selection is not None else document.selection()
-
-    layer = document.createNode("Leonardo-AI", "paintlayer")
-    document.rootNode().addChildNode(layer, None)
-
-    ptr = image.bits()
-    ptr.setsize(image.byteCount())
-    layer.setPixelData(QByteArray(ptr.asstring()), selection.x(), selection.y(), image.width(), image.height())
-    layer.cropNode(selection.x(), selection.y(), selection.width(), selection.height())
-
-    invertedSelection = selection.duplicate()
-    invertedSelection.invert()
-    invertedSelection.cut(layer)
-
-    return layer
 
   def maskFromSelection(self, selection: Selection | None = None) -> QImage:
     selection = selection if selection is not None else Krita.instance().activeDocument().selection()
