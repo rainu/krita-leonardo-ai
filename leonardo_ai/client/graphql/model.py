@@ -95,6 +95,8 @@ class generationParameter:
       "public": self.Public,
       "tiling": self.Tiling if self.Tiling is not None else False,
       "leonardoMagic": self.LeonardoMagic if self.LeonardoMagic is not None else False,
+      "alchemy": self.Alchemy is not None,
+      "photoReal": self.PhotoReal is not None,
       "poseToImage": self.ControlNet is not None,
       "elements": self.Elements if self.Elements is not None else [],
       **({"modelId": self.Model.Id} if self.Model.Id is not None else {}),
@@ -127,21 +129,16 @@ class generationParameter:
 
     if self.PhotoReal is not None:
       content.update({
-        "photoReal": True,
         "photoRealStrength": self.PhotoReal.Strength,
         "presetStyle": self.PhotoReal.Style,
+        "highContrast": self.PhotoReal.HighContrast,
       })
 
     if self.Alchemy is not None:
       content.update({
-        "alchemy": True,
         "highResolution": self.Alchemy.HighResolution,
         "contrastRatio": self.Alchemy.ContrastBoost,
         "guidance_scale": self.Alchemy.Resonance,
-      })
-    else:
-      content.update({
-        "alchemy": False,
       })
 
     return content

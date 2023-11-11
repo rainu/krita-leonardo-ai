@@ -173,7 +173,7 @@ class LeonardoDock(Sketch2Image):
     }
     if self.ui.grpAdvancedSettings.isVisible():
       args.update({
-        "guidanceScale": self.guidanceScale, "seed": self.seed, "scheduler": self.scheduler,
+        "guidanceScale": self.guidanceScale, "seed": self.seed, "scheduler": self.scheduler, "inferenceSteps": self.stepCount,
       })
     if self.ui.chkPhotoReal.isChecked():
       args.update({
@@ -218,7 +218,7 @@ class LeonardoDock(Sketch2Image):
     }
     if self.ui.grpAdvancedSettings.isVisible():
       args.update({
-        "guidanceScale": self.guidanceScale, "seed": self.seed, "scheduler": self.scheduler,
+        "guidanceScale": self.guidanceScale, "seed": self.seed, "scheduler": self.scheduler, "inferenceSteps": self.stepCount,
       })
 
     self.generate(self.leonardoAI.createInpaintGeneration, args, self.sigGenerationDoneInpaint)
@@ -248,7 +248,7 @@ class LeonardoDock(Sketch2Image):
     }
     if self.ui.grpAdvancedSettings.isVisible():
       args.update({
-        "guidanceScale": self.guidanceScale, "seed": self.seed, "scheduler": self.scheduler,
+        "guidanceScale": self.guidanceScale, "seed": self.seed, "scheduler": self.scheduler, "inferenceSteps": self.stepCount,
       })
 
     self.generate(self.leonardoAI.createInpaintGeneration, args, self.sigGenerationDoneOutpaint)
@@ -284,7 +284,7 @@ class LeonardoDock(Sketch2Image):
     }
     if self.ui.grpAdvancedSettings.isVisible():
       args.update({
-        "guidanceScale": self.guidanceScale, "seed": self.seed, "scheduler": self.scheduler,
+        "guidanceScale": self.guidanceScale, "seed": self.seed, "scheduler": self.scheduler, "inferenceSteps": self.stepCount,
       })
     if self.controlNet:
       args.update({
@@ -327,7 +327,7 @@ class LeonardoDock(Sketch2Image):
       })
     if self.ui.grpAdvancedSettings.isVisible():
       args.update({
-        "guidanceScale": self.guidanceScale, "seed": self.seed, "scheduler": self.scheduler,
+        "guidanceScale": self.guidanceScale, "seed": self.seed, "scheduler": self.scheduler, "inferenceSteps": self.stepCount,
       })
 
     self.generate(self.leonardoAI.createSketch2ImageGeneration, args, self.sigGenerationDoneImage2Image)
