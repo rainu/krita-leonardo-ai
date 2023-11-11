@@ -20,6 +20,8 @@ class Image2Image(Outpaint):
 
     def onAlchemyChange():
       self.ui.grpI2IAlchemy.setVisible(self.ui.chkI2IAlchemy.isChecked())
+      self.ui.cmbAlchemyPresetStyle.setVisible(self.ui.chkI2IAlchemy.isChecked())
+      self.ui.cmbPresetStyle.setVisible(not self.ui.chkI2IAlchemy.isChecked())
       if self.ui.chkI2IAlchemy.isChecked():
         self.ui.chkControlNet.setChecked(False)
 

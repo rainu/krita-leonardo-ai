@@ -16,6 +16,12 @@ class uploadImageInfo:
     self.Fields = Fields
 
 @dataclass
+class modelParameter:
+  Id: str | None
+  StableDiffusionVersion: str
+  PresetStyle: str = "NONE"
+
+@dataclass
 class promptMagicParameter:
   Strength: float
   HighContrast: bool
@@ -54,17 +60,15 @@ class elementParameter:
 class generationParameter:
   Prompt: str
   NegativePrompt: str
+  Model: modelParameter
   ImageCount: int
   ImageWidth: int
   ImageHeight: int
   InferenceSteps: int
   GuidanceScale: int
-  StableDiffusionVersion: str
-  ModelId: str | None
   Public: bool
   NotSaveForWork: bool
   LeonardoMagic: bool | None = None
-  PresetStyle: str = "NONE"
   Tiling: bool | None = None
   Canvas: canvasParameter | None = None
   PromptMagic: promptMagicParameter | None = None
@@ -85,15 +89,15 @@ class generationParameter:
       "height": self.ImageHeight,
       "num_inference_steps": self.InferenceSteps,
       "guidance_scale": self.GuidanceScale,
-      "sd_version": self.StableDiffusionVersion,
-      "presetStyle": self.PresetStyle,
+      "sd_version": self.Model.StableDiffusionVersion,
+      "presetStyle": self.Model.PresetStyle,
       "scheduler": self.Scheduler if self.Scheduler is not None else "LEONARDO",
       "public": self.Public,
       "tiling": self.Tiling if self.Tiling is not None else False,
       "leonardoMagic": self.LeonardoMagic if self.LeonardoMagic is not None else False,
       "poseToImage": self.ControlNet is not None,
       "elements": self.Elements if self.Elements is not None else [],
-      **({"modelId": self.ModelId } if self.ModelId is not None else {}),
+      **({"modelId": self.Model.Id} if self.Model.Id is not None else {}),
       **({"seed": self.Seed} if self.Seed is not None else {}),
     }
 

@@ -35,6 +35,8 @@ class Text2Image(AdvancedSettings):
 
     def onAlchemyChange():
       self.ui.grpAlchemy.setVisible(self.ui.chkAlchemy.isChecked())
+      self.ui.cmbAlchemyPresetStyle.setVisible(self.ui.chkAlchemy.isChecked())
+      self.ui.cmbPresetStyle.setVisible(not self.ui.chkAlchemy.isChecked())
       if not self.ui.chkAlchemy.isChecked():
         self.ui.chkPhotoReal.setChecked(False)
 

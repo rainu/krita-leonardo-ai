@@ -415,12 +415,16 @@ fragment ModelParts on custom_models {
                             tiling: bool = False,
                             sdVersion: str = "v1_5",
                             modelId: str | None = None,
+                            presetStyle: str | None = None,
                             scheduler: str = "LEONARDO",
                             public: bool = False,
                             seed: int | None = None,
                             ) -> str:
     gp = generationParameter(
-      Prompt=prompt, NegativePrompt=negativePrompt, ModelId=modelId, StableDiffusionVersion=sdVersion,
+      Prompt=prompt, NegativePrompt=negativePrompt,
+      Model=modelParameter(
+        Id=modelId, StableDiffusionVersion=sdVersion, PresetStyle=presetStyle,
+      ),
       ImageCount=numberOfImages,
       ImageWidth=multipleOf(width, 8), ImageHeight=multipleOf(height, 8),
       InferenceSteps=inferenceSteps, GuidanceScale=guidanceScale,
@@ -461,6 +465,7 @@ fragment ModelParts on custom_models {
                               guidanceScale: int = 7,
                               sdVersion: str = "v1_5",
                               modelId: str | None = None,
+                              presetStyle: str | None = None,
                               scheduler: str = "LEONARDO",
                               public: bool = False,
                               imageStrength: float = 1.0,
@@ -485,7 +490,10 @@ fragment ModelParts on custom_models {
         raise Exception(f"unable to upload image: unexpected response code: {upload.result().status_code}")
 
     return self._createGenerationJob(generationParameter(
-      Prompt=prompt, NegativePrompt=negativePrompt, ModelId=modelId, StableDiffusionVersion=sdVersion,
+      Prompt=prompt, NegativePrompt=negativePrompt,
+      Model=modelParameter(
+        Id=modelId, StableDiffusionVersion=sdVersion, PresetStyle=presetStyle,
+      ),
       ImageCount=numberOfImages,
       ImageWidth=multipleOf(image.width(), 8), ImageHeight=multipleOf(image.height(), 8),
       Canvas=canvasParameter(
@@ -505,6 +513,7 @@ fragment ModelParts on custom_models {
                                   guidanceScale: int = 7,
                                   sdVersion: str = "v1_5",
                                   modelId: str | None = None,
+                                  presetStyle: str | None = None,
                                   poseToImage: PoseToImageType | None = None,
                                   controlnetWeight: float = 0.75,
                                   tiling: bool = False,
@@ -523,7 +532,10 @@ fragment ModelParts on custom_models {
       raise Exception(f"unable to upload image: unexpected response code: {uResponse.status_code}")
 
     gp = generationParameter(
-      Prompt=prompt, NegativePrompt=negativePrompt, ModelId=modelId, StableDiffusionVersion=sdVersion,
+      Prompt=prompt, NegativePrompt=negativePrompt,
+      Model=modelParameter(
+        Id=modelId, StableDiffusionVersion=sdVersion, PresetStyle=presetStyle,
+      ),
       ImageCount=numberOfImages,
       ImageWidth=multipleOf(image.width(), 8), ImageHeight=multipleOf(image.height(), 8),
       Canvas=canvasParameter(
@@ -556,6 +568,7 @@ fragment ModelParts on custom_models {
                                    guidanceScale: int = 7,
                                    sdVersion: str = "v1_5",
                                    modelId: str | None = None,
+                                   presetStyle: str | None = None,
                                    scheduler: str = "LEONARDO",
                                    public: bool = False,
                                    imageStrength: float = 0.1,
@@ -580,7 +593,10 @@ fragment ModelParts on custom_models {
         raise Exception(f"unable to upload image: unexpected response code: {upload.result().status_code}")
 
     gp = generationParameter(
-      Prompt=prompt, NegativePrompt=negativePrompt, ModelId=modelId, StableDiffusionVersion=sdVersion,
+      Prompt=prompt, NegativePrompt=negativePrompt,
+      Model=modelParameter(
+        Id=modelId, StableDiffusionVersion=sdVersion, PresetStyle=presetStyle,
+      ),
       ImageCount=numberOfImages,
       ImageWidth=multipleOf(image.width(), 8), ImageHeight=multipleOf(image.height(), 8),
       Canvas=canvasParameter(

@@ -22,6 +22,8 @@ class BaseDock(DockWidget):
     self.ui.setupUi(self)
 
     self.ui.lstModel.itemSelectionChanged.connect(self.onMandatoryInputChanges)
+    self.ui.cmbPresetStyle.setVisible(True)
+    self.ui.cmbAlchemyPresetStyle.setVisible(False)
     self.ui.inPrompt.textChanged.connect(self.onMandatoryInputChanges)
     self.ui.tabType.currentChanged.connect(self.onTabChange)
     self.ui.settings = Settings(self.onSettingsChanged)
@@ -39,6 +41,23 @@ class BaseDock(DockWidget):
   def model(self) -> Model | None:
     selectedItem = self.ui.lstModel.itemWidget(self.ui.lstModel.currentItem())
     return selectedItem.model if selectedItem is not None else None
+
+  @property
+  def presetStyle(self):
+    if self.ui.cmbPresetStyle.isVisible():
+      if self.ui.cmbPresetStyle.currentIndex() == 0: return None
+      else: return self.ui.cmbPresetStyle.currentText().upper()
+
+    elif self.ui.cmbAlchemyPresetStyle.isVisible():
+      if self.ui.cmbAlchemyPresetStyle.currentIndex() == 0: return None
+      if not self.ui.cmbAlchemyPresetStyle.currentText().__contains__(" "): return self.ui.cmbAlchemyPresetStyle.currentText().upper()
+      else:
+        label = self.ui.cmbAlchemyPresetStyle.currentText()
+        if label == "Sketch B/W": return "SKETCH_BW"
+        elif label == "Sketch Color": return "SKETCH_COLOR"
+        elif label == "3D Render": return "RENDER_3D"
+
+    return None
 
   @property
   def prompt(self):
@@ -84,7 +103,6 @@ class BaseDock(DockWidget):
     elif self.ui.tabType.currentIndex() == 2: self.onTabOutpaintActivate()
     elif self.ui.tabType.currentIndex() == 3: self.onTabImage2ImageActivate()
     elif self.ui.tabType.currentIndex() == 4: self.onTabSketch2ImageActivate()
-
 
   def onTabText2ImageActivate(self): pass
   def onTabInpaintActivate(self): pass

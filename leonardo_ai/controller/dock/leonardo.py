@@ -165,7 +165,7 @@ class LeonardoDock(Sketch2Image):
 
   def onImage(self):
     args = {
-      "modelId": self.model.Id, "sdVersion": self.model.StableDiffusionVersion,
+      "modelId": self.model.Id, "sdVersion": self.model.StableDiffusionVersion, "presetStyle": self.presetStyle,
       "prompt": self.prompt, "negativePrompt": self.negativePrompt,
       "notSaveForWork": self.nsfw, "public": self.public, "numberOfImages": self.numberOfImages,
       "width": self.dimWidth, "height": self.dimHeight,
@@ -210,7 +210,7 @@ class LeonardoDock(Sketch2Image):
     mask = self.maskFromSelection(selection)
 
     args = {
-      "modelId": self.model.Id, "sdVersion": self.model.StableDiffusionVersion,
+      "modelId": self.model.Id, "sdVersion": self.model.StableDiffusionVersion, "presetStyle": self.presetStyle,
       "prompt": self.prompt, "negativePrompt": self.negativePrompt,
       "notSaveForWork": self.nsfw, "public": self.public, "numberOfImages": self.numberOfImages,
       "imageStrength": 1.0 - self.inpaintStrength,
@@ -240,7 +240,7 @@ class LeonardoDock(Sketch2Image):
     img = self.partFromSelection(document, selection)
 
     args = {
-      "modelId": self.model.Id, "sdVersion": self.model.StableDiffusionVersion,
+      "modelId": self.model.Id, "sdVersion": self.model.StableDiffusionVersion, "presetStyle": self.presetStyle,
       "prompt": self.prompt, "negativePrompt": self.negativePrompt,
       "notSaveForWork": self.nsfw, "public": self.public, "numberOfImages": self.numberOfImages,
       "imageStrength": 0.1,
@@ -276,7 +276,7 @@ class LeonardoDock(Sketch2Image):
     img = self.partFromSelection(document, selection)
 
     args = {
-      "modelId": self.model.Id, "sdVersion": self.model.StableDiffusionVersion,
+      "modelId": self.model.Id, "sdVersion": self.model.StableDiffusionVersion, "presetStyle": self.presetStyle,
       "prompt": self.prompt, "negativePrompt": self.negativePrompt,
       "notSaveForWork": self.nsfw, "public": self.public, "numberOfImages": self.numberOfImages,
       "image": img,
@@ -316,7 +316,7 @@ class LeonardoDock(Sketch2Image):
     mask = self.maskFromSelection(selection)
 
     args = {
-      "modelId": self.model.Id, "sdVersion": self.model.StableDiffusionVersion,
+      "modelId": self.model.Id, "sdVersion": self.model.StableDiffusionVersion, "presetStyle": self.presetStyle,
       "prompt": self.prompt, "negativePrompt": self.negativePrompt,
       "notSaveForWork": self.nsfw, "public": self.public, "numberOfImages": self.numberOfImages,
       "image": img, "mask": mask,
