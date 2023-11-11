@@ -98,16 +98,11 @@ class LeonardoDock(Sketch2Image):
     self.balanceUpdater.start()
 
   def onGenerate(self):
-    if self.ui.tabType.currentWidget() == self.ui.tabTxt2Img:
-      self.onImage()
-    elif self.ui.tabType.currentWidget() == self.ui.tabInpaint:
-      self.onInpaint()
-    elif self.ui.tabType.currentWidget() == self.ui.tabOutpaint:
-      self.onOutpaint()
-    elif self.ui.tabType.currentWidget() == self.ui.tabImg2Img:
-      self.onImage2Image()
-    elif self.ui.tabType.currentWidget() == self.ui.tabSketch2Img:
-      self.onSketch2Image()
+    if self.ui.cmbMode.currentIndex() == 0: self.onImage()
+    if self.ui.cmbMode.currentIndex() == 1: self.onInpaint()
+    if self.ui.cmbMode.currentIndex() == 2: self.onOutpaint()
+    if self.ui.cmbMode.currentIndex() == 3: self.onImage2Image()
+    if self.ui.cmbMode.currentIndex() == 4: self.onSketch2Image()
 
   def generate(self, genFunc: Callable[[...], str], genArgs: dict, signal: QtCore.pyqtBoundSignal):
     self.ui.btnGenerate.setEnabled(False)

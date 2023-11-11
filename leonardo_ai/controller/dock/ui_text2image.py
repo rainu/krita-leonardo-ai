@@ -72,9 +72,6 @@ class Text2Image(AdvancedSettings):
     self.ui.slDimWidth.setValue(width)
     self.ui.slDimHeight.setValue(height)
 
-  def onTabText2ImageActivate(self):
-    self.ui.conText2ImageAlchemy.layout().addWidget(self.ui.frmAlchemy)
-
   @property
   def dimWidth(self):
       return int(self.ui.inDimWidth.text())

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>330</width>
-    <height>622</height>
+    <width>297</width>
+    <height>793</height>
    </rect>
   </property>
   <property name="toolTip">
@@ -22,7 +22,14 @@
   <widget class="QWidget" name="dockWidgetContents">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QListWidget" name="lstModel"/>
+     <widget class="QListWidget" name="lstModel">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>70</height>
+       </size>
+      </property>
+     </widget>
     </item>
     <item>
      <widget class="QFrame" name="frame_3">
@@ -33,6 +40,9 @@
        <enum>QFrame::Raised</enum>
       </property>
       <layout class="QFormLayout" name="formLayout_10">
+       <property name="verticalSpacing">
+        <number>0</number>
+       </property>
        <property name="leftMargin">
         <number>0</number>
        </property>
@@ -172,11 +182,11 @@
     </item>
     <item>
      <widget class="QGroupBox" name="groupBox">
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>110</height>
-       </size>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
       </property>
       <property name="layoutDirection">
        <enum>Qt::LeftToRight</enum>
@@ -318,6 +328,1346 @@
          <property name="value" stdset="0">
           <double>0.000000000000000</double>
          </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QFrame" name="frame_6">
+      <layout class="QVBoxLayout" name="verticalLayout_13">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QComboBox" name="cmbMode">
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
+         <item>
+          <property name="text">
+           <string>Text -&gt; Image</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Inpaint</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Outpaint</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Image -&gt; Image</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Sketch -&gt; Imag</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item>
+        <widget class="QScrollArea" name="grpText2Image">
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="grpText2Image_3">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>265</width>
+            <height>733</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_14">
+           <property name="leftMargin">
+            <number>2</number>
+           </property>
+           <property name="rightMargin">
+            <number>2</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QGroupBox" name="groupBox_2">
+             <property name="toolTip">
+              <string>This is the input resolution into Alchemy. Note that Alchemy's final output resolution is higher than this and is noted in the Alchemy section.</string>
+             </property>
+             <property name="title">
+              <string>Image Dimensions</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_2" columnstretch="1,1">
+              <property name="sizeConstraint">
+               <enum>QLayout::SetDefaultConstraint</enum>
+              </property>
+              <item row="0" column="0">
+               <widget class="QPushButton" name="btnDim512x512">
+                <property name="text">
+                 <string>512 x 512</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QPushButton" name="btnDim768x768">
+                <property name="text">
+                 <string>768 x 768</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QPushButton" name="btnDim512x1024">
+                <property name="text">
+                 <string>512 x 1024</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QPushButton" name="btnDim768x1024">
+                <property name="text">
+                 <string>768 x 1024</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QPushButton" name="btnDim1024x768">
+                <property name="text">
+                 <string>1024 x 768</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QPushButton" name="btnDim1024x1024">
+                <property name="text">
+                 <string>1024 x 1024</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QSlider" name="slDimWidth">
+                <property name="minimum">
+                 <number>512</number>
+                </property>
+                <property name="maximum">
+                 <number>1536</number>
+                </property>
+                <property name="singleStep">
+                 <number>8</number>
+                </property>
+                <property name="pageStep">
+                 <number>64</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QFrame" name="frame">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QHBoxLayout" name="horizontalLayout">
+                 <item>
+                  <widget class="QLabel" name="label">
+                   <property name="text">
+                    <string>W</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QSpinBox" name="inDimWidth">
+                   <property name="minimum">
+                    <number>512</number>
+                   </property>
+                   <property name="maximum">
+                    <number>1536</number>
+                   </property>
+                   <property name="singleStep">
+                    <number>8</number>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="QSlider" name="slDimHeight">
+                <property name="minimum">
+                 <number>512</number>
+                </property>
+                <property name="maximum">
+                 <number>1536</number>
+                </property>
+                <property name="singleStep">
+                 <number>8</number>
+                </property>
+                <property name="pageStep">
+                 <number>64</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="1">
+               <widget class="QFrame" name="frame_2">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QHBoxLayout" name="horizontalLayout_2">
+                 <item>
+                  <widget class="QLabel" name="label_2">
+                   <property name="text">
+                    <string>H</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QSpinBox" name="inDimHeight">
+                   <property name="minimum">
+                    <number>512</number>
+                   </property>
+                   <property name="maximum">
+                    <number>1536</number>
+                   </property>
+                   <property name="singleStep">
+                    <number>8</number>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="5" column="1">
+               <widget class="QPushButton" name="btnDimSwap">
+                <property name="text">
+                 <string>swap</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="chkPhotoReal">
+             <property name="toolTip">
+              <string>Leonardo PhotoReal is our latest innovation, a powerful pipeline designed to generate hyper-realistic photos and lifelike portraits. Requires Alchemy to work.</string>
+             </property>
+             <property name="text">
+              <string>PhotoReal</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="grpPhotoReal">
+             <property name="title">
+              <string/>
+             </property>
+             <layout class="QFormLayout" name="formLayout">
+              <item row="1" column="1">
+               <widget class="QComboBox" name="cmbPhotoRealDepthOfField">
+                <item>
+                 <property name="text">
+                  <string comment="HIGH">High</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string comment="MEDIUM">Medium</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string comment="LOW">Low</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_3">
+                <property name="toolTip">
+                 <string>This controls the depth of field of the image. At lower values, the image will have a shallower focal range, and more of the image may appear soft or blurry. At higher values, the image will have a wider focal range, and more of it will be in focus.</string>
+                </property>
+                <property name="text">
+                 <string>Depth of Field</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QCheckBox" name="chkPhotoRealRawMode">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="label_4">
+                <property name="toolTip">
+                 <string>Enable this mode if you are looking for more control and flexibility with complex prompts. Leaving it off works better with shorter prompts.</string>
+                </property>
+                <property name="text">
+                 <string>RAW Mode</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_20">
+                <property name="toolTip">
+                 <string>This controls the depth of field of the image. At lower values, the image will have a shallower focal range, and more of the image may appear soft or blurry. At higher values, the image will have a wider focal range, and more of it will be in focus.</string>
+                </property>
+                <property name="text">
+                 <string>Style</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QComboBox" name="cmbPhotoRealStyle">
+                <item>
+                 <property name="text">
+                  <string>Cinematic</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Creative</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Vibrant</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>None</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QFrame" name="frmAlchemy">
+             <layout class="QVBoxLayout" name="verticalLayout_4">
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QCheckBox" name="chkAlchemy">
+                <property name="toolTip">
+                 <string>Leonardo Alchemy is our powerful new image generation pipeline. Click the question mark for more info.</string>
+                </property>
+                <property name="text">
+                 <string>Alchemy</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QFrame" name="grpAlchemy">
+                <property name="frameShape">
+                 <enum>QFrame::NoFrame</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_2">
+                 <property name="spacing">
+                  <number>0</number>
+                 </property>
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QGroupBox" name="groupBox_3">
+                   <property name="title">
+                    <string/>
+                   </property>
+                   <layout class="QFormLayout" name="formLayout_2">
+                    <item row="0" column="1">
+                     <widget class="QCheckBox" name="chkAlchemyHighResolution">
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="0">
+                     <widget class="QLabel" name="label_6">
+                      <property name="toolTip">
+                       <string>This will adjust the dynamic range of your image. The default is 1, but you may find reducing it is helpful depending on your subject matter.</string>
+                      </property>
+                      <property name="text">
+                       <string>Contrast Boost</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="1">
+                     <widget class="QFrame" name="frame_5">
+                      <property name="frameShape">
+                       <enum>QFrame::NoFrame</enum>
+                      </property>
+                      <property name="lineWidth">
+                       <number>0</number>
+                      </property>
+                      <layout class="QHBoxLayout" name="horizontalLayout_4">
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QSlider" name="slAlchemyContrastBoost">
+                         <property name="maximum">
+                          <number>100</number>
+                         </property>
+                         <property name="singleStep">
+                          <number>25</number>
+                         </property>
+                         <property name="value">
+                          <number>50</number>
+                         </property>
+                         <property name="orientation">
+                          <enum>Qt::Horizontal</enum>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QLabel" name="lblAlchemyContrastBoost">
+                         <property name="text">
+                          <string>0.5</string>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                    <item row="2" column="0">
+                     <widget class="QLabel" name="label_7">
+                      <property name="toolTip">
+                       <string>This scale dictates how much detail is in the image, and how prompt adherent it is. Higher numbers can create images that are extremely busy. Around 13-15 is a good balance.</string>
+                      </property>
+                      <property name="text">
+                       <string>Resonance</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="1">
+                     <widget class="QFrame" name="frame_6">
+                      <property name="frameShape">
+                       <enum>QFrame::NoFrame</enum>
+                      </property>
+                      <property name="lineWidth">
+                       <number>0</number>
+                      </property>
+                      <layout class="QHBoxLayout" name="horizontalLayout_5">
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QSlider" name="slAlchemyResonance">
+                         <property name="minimum">
+                          <number>2</number>
+                         </property>
+                         <property name="maximum">
+                          <number>30</number>
+                         </property>
+                         <property name="singleStep">
+                          <number>1</number>
+                         </property>
+                         <property name="value">
+                          <number>15</number>
+                         </property>
+                         <property name="orientation">
+                          <enum>Qt::Horizontal</enum>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QLabel" name="lblAlchemyResonance">
+                         <property name="text">
+                          <string>15</string>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                    <item row="3" column="0">
+                     <widget class="QLabel" name="label_8">
+                      <property name="text">
+                       <string>Prompt Magic</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="3" column="1">
+                     <widget class="QFrame" name="frame_7">
+                      <property name="frameShape">
+                       <enum>QFrame::NoFrame</enum>
+                      </property>
+                      <property name="frameShadow">
+                       <enum>QFrame::Raised</enum>
+                      </property>
+                      <layout class="QHBoxLayout" name="horizontalLayout_6">
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QRadioButton" name="radAlchemyPromptMagicOff">
+                         <property name="text">
+                          <string>off</string>
+                         </property>
+                         <attribute name="buttonGroup">
+                          <string notr="true">buttonGroup</string>
+                         </attribute>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QRadioButton" name="radAlchemyPromptMagicV2">
+                         <property name="text">
+                          <string>V2</string>
+                         </property>
+                         <property name="checked">
+                          <bool>true</bool>
+                         </property>
+                         <attribute name="buttonGroup">
+                          <string notr="true">buttonGroup</string>
+                         </attribute>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QRadioButton" name="radAlchemyPromptMagicV3">
+                         <property name="text">
+                          <string>V3</string>
+                         </property>
+                         <attribute name="buttonGroup">
+                          <string notr="true">buttonGroup</string>
+                         </attribute>
+                        </widget>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                    <item row="0" column="0">
+                     <widget class="QLabel" name="label_5">
+                      <property name="toolTip">
+                       <string>This boosts the output resolution of Leonardo Alchemy. Higher resolution outputs will be somewhat different to the normal resolution outputs due to the diffusion process, so do not expect this to act as an upscaler.</string>
+                      </property>
+                      <property name="text">
+                       <string>High Resolution</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QGroupBox" name="grpAlchemyPromptMagicV2">
+                   <property name="title">
+                    <string/>
+                   </property>
+                   <layout class="QFormLayout" name="formLayout_3">
+                    <item row="0" column="0">
+                     <widget class="QLabel" name="label_10">
+                      <property name="toolTip">
+                       <string>How strongly Prompt Magic influences the output. A higher number means greater influence.</string>
+                      </property>
+                      <property name="text">
+                       <string>Prompt Magic Strength</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="1">
+                     <widget class="QFrame" name="frame_8">
+                      <property name="frameShape">
+                       <enum>QFrame::NoFrame</enum>
+                      </property>
+                      <property name="frameShadow">
+                       <enum>QFrame::Raised</enum>
+                      </property>
+                      <layout class="QHBoxLayout" name="horizontalLayout_7">
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QSlider" name="slAlchemyPromptMagicStrengthV2">
+                         <property name="minimum">
+                          <number>30</number>
+                         </property>
+                         <property name="maximum">
+                          <number>45</number>
+                         </property>
+                         <property name="singleStep">
+                          <number>5</number>
+                         </property>
+                         <property name="value">
+                          <number>40</number>
+                         </property>
+                         <property name="orientation">
+                          <enum>Qt::Horizontal</enum>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QLabel" name="lblAlchemyPromptMagicStrengthV2">
+                         <property name="text">
+                          <string>0.4</string>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                    <item row="1" column="0">
+                     <widget class="QLabel" name="label_11">
+                      <property name="toolTip">
+                       <string>High Contrast mode will give moodier images with more shadows. Turn this toggle off if you find that the outputs with PMv2 are too dark for your chosen prompt.</string>
+                      </property>
+                      <property name="text">
+                       <string>High Contrast</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="1">
+                     <widget class="QCheckBox" name="chkAlchemyHighContrast">
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QGroupBox" name="grpAlchemyPromptMagicV3">
+                   <property name="title">
+                    <string/>
+                   </property>
+                   <layout class="QFormLayout" name="formLayout_4">
+                    <item row="0" column="0">
+                     <widget class="QLabel" name="label_12">
+                      <property name="toolTip">
+                       <string>How strongly Prompt Magic influences the output. A higher number means greater influence.</string>
+                      </property>
+                      <property name="text">
+                       <string>Prompt Magic Strength</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="1">
+                     <widget class="QFrame" name="frame_9">
+                      <property name="frameShape">
+                       <enum>QFrame::NoFrame</enum>
+                      </property>
+                      <property name="frameShadow">
+                       <enum>QFrame::Raised</enum>
+                      </property>
+                      <layout class="QHBoxLayout" name="horizontalLayout_8">
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QSlider" name="slAlchemyPromptMagicStrengthV3">
+                         <property name="minimum">
+                          <number>30</number>
+                         </property>
+                         <property name="maximum">
+                          <number>65</number>
+                         </property>
+                         <property name="singleStep">
+                          <number>5</number>
+                         </property>
+                         <property name="value">
+                          <number>55</number>
+                         </property>
+                         <property name="orientation">
+                          <enum>Qt::Horizontal</enum>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QLabel" name="lblAlchemyPromptMagicStrengthV3">
+                         <property name="text">
+                          <string>0.55</string>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                    <item row="1" column="0">
+                     <widget class="QLabel" name="label_9">
+                      <property name="toolTip">
+                       <string>Enable this mode if you are looking for more control and flexibility with complex prompts. Leaving it off works better with shorter prompts.</string>
+                      </property>
+                      <property name="text">
+                       <string>RAW Mode</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="1">
+                     <widget class="QCheckBox" name="chkAlchemyRawMode">
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="chkText2ImageTiling">
+             <property name="text">
+              <string>Tiling</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+       <item>
+        <widget class="QFrame" name="grpInpaint">
+         <layout class="QFormLayout" name="formLayout_5">
+          <property name="leftMargin">
+           <number>2</number>
+          </property>
+          <property name="rightMargin">
+           <number>2</number>
+          </property>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_13">
+            <property name="toolTip">
+             <string>The inpainting algorithm looks at what already exists in your image to better edit or place new content. The higher the strength the more it will diverge from the original.</string>
+            </property>
+            <property name="text">
+             <string>Strength</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QFrame" name="frame_11">
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_9">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QSlider" name="slInpaintStrength">
+               <property name="minimum">
+                <number>20</number>
+               </property>
+               <property name="maximum">
+                <number>100</number>
+               </property>
+               <property name="value">
+                <number>100</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="lblInpaintStrength">
+               <property name="text">
+                <string>1</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QScrollArea" name="grpImage2Image">
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <property name="verticalScrollBarPolicy">
+          <enum>Qt::ScrollBarAsNeeded</enum>
+         </property>
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="grpImage2Image_3">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>265</width>
+            <height>329</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_7">
+           <property name="leftMargin">
+            <number>2</number>
+           </property>
+           <property name="rightMargin">
+            <number>2</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QGroupBox" name="groupBox_15">
+             <layout class="QFormLayout" name="formLayout_6">
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_14">
+                <property name="toolTip">
+                 <string>The inpainting algorithm looks at what already exists in your image to better edit or place new content. The higher the strength the more it will diverge from the original.</string>
+                </property>
+                <property name="text">
+                 <string>Input Strength</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QFrame" name="frame_14">
+                <property name="frameShape">
+                 <enum>QFrame::NoFrame</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QHBoxLayout" name="horizontalLayout_12">
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QSlider" name="slImageStrength">
+                   <property name="minimum">
+                    <number>10</number>
+                   </property>
+                   <property name="maximum">
+                    <number>80</number>
+                   </property>
+                   <property name="value">
+                    <number>80</number>
+                   </property>
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="lblImageStrength">
+                   <property name="text">
+                    <string>0.8</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QCheckBox" name="chkTiling">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_17">
+                <property name="text">
+                 <string>Tiling</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="chkControlNet">
+             <property name="text">
+              <string>ControlNet</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="grpControlNet">
+             <layout class="QFormLayout" name="formLayout_8">
+              <item row="0" column="1">
+               <widget class="QComboBox" name="cmbControlNet">
+                <property name="currentIndex">
+                 <number>1</number>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>Pose to Image</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Edge to Image</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Depth to Image</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Pattern to Image</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_18">
+                <property name="text">
+                 <string>Weight</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QFrame" name="frame_16">
+                <property name="frameShape">
+                 <enum>QFrame::NoFrame</enum>
+                </property>
+                <layout class="QHBoxLayout" name="horizontalLayout_13">
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QSlider" name="slControlNetWeight">
+                   <property name="maximum">
+                    <number>100</number>
+                   </property>
+                   <property name="value">
+                    <number>100</number>
+                   </property>
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="lblControlNetWeight">
+                   <property name="text">
+                    <string>1</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="chkI2IAlchemy">
+             <property name="toolTip">
+              <string>Leonardo Alchemy is our powerful new image generation pipeline. Click the question mark for more info.</string>
+             </property>
+             <property name="text">
+              <string>Alchemy</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="grpI2IAlchemy">
+             <property name="title">
+              <string/>
+             </property>
+             <layout class="QFormLayout" name="formLayout_13">
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_29">
+                <property name="toolTip">
+                 <string>This boosts the output resolution of Leonardo Alchemy. Higher resolution outputs will be somewhat different to the normal resolution outputs due to the diffusion process, so do not expect this to act as an upscaler.</string>
+                </property>
+                <property name="text">
+                 <string>High Resolution</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QCheckBox" name="chkI2IAlchemyHighResolution">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="label_30">
+                <property name="toolTip">
+                 <string>This will adjust the dynamic range of your image. The default is 1, but you may find reducing it is helpful depending on your subject matter.</string>
+                </property>
+                <property name="text">
+                 <string>Contrast Boost</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QFrame" name="frame_21">
+                <property name="frameShape">
+                 <enum>QFrame::NoFrame</enum>
+                </property>
+                <property name="lineWidth">
+                 <number>0</number>
+                </property>
+                <layout class="QHBoxLayout" name="horizontalLayout_21">
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QSlider" name="slI2IAlchemyContrastBoost">
+                   <property name="maximum">
+                    <number>100</number>
+                   </property>
+                   <property name="singleStep">
+                    <number>25</number>
+                   </property>
+                   <property name="value">
+                    <number>50</number>
+                   </property>
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="lblI2IAlchemyContrastBoost">
+                   <property name="text">
+                    <string>0.5</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="label_31">
+                <property name="toolTip">
+                 <string>This scale dictates how much detail is in the image, and how prompt adherent it is. Higher numbers can create images that are extremely busy. Around 13-15 is a good balance.</string>
+                </property>
+                <property name="text">
+                 <string>Resonance</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QFrame" name="frame_22">
+                <property name="frameShape">
+                 <enum>QFrame::NoFrame</enum>
+                </property>
+                <property name="lineWidth">
+                 <number>0</number>
+                </property>
+                <layout class="QHBoxLayout" name="horizontalLayout_22">
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QSlider" name="slI2IAlchemyResonance">
+                   <property name="minimum">
+                    <number>2</number>
+                   </property>
+                   <property name="maximum">
+                    <number>30</number>
+                   </property>
+                   <property name="singleStep">
+                    <number>1</number>
+                   </property>
+                   <property name="value">
+                    <number>15</number>
+                   </property>
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="lblI2IAlchemyResonance">
+                   <property name="text">
+                    <string>15</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="4" column="1">
+               <widget class="QFrame" name="frame_23">
+                <property name="frameShape">
+                 <enum>QFrame::NoFrame</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QHBoxLayout" name="horizontalLayout_23">
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                </layout>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QFrame" name="conImage2ImageAlchemy">
+             <property name="frameShape">
+              <enum>QFrame::NoFrame</enum>
+             </property>
+             <property name="lineWidth">
+              <number>0</number>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_9">
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+       <item>
+        <widget class="QFrame" name="grpSketch2Image">
+         <layout class="QVBoxLayout" name="verticalLayout_12">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item alignment="Qt::AlignTop">
+           <widget class="QCheckBox" name="chkOverrideDefaults">
+            <property name="text">
+             <string>Override Defaults</string>
+            </property>
+           </widget>
+          </item>
+          <item alignment="Qt::AlignTop">
+           <widget class="QGroupBox" name="grpSketch2ImageDefaults">
+            <layout class="QFormLayout" name="formLayout_9">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_19">
+               <property name="text">
+                <string>Input Strength</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QFrame" name="frame_4">
+               <property name="frameShape">
+                <enum>QFrame::NoFrame</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Raised</enum>
+               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_14">
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>0</number>
+                </property>
+                <item>
+                 <widget class="QSlider" name="slSketch2ImageStrength">
+                  <property name="minimum">
+                   <number>10</number>
+                  </property>
+                  <property name="maximum">
+                   <number>80</number>
+                  </property>
+                  <property name="value">
+                   <number>80</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="lblSketch2ImageStrength">
+                  <property name="text">
+                   <string>0.8</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
       </layout>
@@ -532,1367 +1882,19 @@
      </widget>
     </item>
     <item>
-     <widget class="QTabWidget" name="tabType">
-      <property name="currentIndex">
-       <number>0</number>
+     <widget class="QFrame" name="frmFiller">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
       </property>
-      <widget class="QWidget" name="tabTxt2Img">
-       <attribute name="title">
-        <string>Text2Image</string>
-       </attribute>
-       <layout class="QHBoxLayout" name="horizontalLayout_3">
-        <property name="spacing">
-         <number>0</number>
-        </property>
-        <property name="leftMargin">
-         <number>0</number>
-        </property>
-        <property name="topMargin">
-         <number>0</number>
-        </property>
-        <property name="rightMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
-         <number>0</number>
-        </property>
-        <item>
-         <widget class="QScrollArea" name="scrollArea">
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAsNeeded</enum>
-          </property>
-          <property name="widgetResizable">
-           <bool>true</bool>
-          </property>
-          <widget class="QWidget" name="scrollAreaWidgetContents">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>-647</y>
-             <width>296</width>
-             <height>796</height>
-            </rect>
-           </property>
-           <layout class="QVBoxLayout" name="verticalLayout_3">
-            <item>
-             <widget class="QGroupBox" name="groupBox_2">
-              <property name="toolTip">
-               <string>This is the input resolution into Alchemy. Note that Alchemy's final output resolution is higher than this and is noted in the Alchemy section.</string>
-              </property>
-              <property name="title">
-               <string>Image Dimensions</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_2" columnstretch="1,1">
-               <property name="sizeConstraint">
-                <enum>QLayout::SetDefaultConstraint</enum>
-               </property>
-               <item row="0" column="0">
-                <widget class="QPushButton" name="btnDim512x512">
-                 <property name="text">
-                  <string>512 x 512</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
-                <widget class="QPushButton" name="btnDim768x768">
-                 <property name="text">
-                  <string>768 x 768</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QPushButton" name="btnDim512x1024">
-                 <property name="text">
-                  <string>512 x 1024</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QPushButton" name="btnDim768x1024">
-                 <property name="text">
-                  <string>768 x 1024</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="0">
-                <widget class="QPushButton" name="btnDim1024x768">
-                 <property name="text">
-                  <string>1024 x 768</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="1">
-                <widget class="QPushButton" name="btnDim1024x1024">
-                 <property name="text">
-                  <string>1024 x 1024</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0">
-                <widget class="QSlider" name="slDimWidth">
-                 <property name="minimum">
-                  <number>512</number>
-                 </property>
-                 <property name="maximum">
-                  <number>1536</number>
-                 </property>
-                 <property name="singleStep">
-                  <number>8</number>
-                 </property>
-                 <property name="pageStep">
-                  <number>64</number>
-                 </property>
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="1">
-                <widget class="QFrame" name="frame">
-                 <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
-                 </property>
-                 <property name="frameShadow">
-                  <enum>QFrame::Raised</enum>
-                 </property>
-                 <layout class="QHBoxLayout" name="horizontalLayout">
-                  <item>
-                   <widget class="QLabel" name="label">
-                    <property name="text">
-                     <string>W</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QSpinBox" name="inDimWidth">
-                    <property name="minimum">
-                     <number>512</number>
-                    </property>
-                    <property name="maximum">
-                     <number>1536</number>
-                    </property>
-                    <property name="singleStep">
-                     <number>8</number>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item row="4" column="0">
-                <widget class="QSlider" name="slDimHeight">
-                 <property name="minimum">
-                  <number>512</number>
-                 </property>
-                 <property name="maximum">
-                  <number>1536</number>
-                 </property>
-                 <property name="singleStep">
-                  <number>8</number>
-                 </property>
-                 <property name="pageStep">
-                  <number>64</number>
-                 </property>
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="1">
-                <widget class="QFrame" name="frame_2">
-                 <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
-                 </property>
-                 <property name="frameShadow">
-                  <enum>QFrame::Raised</enum>
-                 </property>
-                 <layout class="QHBoxLayout" name="horizontalLayout_2">
-                  <item>
-                   <widget class="QLabel" name="label_2">
-                    <property name="text">
-                     <string>H</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QSpinBox" name="inDimHeight">
-                    <property name="minimum">
-                     <number>512</number>
-                    </property>
-                    <property name="maximum">
-                     <number>1536</number>
-                    </property>
-                    <property name="singleStep">
-                     <number>8</number>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item row="5" column="1">
-                <widget class="QPushButton" name="btnDimSwap">
-                 <property name="text">
-                  <string>swap</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QGroupBox" name="groupBox_3">
-              <layout class="QVBoxLayout" name="verticalLayout_2">
-               <item alignment="Qt::AlignTop">
-                <widget class="QCheckBox" name="chkPhotoReal">
-                 <property name="toolTip">
-                  <string>Leonardo PhotoReal is our latest innovation, a powerful pipeline designed to generate hyper-realistic photos and lifelike portraits. Requires Alchemy to work.</string>
-                 </property>
-                 <property name="text">
-                  <string>PhotoReal</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QGroupBox" name="grpPhotoReal">
-                 <property name="title">
-                  <string/>
-                 </property>
-                 <layout class="QFormLayout" name="formLayout">
-                  <item row="1" column="1">
-                   <widget class="QComboBox" name="cmbPhotoRealDepthOfField">
-                    <item>
-                     <property name="text">
-                      <string comment="HIGH">High</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string comment="MEDIUM">Medium</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string comment="LOW">Low</string>
-                     </property>
-                    </item>
-                   </widget>
-                  </item>
-                  <item row="1" column="0">
-                   <widget class="QLabel" name="label_3">
-                    <property name="toolTip">
-                     <string>This controls the depth of field of the image. At lower values, the image will have a shallower focal range, and more of the image may appear soft or blurry. At higher values, the image will have a wider focal range, and more of it will be in focus.</string>
-                    </property>
-                    <property name="text">
-                     <string>Depth of Field</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="2" column="1">
-                   <widget class="QCheckBox" name="chkPhotoRealRawMode">
-                    <property name="text">
-                     <string/>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="2" column="0">
-                   <widget class="QLabel" name="label_4">
-                    <property name="toolTip">
-                     <string>Enable this mode if you are looking for more control and flexibility with complex prompts. Leaving it off works better with shorter prompts.</string>
-                    </property>
-                    <property name="text">
-                     <string>RAW Mode</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="0">
-                   <widget class="QLabel" name="label_20">
-                    <property name="toolTip">
-                     <string>This controls the depth of field of the image. At lower values, the image will have a shallower focal range, and more of the image may appear soft or blurry. At higher values, the image will have a wider focal range, and more of it will be in focus.</string>
-                    </property>
-                    <property name="text">
-                     <string>Style</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="1">
-                   <widget class="QComboBox" name="cmbPhotoRealStyle">
-                    <item>
-                     <property name="text">
-                      <string>Cinematic</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>Creative</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>Vibrant</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>None</string>
-                     </property>
-                    </item>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QFrame" name="conText2ImageAlchemy">
-              <property name="frameShape">
-               <enum>QFrame::NoFrame</enum>
-              </property>
-              <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
-              </property>
-              <property name="lineWidth">
-               <number>0</number>
-              </property>
-              <layout class="QVBoxLayout" name="verticalLayout_8">
-               <property name="leftMargin">
-                <number>0</number>
-               </property>
-               <property name="topMargin">
-                <number>0</number>
-               </property>
-               <property name="rightMargin">
-                <number>0</number>
-               </property>
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-               <item>
-                <widget class="QGroupBox" name="frmAlchemy">
-                 <layout class="QVBoxLayout" name="verticalLayout_4">
-                  <item>
-                   <widget class="QCheckBox" name="chkAlchemy">
-                    <property name="toolTip">
-                     <string>Leonardo Alchemy is our powerful new image generation pipeline. Click the question mark for more info.</string>
-                    </property>
-                    <property name="text">
-                     <string>Alchemy</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QFrame" name="grpAlchemy">
-                    <property name="frameShape">
-                     <enum>QFrame::NoFrame</enum>
-                    </property>
-                    <property name="frameShadow">
-                     <enum>QFrame::Raised</enum>
-                    </property>
-                    <property name="lineWidth">
-                     <number>0</number>
-                    </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_5">
-                     <property name="spacing">
-                      <number>0</number>
-                     </property>
-                     <property name="leftMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="topMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="rightMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="bottomMargin">
-                      <number>0</number>
-                     </property>
-                     <item>
-                      <widget class="QGroupBox" name="groupBox_3">
-                       <property name="title">
-                        <string/>
-                       </property>
-                       <layout class="QFormLayout" name="formLayout_2">
-                        <item row="0" column="0">
-                         <widget class="QLabel" name="label_5">
-                          <property name="toolTip">
-                           <string>This boosts the output resolution of Leonardo Alchemy. Higher resolution outputs will be somewhat different to the normal resolution outputs due to the diffusion process, so do not expect this to act as an upscaler.</string>
-                          </property>
-                          <property name="text">
-                           <string>High Resolution</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item row="0" column="1">
-                         <widget class="QCheckBox" name="chkAlchemyHighResolution">
-                          <property name="text">
-                           <string/>
-                          </property>
-                         </widget>
-                        </item>
-                        <item row="1" column="0">
-                         <widget class="QLabel" name="label_6">
-                          <property name="toolTip">
-                           <string>This will adjust the dynamic range of your image. The default is 1, but you may find reducing it is helpful depending on your subject matter.</string>
-                          </property>
-                          <property name="text">
-                           <string>Contrast Boost</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item row="1" column="1">
-                         <widget class="QFrame" name="frame_5">
-                          <property name="frameShape">
-                           <enum>QFrame::NoFrame</enum>
-                          </property>
-                          <property name="lineWidth">
-                           <number>0</number>
-                          </property>
-                          <layout class="QHBoxLayout" name="horizontalLayout_4">
-                           <property name="leftMargin">
-                            <number>0</number>
-                           </property>
-                           <property name="topMargin">
-                            <number>0</number>
-                           </property>
-                           <property name="rightMargin">
-                            <number>0</number>
-                           </property>
-                           <property name="bottomMargin">
-                            <number>0</number>
-                           </property>
-                           <item>
-                            <widget class="QSlider" name="slAlchemyContrastBoost">
-                             <property name="maximum">
-                              <number>100</number>
-                             </property>
-                             <property name="singleStep">
-                              <number>25</number>
-                             </property>
-                             <property name="value">
-                              <number>50</number>
-                             </property>
-                             <property name="orientation">
-                              <enum>Qt::Horizontal</enum>
-                             </property>
-                            </widget>
-                           </item>
-                           <item>
-                            <widget class="QLabel" name="lblAlchemyContrastBoost">
-                             <property name="text">
-                              <string>0.5</string>
-                             </property>
-                            </widget>
-                           </item>
-                          </layout>
-                         </widget>
-                        </item>
-                        <item row="2" column="0">
-                         <widget class="QLabel" name="label_7">
-                          <property name="toolTip">
-                           <string>This scale dictates how much detail is in the image, and how prompt adherent it is. Higher numbers can create images that are extremely busy. Around 13-15 is a good balance.</string>
-                          </property>
-                          <property name="text">
-                           <string>Resonance</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item row="2" column="1">
-                         <widget class="QFrame" name="frame_6">
-                          <property name="frameShape">
-                           <enum>QFrame::NoFrame</enum>
-                          </property>
-                          <property name="lineWidth">
-                           <number>0</number>
-                          </property>
-                          <layout class="QHBoxLayout" name="horizontalLayout_5">
-                           <property name="leftMargin">
-                            <number>0</number>
-                           </property>
-                           <property name="topMargin">
-                            <number>0</number>
-                           </property>
-                           <property name="rightMargin">
-                            <number>0</number>
-                           </property>
-                           <property name="bottomMargin">
-                            <number>0</number>
-                           </property>
-                           <item>
-                            <widget class="QSlider" name="slAlchemyResonance">
-                             <property name="minimum">
-                              <number>2</number>
-                             </property>
-                             <property name="maximum">
-                              <number>30</number>
-                             </property>
-                             <property name="singleStep">
-                              <number>1</number>
-                             </property>
-                             <property name="value">
-                              <number>15</number>
-                             </property>
-                             <property name="orientation">
-                              <enum>Qt::Horizontal</enum>
-                             </property>
-                            </widget>
-                           </item>
-                           <item>
-                            <widget class="QLabel" name="lblAlchemyResonance">
-                             <property name="text">
-                              <string>15</string>
-                             </property>
-                            </widget>
-                           </item>
-                          </layout>
-                         </widget>
-                        </item>
-                        <item row="3" column="0">
-                         <widget class="QLabel" name="label_8">
-                          <property name="text">
-                           <string>Prompt Magic</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item row="3" column="1">
-                         <widget class="QFrame" name="frame_7">
-                          <property name="frameShape">
-                           <enum>QFrame::NoFrame</enum>
-                          </property>
-                          <property name="frameShadow">
-                           <enum>QFrame::Raised</enum>
-                          </property>
-                          <layout class="QHBoxLayout" name="horizontalLayout_6">
-                           <property name="leftMargin">
-                            <number>0</number>
-                           </property>
-                           <property name="topMargin">
-                            <number>0</number>
-                           </property>
-                           <property name="rightMargin">
-                            <number>0</number>
-                           </property>
-                           <property name="bottomMargin">
-                            <number>0</number>
-                           </property>
-                           <item>
-                            <widget class="QRadioButton" name="radAlchemyPromptMagicOff">
-                             <property name="text">
-                              <string>off</string>
-                             </property>
-                             <attribute name="buttonGroup">
-                              <string notr="true">buttonGroup</string>
-                             </attribute>
-                            </widget>
-                           </item>
-                           <item>
-                            <widget class="QRadioButton" name="radAlchemyPromptMagicV2">
-                             <property name="text">
-                              <string>V2</string>
-                             </property>
-                             <property name="checked">
-                              <bool>true</bool>
-                             </property>
-                             <attribute name="buttonGroup">
-                              <string notr="true">buttonGroup</string>
-                             </attribute>
-                            </widget>
-                           </item>
-                           <item>
-                            <widget class="QRadioButton" name="radAlchemyPromptMagicV3">
-                             <property name="text">
-                              <string>V3</string>
-                             </property>
-                             <attribute name="buttonGroup">
-                              <string notr="true">buttonGroup</string>
-                             </attribute>
-                            </widget>
-                           </item>
-                          </layout>
-                         </widget>
-                        </item>
-                       </layout>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QGroupBox" name="grpAlchemyPromptMagicV2">
-                       <property name="title">
-                        <string/>
-                       </property>
-                       <layout class="QFormLayout" name="formLayout_3">
-                        <item row="0" column="0">
-                         <widget class="QLabel" name="label_10">
-                          <property name="toolTip">
-                           <string>How strongly Prompt Magic influences the output. A higher number means greater influence.</string>
-                          </property>
-                          <property name="text">
-                           <string>Prompt Magic Strength</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item row="0" column="1">
-                         <widget class="QFrame" name="frame_8">
-                          <property name="frameShape">
-                           <enum>QFrame::NoFrame</enum>
-                          </property>
-                          <property name="frameShadow">
-                           <enum>QFrame::Raised</enum>
-                          </property>
-                          <layout class="QHBoxLayout" name="horizontalLayout_7">
-                           <property name="leftMargin">
-                            <number>0</number>
-                           </property>
-                           <property name="topMargin">
-                            <number>0</number>
-                           </property>
-                           <property name="rightMargin">
-                            <number>0</number>
-                           </property>
-                           <property name="bottomMargin">
-                            <number>0</number>
-                           </property>
-                           <item>
-                            <widget class="QSlider" name="slAlchemyPromptMagicStrengthV2">
-                             <property name="minimum">
-                              <number>30</number>
-                             </property>
-                             <property name="maximum">
-                              <number>45</number>
-                             </property>
-                             <property name="singleStep">
-                              <number>5</number>
-                             </property>
-                             <property name="value">
-                              <number>40</number>
-                             </property>
-                             <property name="orientation">
-                              <enum>Qt::Horizontal</enum>
-                             </property>
-                            </widget>
-                           </item>
-                           <item>
-                            <widget class="QLabel" name="lblAlchemyPromptMagicStrengthV2">
-                             <property name="text">
-                              <string>0.4</string>
-                             </property>
-                            </widget>
-                           </item>
-                          </layout>
-                         </widget>
-                        </item>
-                        <item row="1" column="0">
-                         <widget class="QLabel" name="label_11">
-                          <property name="toolTip">
-                           <string>High Contrast mode will give moodier images with more shadows. Turn this toggle off if you find that the outputs with PMv2 are too dark for your chosen prompt.</string>
-                          </property>
-                          <property name="text">
-                           <string>High Contrast</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item row="1" column="1">
-                         <widget class="QCheckBox" name="chkAlchemyHighContrast">
-                          <property name="text">
-                           <string/>
-                          </property>
-                         </widget>
-                        </item>
-                       </layout>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QGroupBox" name="grpAlchemyPromptMagicV3">
-                       <property name="title">
-                        <string/>
-                       </property>
-                       <layout class="QFormLayout" name="formLayout_4">
-                        <item row="0" column="0">
-                         <widget class="QLabel" name="label_12">
-                          <property name="toolTip">
-                           <string>How strongly Prompt Magic influences the output. A higher number means greater influence.</string>
-                          </property>
-                          <property name="text">
-                           <string>Prompt Magic Strength</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item row="0" column="1">
-                         <widget class="QFrame" name="frame_9">
-                          <property name="frameShape">
-                           <enum>QFrame::NoFrame</enum>
-                          </property>
-                          <property name="frameShadow">
-                           <enum>QFrame::Raised</enum>
-                          </property>
-                          <layout class="QHBoxLayout" name="horizontalLayout_8">
-                           <property name="leftMargin">
-                            <number>0</number>
-                           </property>
-                           <property name="topMargin">
-                            <number>0</number>
-                           </property>
-                           <property name="rightMargin">
-                            <number>0</number>
-                           </property>
-                           <property name="bottomMargin">
-                            <number>0</number>
-                           </property>
-                           <item>
-                            <widget class="QSlider" name="slAlchemyPromptMagicStrengthV3">
-                             <property name="minimum">
-                              <number>30</number>
-                             </property>
-                             <property name="maximum">
-                              <number>65</number>
-                             </property>
-                             <property name="singleStep">
-                              <number>5</number>
-                             </property>
-                             <property name="value">
-                              <number>55</number>
-                             </property>
-                             <property name="orientation">
-                              <enum>Qt::Horizontal</enum>
-                             </property>
-                            </widget>
-                           </item>
-                           <item>
-                            <widget class="QLabel" name="lblAlchemyPromptMagicStrengthV3">
-                             <property name="text">
-                              <string>0.55</string>
-                             </property>
-                            </widget>
-                           </item>
-                          </layout>
-                         </widget>
-                        </item>
-                        <item row="1" column="0">
-                         <widget class="QLabel" name="label_9">
-                          <property name="toolTip">
-                           <string>Enable this mode if you are looking for more control and flexibility with complex prompts. Leaving it off works better with shorter prompts.</string>
-                          </property>
-                          <property name="text">
-                           <string>RAW Mode</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item row="1" column="1">
-                         <widget class="QCheckBox" name="chkAlchemyRawMode">
-                          <property name="text">
-                           <string/>
-                          </property>
-                         </widget>
-                        </item>
-                       </layout>
-                      </widget>
-                     </item>
-                    </layout>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="chkText2ImageTiling">
-              <property name="text">
-               <string>Tiling</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tabInpaint">
-       <attribute name="title">
-        <string>Inpaint</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_6">
-        <item>
-         <widget class="QGroupBox" name="groupBox_10">
-          <layout class="QFormLayout" name="formLayout_5">
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_13">
-             <property name="toolTip">
-              <string>The inpainting algorithm looks at what already exists in your image to better edit or place new content. The higher the strength the more it will diverge from the original.</string>
-             </property>
-             <property name="text">
-              <string>Strength</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QFrame" name="frame_11">
-             <property name="frameShape">
-              <enum>QFrame::NoFrame</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Raised</enum>
-             </property>
-             <layout class="QHBoxLayout" name="horizontalLayout_9">
-              <property name="leftMargin">
-               <number>0</number>
-              </property>
-              <property name="topMargin">
-               <number>0</number>
-              </property>
-              <property name="rightMargin">
-               <number>0</number>
-              </property>
-              <property name="bottomMargin">
-               <number>0</number>
-              </property>
-              <item>
-               <widget class="QSlider" name="slInpaintStrength">
-                <property name="minimum">
-                 <number>20</number>
-                </property>
-                <property name="maximum">
-                 <number>100</number>
-                </property>
-                <property name="value">
-                 <number>100</number>
-                </property>
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="lblInpaintStrength">
-                <property name="text">
-                 <string>1</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tabOutpaint">
-       <attribute name="title">
-        <string>Outpaint</string>
-       </attribute>
-      </widget>
-      <widget class="QWidget" name="tabImg2Img">
-       <attribute name="title">
-        <string>Image2Image</string>
-       </attribute>
-       <layout class="QVBoxLayout">
-        <property name="spacing">
-         <number>0</number>
-        </property>
-        <property name="leftMargin">
-         <number>0</number>
-        </property>
-        <property name="topMargin">
-         <number>0</number>
-        </property>
-        <property name="rightMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
-         <number>0</number>
-        </property>
-        <item>
-         <widget class="QScrollArea" name="scrollArea_2">
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAsNeeded</enum>
-          </property>
-          <property name="widgetResizable">
-           <bool>true</bool>
-          </property>
-          <widget class="QWidget" name="scrollAreaWidgetContents_2">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>292</width>
-             <height>392</height>
-            </rect>
-           </property>
-           <layout class="QVBoxLayout" name="verticalLayout_7">
-            <item>
-             <widget class="QGroupBox" name="groupBox_15">
-              <layout class="QFormLayout" name="formLayout_6">
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_14">
-                 <property name="toolTip">
-                  <string>The inpainting algorithm looks at what already exists in your image to better edit or place new content. The higher the strength the more it will diverge from the original.</string>
-                 </property>
-                 <property name="text">
-                  <string>Input Strength</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
-                <widget class="QFrame" name="frame_14">
-                 <property name="frameShape">
-                  <enum>QFrame::NoFrame</enum>
-                 </property>
-                 <property name="frameShadow">
-                  <enum>QFrame::Raised</enum>
-                 </property>
-                 <layout class="QHBoxLayout" name="horizontalLayout_12">
-                  <property name="leftMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="topMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="rightMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="bottomMargin">
-                   <number>0</number>
-                  </property>
-                  <item>
-                   <widget class="QSlider" name="slImageStrength">
-                    <property name="minimum">
-                     <number>10</number>
-                    </property>
-                    <property name="maximum">
-                     <number>80</number>
-                    </property>
-                    <property name="value">
-                     <number>80</number>
-                    </property>
-                    <property name="orientation">
-                     <enum>Qt::Horizontal</enum>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLabel" name="lblImageStrength">
-                    <property name="text">
-                     <string>0.8</string>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QCheckBox" name="chkTiling">
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_17">
-                 <property name="text">
-                  <string>Tiling</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QGroupBox" name="groupBox_4">
-              <property name="title">
-               <string/>
-              </property>
-              <layout class="QVBoxLayout" name="verticalLayout_10">
-               <item>
-                <widget class="QCheckBox" name="chkControlNet">
-                 <property name="text">
-                  <string>ControlNet</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QGroupBox" name="grpControlNet">
-                 <layout class="QFormLayout" name="formLayout_8">
-                  <item row="0" column="1">
-                   <widget class="QComboBox" name="cmbControlNet">
-                    <property name="currentIndex">
-                     <number>1</number>
-                    </property>
-                    <item>
-                     <property name="text">
-                      <string>Pose to Image</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>Edge to Image</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>Depth to Image</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>Pattern to Image</string>
-                     </property>
-                    </item>
-                   </widget>
-                  </item>
-                  <item row="1" column="0">
-                   <widget class="QLabel" name="label_18">
-                    <property name="text">
-                     <string>Weight</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="1">
-                   <widget class="QFrame" name="frame_16">
-                    <property name="frameShape">
-                     <enum>QFrame::NoFrame</enum>
-                    </property>
-                    <layout class="QHBoxLayout" name="horizontalLayout_13">
-                     <property name="leftMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="topMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="rightMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="bottomMargin">
-                      <number>0</number>
-                     </property>
-                     <item>
-                      <widget class="QSlider" name="slControlNetWeight">
-                       <property name="maximum">
-                        <number>100</number>
-                       </property>
-                       <property name="value">
-                        <number>100</number>
-                       </property>
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLabel" name="lblControlNetWeight">
-                       <property name="text">
-                        <string>1</string>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QFrame" name="conImage2ImageAlchemy">
-              <property name="frameShape">
-               <enum>QFrame::NoFrame</enum>
-              </property>
-              <property name="lineWidth">
-               <number>0</number>
-              </property>
-              <layout class="QVBoxLayout" name="verticalLayout_9">
-               <property name="leftMargin">
-                <number>0</number>
-               </property>
-               <property name="topMargin">
-                <number>0</number>
-               </property>
-               <property name="rightMargin">
-                <number>0</number>
-               </property>
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QGroupBox" name="groupBox">
-              <layout class="QVBoxLayout" name="verticalLayout_15">
-               <item>
-                <widget class="QCheckBox" name="chkI2IAlchemy">
-                 <property name="toolTip">
-                  <string>Leonardo Alchemy is our powerful new image generation pipeline. Click the question mark for more info.</string>
-                 </property>
-                 <property name="text">
-                  <string>Alchemy</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QGroupBox" name="grpI2IAlchemy">
-                 <property name="title">
-                  <string/>
-                 </property>
-                 <layout class="QFormLayout" name="formLayout_13">
-                  <item row="0" column="0">
-                   <widget class="QLabel" name="label_29">
-                    <property name="toolTip">
-                     <string>This boosts the output resolution of Leonardo Alchemy. Higher resolution outputs will be somewhat different to the normal resolution outputs due to the diffusion process, so do not expect this to act as an upscaler.</string>
-                    </property>
-                    <property name="text">
-                     <string>High Resolution</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="1">
-                   <widget class="QCheckBox" name="chkI2IAlchemyHighResolution">
-                    <property name="text">
-                     <string/>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="2" column="0">
-                   <widget class="QLabel" name="label_30">
-                    <property name="toolTip">
-                     <string>This will adjust the dynamic range of your image. The default is 1, but you may find reducing it is helpful depending on your subject matter.</string>
-                    </property>
-                    <property name="text">
-                     <string>Contrast Boost</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="2" column="1">
-                   <widget class="QFrame" name="frame_21">
-                    <property name="frameShape">
-                     <enum>QFrame::NoFrame</enum>
-                    </property>
-                    <property name="lineWidth">
-                     <number>0</number>
-                    </property>
-                    <layout class="QHBoxLayout" name="horizontalLayout_21">
-                     <property name="leftMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="topMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="rightMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="bottomMargin">
-                      <number>0</number>
-                     </property>
-                     <item>
-                      <widget class="QSlider" name="slI2IAlchemyContrastBoost">
-                       <property name="maximum">
-                        <number>100</number>
-                       </property>
-                       <property name="singleStep">
-                        <number>25</number>
-                       </property>
-                       <property name="value">
-                        <number>50</number>
-                       </property>
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLabel" name="lblI2IAlchemyContrastBoost">
-                       <property name="text">
-                        <string>0.5</string>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </widget>
-                  </item>
-                  <item row="3" column="0">
-                   <widget class="QLabel" name="label_31">
-                    <property name="toolTip">
-                     <string>This scale dictates how much detail is in the image, and how prompt adherent it is. Higher numbers can create images that are extremely busy. Around 13-15 is a good balance.</string>
-                    </property>
-                    <property name="text">
-                     <string>Resonance</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="3" column="1">
-                   <widget class="QFrame" name="frame_22">
-                    <property name="frameShape">
-                     <enum>QFrame::NoFrame</enum>
-                    </property>
-                    <property name="lineWidth">
-                     <number>0</number>
-                    </property>
-                    <layout class="QHBoxLayout" name="horizontalLayout_22">
-                     <property name="leftMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="topMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="rightMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="bottomMargin">
-                      <number>0</number>
-                     </property>
-                     <item>
-                      <widget class="QSlider" name="slI2IAlchemyResonance">
-                       <property name="minimum">
-                        <number>2</number>
-                       </property>
-                       <property name="maximum">
-                        <number>30</number>
-                       </property>
-                       <property name="singleStep">
-                        <number>1</number>
-                       </property>
-                       <property name="value">
-                        <number>15</number>
-                       </property>
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLabel" name="lblI2IAlchemyResonance">
-                       <property name="text">
-                        <string>15</string>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </widget>
-                  </item>
-                  <item row="4" column="1">
-                   <widget class="QFrame" name="frame_23">
-                    <property name="frameShape">
-                     <enum>QFrame::NoFrame</enum>
-                    </property>
-                    <property name="frameShadow">
-                     <enum>QFrame::Raised</enum>
-                    </property>
-                    <layout class="QHBoxLayout" name="horizontalLayout_23">
-                     <property name="leftMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="topMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="rightMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="bottomMargin">
-                      <number>0</number>
-                     </property>
-                    </layout>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tabSketch2Img">
-       <attribute name="title">
-        <string>Sketch2Image</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_11">
-        <item>
-         <widget class="QGroupBox" name="groupBox_5">
-          <property name="title">
-           <string/>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_12">
-           <item alignment="Qt::AlignTop">
-            <widget class="QCheckBox" name="chkOverrideDefaults">
-             <property name="text">
-              <string>Override Defaults</string>
-             </property>
-            </widget>
-           </item>
-           <item alignment="Qt::AlignTop">
-            <widget class="QGroupBox" name="grpSketch2ImageDefaults">
-             <layout class="QFormLayout" name="formLayout_9">
-              <item row="0" column="0">
-               <widget class="QLabel" name="label_19">
-                <property name="text">
-                 <string>Input Strength</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QFrame" name="frame_4">
-                <property name="frameShape">
-                 <enum>QFrame::NoFrame</enum>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Raised</enum>
-                </property>
-                <layout class="QHBoxLayout" name="horizontalLayout_14">
-                 <property name="leftMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>0</number>
-                 </property>
-                 <item>
-                  <widget class="QSlider" name="slSketch2ImageStrength">
-                   <property name="minimum">
-                    <number>10</number>
-                   </property>
-                   <property name="maximum">
-                    <number>80</number>
-                   </property>
-                   <property name="value">
-                    <number>80</number>
-                   </property>
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLabel" name="lblSketch2ImageStrength">
-                   <property name="text">
-                    <string>0.8</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-       </layout>
-      </widget>
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Plain</enum>
+      </property>
      </widget>
     </item>
    </layout>

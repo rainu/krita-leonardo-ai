@@ -34,9 +34,6 @@ class Image2Image(Outpaint):
     def onResonanceChange(): self.ui.lblI2IAlchemyResonance.setText(str(self.alchemyI2IResonance))
     self.ui.slI2IAlchemyResonance.valueChanged.connect(onResonanceChange)
 
-  def onTabImage2ImageActivate(self):
-    self.ui.conImage2ImageAlchemy.layout().addWidget(self.ui.frmAlchemy)
-
   @property
   def imageStrength(self):
     return self.ui.slImageStrength.value() / 100

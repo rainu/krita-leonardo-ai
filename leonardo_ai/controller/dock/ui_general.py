@@ -25,7 +25,16 @@ class BaseDock(DockWidget):
     self.ui.cmbPresetStyle.setVisible(True)
     self.ui.cmbAlchemyPresetStyle.setVisible(False)
     self.ui.inPrompt.textChanged.connect(self.onMandatoryInputChanges)
-    self.ui.tabType.currentChanged.connect(self.onTabChange)
+
+    def onModeChange():
+      self.ui.grpText2Image.setVisible(self.ui.cmbMode.currentIndex() == 0)
+      self.ui.grpInpaint.setVisible(self.ui.cmbMode.currentIndex() == 1)
+      self.ui.grpImage2Image.setVisible(self.ui.cmbMode.currentIndex() == 3)
+      self.ui.grpSketch2Image.setVisible(self.ui.cmbMode.currentIndex() == 4)
+
+    self.ui.cmbMode.currentIndexChanged.connect(onModeChange)
+    onModeChange()
+
     self.ui.settings = Settings(self.onSettingsChanged)
 
     def onSettingsClick():
@@ -96,16 +105,3 @@ class BaseDock(DockWidget):
 
   def onMandatoryInputChanges(self):
     self.ui.btnGenerate.setEnabled(self.prompt != "" and self.model is not None)
-
-  def onTabChange(self):
-    if self.ui.tabType.currentIndex() == 0: self.onTabText2ImageActivate()
-    elif self.ui.tabType.currentIndex() == 1: self.onTabInpaintActivate()
-    elif self.ui.tabType.currentIndex() == 2: self.onTabOutpaintActivate()
-    elif self.ui.tabType.currentIndex() == 3: self.onTabImage2ImageActivate()
-    elif self.ui.tabType.currentIndex() == 4: self.onTabSketch2ImageActivate()
-
-  def onTabText2ImageActivate(self): pass
-  def onTabInpaintActivate(self): pass
-  def onTabOutpaintActivate(self): pass
-  def onTabImage2ImageActivate(self): pass
-  def onTabSketch2ImageActivate(self): pass
