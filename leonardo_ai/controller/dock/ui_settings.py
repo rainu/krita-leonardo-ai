@@ -5,7 +5,7 @@ from ...config import Config, ConfigRegistry
 from ...client.graphql.graphql import GraphqlClient
 from ...client.restClient import RestClient
 
-class Settings(QtWidgets.QFrame):
+class Settings(QtWidgets.QDialog):
 
   def __init__(self, applyClb: callable):
     super().__init__()
@@ -53,11 +53,13 @@ class Settings(QtWidgets.QFrame):
     try:
       if GraphqlClient(self.ui.inClientUsername.text(), self.ui.inClientPassword.text()).getUserInfo().Id is not None:
         self.ui.lblTestGQL.setText("Successful")
+        self.ui.lblTestGQL.setStyleSheet("QLabel { color : green; }")
         return
     except Exception:
       pass
 
     self.ui.lblTestGQL.setText("Unsuccessful")
+    self.ui.lblTestGQL.setStyleSheet("QLabel { color : red; }")
 
 
   def onTestRest(self):
@@ -65,12 +67,12 @@ class Settings(QtWidgets.QFrame):
 
     try:
       if RestClient(self.ui.inClientKey.text()).getUserInfo().Id is not None:
-        self.ui.lblTestREST.setText("Successful")
+        self.ui.lblTestREST.setText("Successful").setStyleSheet("QLabel { color : green; }")
         return
     except Exception:
       pass
 
-    self.ui.lblTestREST.setText("Unsuccessful")
+    self.ui.lblTestREST.setText("Unsuccessful").setStyleSheet("QLabel { color : red; }")
 
   def onApply(self):
     self.config.set(ConfigRegistry.LEONARDO_CLIENT_TYPE, "gql" if self.ui.radClientGQL.isChecked() else "rest")

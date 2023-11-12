@@ -56,6 +56,9 @@ class LeonardoDock(Sketch2Image):
     self.generationLoadingThread = None
     self._initialiseSDK()
 
+    if self.leonardoAI is None:
+      self.ui.btnSettings.click()
+
     def getLeonardoAI(): return self.leonardoAI
     self.balanceUpdater = BalanceUpdater(getLeonardoAI, self.ui)
     self.updateBalance()
@@ -72,7 +75,7 @@ class LeonardoDock(Sketch2Image):
     else:
       self.leonardoAI = None
 
-    if self.modelLoadingThread is not None:
+    if self.leonardoAI is None or self.modelLoadingThread is not None:
       return
 
     def loadModels(t):
