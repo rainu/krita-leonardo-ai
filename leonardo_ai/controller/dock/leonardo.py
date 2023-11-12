@@ -1,12 +1,11 @@
 import time
-import requests
 from typing import Callable
 
 from PyQt5 import QtCore
 from PyQt5.QtGui import QImage
-from PyQt5.QtCore import QByteArray, QThread
+from PyQt5.QtCore import  QThread
 
-from krita import DockWidget, Node, Document, Selection
+from krita import DockWidget, Node, Document, Selection, GroupLayer
 
 from .ui_sketch2image import Sketch2Image
 from ...client.abstract import JobStatus, AbstractClient, Generation
@@ -15,6 +14,7 @@ from ...client.restClient import RestClient
 from ...view.dock import Ui_LeonardoAI
 from ...config import Config, ConfigRegistry
 from ...util.thread import Thread
+from ...util.generationLoader import GenerationLoader
 
 
 class BalanceUpdater(QThread):
@@ -53,6 +53,7 @@ class LeonardoDock(Sketch2Image):
     self.sigGenerationDoneSketch2Image.connect(self.onGenerationDoneSketch2Image)
 
     self.modelLoadingThread = None
+    self.generationLoadingThread = None
     self._initialiseSDK()
 
     def getLeonardoAI(): return self.leonardoAI
@@ -149,31 +150,6 @@ class LeonardoDock(Sketch2Image):
     self.ui.btnGenerate.setVisible(True)
     self.ui.btnInterrupt.setVisible(False)
 
-  def loadGeneratedImages(self, generation: Generation, document, selection = None):
-    grpLayer = document.createGroupLayer(f"""AI - {generation.Prompt} - {generation.Id}""")
-    document.rootNode().addChildNode(grpLayer, None)
-    for generatedImage in generation.GeneratedImages:
-      image = QImage.fromData(requests.get(generatedImage.Url).content)
-      layer = document.createNode(generatedImage.Id, "paintlayer")
-      grpLayer.addChildNode(layer, None)
-
-      ptr = image.bits()
-      ptr.setsize(image.byteCount())
-      layer.setPixelData(
-        QByteArray(ptr.asstring()),
-        0 if selection is None else selection.x(),
-        0 if selection is None else selection.y(),
-        image.width(),
-        image.height(),
-      )
-
-      if selection is not None:
-        layer.cropNode(selection.x(), selection.y(), selection.width(), selection.height())
-
-        invertedSelection = selection.duplicate()
-        invertedSelection.invert()
-        invertedSelection.cut(layer)
-
   def onImage(self):
     args = {
       "modelId": self.model.Id, "sdVersion": self.model.StableDiffusionVersion, "presetStyle": self.presetStyle,
@@ -204,11 +180,11 @@ class LeonardoDock(Sketch2Image):
 
   @QtCore.pyqtSlot(Generation)
   def onGenerationDoneText2Image(self, generation: Generation):
-    document = Krita.instance().activeDocument()
-    self.loadGeneratedImages(generation, document)
+    def afterLoad(document: Document, selection: Selection):
+      document.crop(0, 0, max(document.width(), generation.ImageWidth), max(document.height(), generation.ImageHeight))
 
-    document.crop(0, 0, max(document.width(), generation.ImageWidth), max(document.height(), generation.ImageHeight))
-    document.refreshProjection()
+    self.generationLoadingThread = GenerationLoader(Krita.instance().activeDocument(),None, generation, afterLoad)
+    self.generationLoadingThread.start()
 
   def onInpaint(self):
     document = Krita.instance().activeDocument()
@@ -235,9 +211,8 @@ class LeonardoDock(Sketch2Image):
   def onGenerationDoneInpaint(self, generation: Generation):
     document = Krita.instance().activeDocument()
     selection = document.selection()
-    self.loadGeneratedImages(generation, document, selection)
-
-    document.refreshProjection()
+    self.generationLoadingThread = GenerationLoader(document, selection, generation)
+    self.generationLoadingThread.start()
 
   def onOutpaint(self):
     document = Krita.instance().activeDocument()
@@ -261,17 +236,18 @@ class LeonardoDock(Sketch2Image):
 
   @QtCore.pyqtSlot(Generation)
   def onGenerationDoneOutpaint(self, generation: Generation):
+    def afterLoad(document: Document, selection: Selection):
+      document.crop(
+        min(selection.x(), 0),
+        min(selection.y(), 0),
+        max(selection.x() + selection.width(), document.width() + abs(min(selection.x(), 0))),
+        max(selection.y() + selection.height(), document.height() + abs(min(selection.y(), 0))),
+      )
+
     document = Krita.instance().activeDocument()
     selection = document.selection()
-    self.loadGeneratedImages(generation, document, selection)
-
-    document.refreshProjection()
-    document.crop(
-      min(selection.x(), 0),
-      min(selection.y(), 0),
-      max(selection.x() + selection.width(), document.width() + abs(min(selection.x(), 0))),
-      max(selection.y() + selection.height(), document.height() + abs(min(selection.y(), 0))),
-    )
+    self.generationLoadingThread = GenerationLoader(document, selection, generation, afterLoad)
+    self.generationLoadingThread.start()
 
   def onImage2Image(self):
     document = Krita.instance().activeDocument()
@@ -306,9 +282,8 @@ class LeonardoDock(Sketch2Image):
   def onGenerationDoneImage2Image(self, generation: Generation):
     document = Krita.instance().activeDocument()
     selection = document.selection()
-    self.loadGeneratedImages(generation, document, selection)
-
-    document.refreshProjection()
+    self.generationLoadingThread = GenerationLoader(document, selection, generation)
+    self.generationLoadingThread.start()
 
   def onSketch2Image(self):
     document = Krita.instance().activeDocument()
@@ -338,9 +313,8 @@ class LeonardoDock(Sketch2Image):
   def onGenerationDoneSketch2Image(self, generation: Generation):
     document = Krita.instance().activeDocument()
     selection = document.selection()
-    self.loadGeneratedImages(generation, document, selection)
-
-    document.refreshProjection()
+    self.generationLoadingThread = GenerationLoader(document, selection, generation)
+    self.generationLoadingThread.start()
 
   def maskFromSelection(self, selection: Selection | None = None) -> QImage:
     selection = selection if selection is not None else Krita.instance().activeDocument().selection()
