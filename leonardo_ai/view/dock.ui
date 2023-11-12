@@ -317,6 +317,19 @@
          </property>
         </widget>
        </item>
+       <item>
+        <widget class="QPushButton" name="btnInterrupt">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Interrupt</string>
+         </property>
+        </widget>
+       </item>
        <item alignment="Qt::AlignRight">
         <widget class="QLCDNumber" name="lcdBalance">
          <property name="frameShape">

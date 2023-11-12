@@ -27,7 +27,7 @@ class Ui_ModelItem(QWidget):
     self.loadingThread = Thread(target=self._loadImage)
     self.loadingThread.start()
 
-  def _loadImage(self):
+  def _loadImage(self, t):
     try:
       data = requests.get(self.model.PreviewImage.Url).content
       pixmap = QPixmap()

@@ -375,6 +375,8 @@ fragment ModelParts on custom_models {
     image.save(buffer, "PNG", 100)
     buffer.close()
 
+    image.save("/tmp/" + name)
+
     return requests.post(url, files={
       **{key: (None, value) for key, value in fields.items()},
       'file': (name, rawImage.data()),

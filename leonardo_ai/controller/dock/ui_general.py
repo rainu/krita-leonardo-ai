@@ -26,6 +26,10 @@ class BaseDock(DockWidget):
     self.ui.cmbAlchemyPresetStyle.setVisible(False)
     self.ui.inPrompt.textChanged.connect(self.onMandatoryInputChanges)
 
+    self.ui.btnGenerate.clicked.connect(self.onGenerate)
+    self.ui.btnInterrupt.clicked.connect(self.onInterrupt)
+    self.ui.btnInterrupt.setVisible(False)
+
     def onModeChange():
       self.ui.grpText2Image.setVisible(self.ui.cmbMode.currentIndex() == 0)
       self.ui.grpInpaint.setVisible(self.ui.cmbMode.currentIndex() == 1)
@@ -42,6 +46,14 @@ class BaseDock(DockWidget):
       self.ui.settings.setVisible(True)
 
     self.ui.btnSettings.clicked.connect(onSettingsClick)
+
+  def onGenerate(self):
+    self.ui.btnGenerate.setVisible(False)
+    self.ui.btnInterrupt.setVisible(True)
+
+  def onInterrupt(self):
+    self.ui.btnGenerate.setVisible(True)
+    self.ui.btnInterrupt.setVisible(False)
 
   def onSettingsChanged(self):
     pass

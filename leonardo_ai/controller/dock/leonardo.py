@@ -32,6 +32,7 @@ class BalanceUpdater(QThread):
 
 class LeonardoDock(Sketch2Image):
   generationThread: Thread = None
+  sigGenerationDone = QtCore.pyqtSignal()
   sigGenerationFailed = QtCore.pyqtSignal(Exception)
   sigGenerationDoneText2Image = QtCore.pyqtSignal(Generation)
   sigGenerationDoneInpaint = QtCore.pyqtSignal(Generation)
@@ -43,14 +44,13 @@ class LeonardoDock(Sketch2Image):
     super().__init__()
     self.config = Config.instance()
 
+    self.sigGenerationDone.connect(self.onGenerationDone)
     self.sigGenerationFailed.connect(self.onGenerationFailed)
     self.sigGenerationDoneText2Image.connect(self.onGenerationDoneText2Image)
     self.sigGenerationDoneInpaint.connect(self.onGenerationDoneInpaint)
     self.sigGenerationDoneOutpaint.connect(self.onGenerationDoneOutpaint)
     self.sigGenerationDoneImage2Image.connect(self.onGenerationDoneImage2Image)
     self.sigGenerationDoneSketch2Image.connect(self.onGenerationDoneSketch2Image)
-
-    self.ui.btnGenerate.clicked.connect(self.onGenerate)
 
     self.modelLoadingThread = None
     self._initialiseSDK()
@@ -74,7 +74,7 @@ class LeonardoDock(Sketch2Image):
     if self.modelLoadingThread is not None:
       return
 
-    def loadModels():
+    def loadModels(t):
       models = self.leonardoAI.getModels(favorites=True)
       for model in models: self.sigAddModel.emit(model)
 
@@ -98,11 +98,19 @@ class LeonardoDock(Sketch2Image):
     self.balanceUpdater.start()
 
   def onGenerate(self):
+    super().onGenerate()
+
     if self.ui.cmbMode.currentIndex() == 0: self.onImage()
     if self.ui.cmbMode.currentIndex() == 1: self.onInpaint()
     if self.ui.cmbMode.currentIndex() == 2: self.onOutpaint()
     if self.ui.cmbMode.currentIndex() == 3: self.onImage2Image()
     if self.ui.cmbMode.currentIndex() == 4: self.onSketch2Image()
+
+  def onInterrupt(self):
+    super().onInterrupt()
+
+    if self.generationThread is not None:
+      self.generationThread.requestInterruption()
 
   def generate(self, genFunc: Callable[[...], str], genArgs: dict, signal: QtCore.pyqtBoundSignal):
     self.ui.btnGenerate.setEnabled(False)
@@ -110,14 +118,15 @@ class LeonardoDock(Sketch2Image):
     if self.generationThread is not None and self.generationThread.isRunning():
       self.generationThread.terminate()
 
-    def run():
+    def run(t: QThread):
       try:
         genId = genFunc(**genArgs)
       except Exception as e:
+        self.sigGenerationDone.emit()
         self.sigGenerationFailed.emit(e)
         return
 
-      while True:
+      while not t.isInterruptionRequested():
         time.sleep(1)
         job = self.leonardoAI.getGenerationById(genId)
 
@@ -128,10 +137,17 @@ class LeonardoDock(Sketch2Image):
           self.sigGenerationFailed.emit(Exception(f"""Job failed: {job.Id}"""))
           break
 
+      self.sigGenerationDone.emit()
       self.updateBalance()
 
     self.generationThread = Thread(run)
     self.generationThread.start()
+
+  @QtCore.pyqtSlot()
+  def onGenerationDone(self):
+    self.ui.btnGenerate.setEnabled(True)
+    self.ui.btnGenerate.setVisible(True)
+    self.ui.btnInterrupt.setVisible(False)
 
   def loadGeneratedImages(self, generation: Generation, document, selection = None):
     grpLayer = document.createGroupLayer(f"""AI - {generation.Prompt} - {generation.Id}""")
@@ -184,13 +200,10 @@ class LeonardoDock(Sketch2Image):
 
   @QtCore.pyqtSlot(Generation)
   def onGenerationFailed(self, error: Exception):
-    self.ui.btnGenerate.setEnabled(True)
     print("Generation failed!", error)
 
   @QtCore.pyqtSlot(Generation)
   def onGenerationDoneText2Image(self, generation: Generation):
-    self.ui.btnGenerate.setEnabled(True)
-
     document = Krita.instance().activeDocument()
     self.loadGeneratedImages(generation, document)
 
@@ -220,8 +233,6 @@ class LeonardoDock(Sketch2Image):
 
   @QtCore.pyqtSlot(Generation)
   def onGenerationDoneInpaint(self, generation: Generation):
-    self.ui.btnGenerate.setEnabled(True)
-
     document = Krita.instance().activeDocument()
     selection = document.selection()
     self.loadGeneratedImages(generation, document, selection)
@@ -250,8 +261,6 @@ class LeonardoDock(Sketch2Image):
 
   @QtCore.pyqtSlot(Generation)
   def onGenerationDoneOutpaint(self, generation: Generation):
-    self.ui.btnGenerate.setEnabled(True)
-
     document = Krita.instance().activeDocument()
     selection = document.selection()
     self.loadGeneratedImages(generation, document, selection)
@@ -295,8 +304,6 @@ class LeonardoDock(Sketch2Image):
 
   @QtCore.pyqtSlot(Generation)
   def onGenerationDoneImage2Image(self, generation: Generation):
-    self.ui.btnGenerate.setEnabled(True)
-
     document = Krita.instance().activeDocument()
     selection = document.selection()
     self.loadGeneratedImages(generation, document, selection)
@@ -329,8 +336,6 @@ class LeonardoDock(Sketch2Image):
 
   @QtCore.pyqtSlot(Generation)
   def onGenerationDoneSketch2Image(self, generation: Generation):
-    self.ui.btnGenerate.setEnabled(True)
-
     document = Krita.instance().activeDocument()
     selection = document.selection()
     self.loadGeneratedImages(generation, document, selection)
