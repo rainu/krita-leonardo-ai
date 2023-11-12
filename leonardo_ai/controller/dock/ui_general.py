@@ -5,8 +5,9 @@ from krita import DockWidget
 
 from ...view.dock import Ui_LeonardoAI
 from .ui_settings import Settings
-from .model_item import Ui_ModelItem
-from ...client.abstract import Model
+from .ui_modelSearch import ModelSearch
+from .model_item import ModelItem
+from ...client.abstract import Model, AbstractClient
 
 class BaseDock(DockWidget):
   sigAddModel = QtCore.pyqtSignal(Model)
@@ -22,6 +23,19 @@ class BaseDock(DockWidget):
     self.ui.setupUi(self)
 
     self.ui.lstModel.itemSelectionChanged.connect(self.onMandatoryInputChanges)
+
+    def onModelSearchSelect(model: Model):
+      self._addModel(model)
+      self.selectModelById(model.Id)
+
+    self.ui.modelSearch = ModelSearch(self.getLeonardoAI, onModelSearchSelect)
+
+    def onModelSearchClick():
+      self.ui.modelSearch.show()
+      self.ui.modelSearch.setVisible(True)
+
+    self.ui.btnModelSearch.clicked.connect(onModelSearchClick)
+
     self.ui.cmbPresetStyle.setVisible(True)
     self.ui.cmbAlchemyPresetStyle.setVisible(False)
     self.ui.inPrompt.textChanged.connect(self.onMandatoryInputChanges)
@@ -46,6 +60,18 @@ class BaseDock(DockWidget):
       self.ui.settings.setVisible(True)
 
     self.ui.btnSettings.clicked.connect(onSettingsClick)
+
+  def selectModelById(self, modelId: str):
+    for i in range(self.ui.lstModel.count()):
+      item = self.ui.lstModel.item(i)
+      wItem = self.ui.lstModel.itemWidget(item)
+      if wItem.model.Id == modelId:
+        item.setSelected(True)
+        self.ui.lstModel.scrollToItem(item)
+        break
+
+  def getLeonardoAI(self) -> AbstractClient:
+    pass
 
   def onGenerate(self):
     self.ui.btnGenerate.setVisible(False)
@@ -109,7 +135,7 @@ class BaseDock(DockWidget):
 
     self._modelIdSet[model.Id] = True
 
-    item = Ui_ModelItem(model)
+    item = ModelItem(model)
     wItem = QListWidgetItem(self.ui.lstModel)
     wItem.setSizeHint(QSize(item.sizeHint().width(), item.height()))
     self.ui.lstModel.addItem(wItem)

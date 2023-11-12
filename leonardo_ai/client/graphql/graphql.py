@@ -109,8 +109,11 @@ class GraphqlClient(AbstractClient):
                 official: bool | None = None,
                 complete: bool | None = None,
                 favorites: bool | None = None,
+                own: bool | None = None,
+                category: str | None = None,
                 notSaveForWork: bool | None = None,
                 orderByCreatedAsc: bool | None = None,
+                orderByNameAsc: bool | None = None,
                 offset: int = 0,
                 limit: int = 50) -> List[Model]:
 
@@ -145,13 +148,35 @@ class GraphqlClient(AbstractClient):
           "createdAt": "asc" if orderByCreatedAsc else "desc"
         }
       })
+    elif orderByNameAsc is not None:
+      variables.update({
+        "order_by": {
+          "name": "asc" if orderByNameAsc else "desc"
+        }
+      })
 
-    if favorites is not None:
+    if favorites:
       variables.get("where").update({
         "user_favourite_custom_models": {
           "userId": {
             "_eq": self.getUserInfo().Id
           }
+        }
+      })
+      variables.get("where").pop("public")
+
+    if own:
+      variables.get("where").update({
+        "userId": {
+          "_eq": self.getUserInfo().Id
+        }
+      })
+      variables.get("where").pop("public")
+
+    if category is not None:
+      variables.get("where").update({
+        "type": {
+          "_eq": category
         }
       })
 

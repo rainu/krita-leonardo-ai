@@ -59,9 +59,11 @@ class LeonardoDock(Sketch2Image):
     if self.leonardoAI is None:
       self.ui.btnSettings.click()
 
-    def getLeonardoAI(): return self.leonardoAI
-    self.balanceUpdater = BalanceUpdater(getLeonardoAI, self.ui)
+    self.balanceUpdater = BalanceUpdater(self.getLeonardoAI, self.ui)
     self.updateBalance()
+
+  def getLeonardoAI(self):
+    return self.leonardoAI
 
   def _initialiseSDK(self):
     clientType = self.config.get(ConfigRegistry.LEONARDO_CLIENT_TYPE)

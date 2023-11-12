@@ -22,6 +22,7 @@ class Ui_modelItem(object):
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.gfxIcon = QtWidgets.QLabel(modelItem)
         self.gfxIcon.setMaximumSize(QtCore.QSize(64, 64))
+        self.gfxIcon.setText("")
         self.gfxIcon.setObjectName("gfxIcon")
         self.horizontalLayout.addWidget(self.gfxIcon)
         self.frame = QtWidgets.QFrame(modelItem)
@@ -67,7 +68,6 @@ class Ui_modelItem(object):
     def retranslateUi(self, modelItem):
         _translate = QtCore.QCoreApplication.translate
         modelItem.setWindowTitle(_translate("modelItem", "Form"))
-        self.gfxIcon.setText(_translate("modelItem", "TextLabel"))
         self.lblBase.setText(_translate("modelItem", "SL_21"))
         self.lblModelDim.setText(_translate("modelItem", "1024x768"))
         self.lblName.setText(_translate("modelItem", "Vintage Style Photography"))
