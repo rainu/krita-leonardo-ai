@@ -16,12 +16,87 @@ else:
   from ..utils import *
   from .model import *
 
+GQL_MODEL = """{
+  id
+  name
+  description
+  modelHeight
+  modelWidth
+  coreModel
+  createdAt
+  sdVersion
+  type
+  nsfw
+  public
+  trainingStrength
+  user {
+    id
+    username
+  }
+  generated_image {
+    id
+    url
+  }
+}"""
+
+def _buildModel(response: dict):
+  return Model(
+    Id=response['id'],
+    Name=response['name'],
+    Description=response['description'],
+    NotSaveForWork=response['nsfw'],
+    Public=response['public'],
+    Height=response['modelHeight'],
+    Width=response['modelWidth'],
+    StableDiffusionVersion=response['sdVersion'],
+    TrainingStrength=response['trainingStrength'],
+    User=UserInfo(
+      Id=response['user']['id'],
+      Name=response['user']['username'],
+      Token=None,
+    ),
+    PreviewImage=None
+  )
+
+GQL_GENERATION = """{
+  id
+  createdAt
+  imageHeight
+  imageWidth
+  seed
+  status
+  prompt
+  negativePrompt
+  sdVersion
+  generated_images(order_by: [{url: desc}]) {
+    id
+    url
+  }
+  custom_model """ + GQL_MODEL + """
+}"""
+
+def _buildGeneration(response: dict) -> Generation:
+  return Generation(
+    Id=response['id'],
+    CreatedAt=datetime.fromisoformat(response['createdAt']),
+    GeneratedImages=[Image(Id=i['id'], Url=i['url']) for i in response['generated_images']],
+    ImageHeight=response['imageHeight'],
+    ImageWidth=response['imageWidth'],
+    Seed=response['seed'],
+    Status=response['status'],
+    Prompt=response['prompt'],
+    NegativePrompt=response['negativePrompt'],
+    SDVersion=response['sdVersion'],
+    CustomModel=_buildModel(response['custom_model']) if response['custom_model'] is not None else None
+  )
+
 class GraphqlClient(AbstractClient):
 
   def __init__(self, username, password):
     self.username = username
     self.password = password
     self.loginResponse = None
+    self._userId = None
 
   def login(self):
     response = requests.get('https://app.leonardo.ai/api/auth/csrf')
@@ -53,6 +128,13 @@ class GraphqlClient(AbstractClient):
       self.login()
 
     return self.loginResponse['user']['sub']
+
+  @property
+  def userId(self):
+    if self._userId is None:
+      self._userId = self.getUserInfo().Id
+
+    return self._userId
 
   def _doGraphqlCall(self, operation: str, query: str, variables: dict):
     print(operation, query, variables)
@@ -91,6 +173,10 @@ class GraphqlClient(AbstractClient):
   }
 }""",
       {"userSub": self.userSub})
+
+    # remember user id for later use
+    if self._userId is None:
+      self._userId = response['users'][0]['id']
 
     return UserInfo(
       response['users'][0]['id'],
@@ -159,7 +245,7 @@ class GraphqlClient(AbstractClient):
       variables.get("where").update({
         "user_favourite_custom_models": {
           "userId": {
-            "_eq": self.getUserInfo().Id
+            "_eq": self.userId
           }
         }
       })
@@ -168,7 +254,7 @@ class GraphqlClient(AbstractClient):
     if own:
       variables.get("where").update({
         "userId": {
-          "_eq": self.getUserInfo().Id
+          "_eq": self.userId
         }
       })
       variables.get("where").pop("public")
@@ -189,46 +275,20 @@ class GraphqlClient(AbstractClient):
     response = self._doGraphqlCall(
       "GetFeedModels",
       """query GetFeedModels($order_by: [custom_models_order_by!] = [{ createdAt: desc }], $where: custom_models_bool_exp, $generationsWhere: generations_bool_exp, $limit: Int, $offset: Int) {
-    custom_models(
-      order_by: $order_by
-      where: $where
-      limit: $limit
-      offset: $offset) {
-        ...ModelParts
-        generations(where: $generationsWhere, limit: 1, order_by: [{ createdAt: asc }]) {
-            generated_images(limit: 1, order_by: [{ likeCount: desc }]) {
-                id
-                url
-            }
-        }
-    }
-}
-
-fragment ModelParts on custom_models {
-    id
-    name
-    description
-    modelHeight
-    modelWidth
-    coreModel
-    createdAt
-    sdVersion
-    type
-    nsfw
-    public
-    trainingStrength
-    user {
-        id
-        username
-    }
-    generated_image {
+  custom_models(order_by: $order_by, where: $where, limit: $limit, offset: $offset) {
+    ...ModelParts
+    generations(where: $generationsWhere, limit: 1, order_by: [{ createdAt: asc }]) {
+      generated_images(limit: 1, order_by: [{ likeCount: desc }]) {
         id
         url
+      }
     }
-}""",
+  }
+}
+  
+fragment ModelParts on custom_models """ + GQL_MODEL,
       variables
     )
-    response = response['custom_models']
 
     def getPreviewImage(model):
       if model['generated_image'] is not None:
@@ -247,26 +307,13 @@ fragment ModelParts on custom_models {
 
       return None
 
-    return [
-      Model(
-        Id=model['id'],
-        Name=model['name'],
-        Description=model['description'],
-        NotSaveForWork=model['nsfw'],
-        Public=model['public'],
-        Height=model['modelHeight'],
-        Width=model['modelWidth'],
-        StableDiffusionVersion=model['sdVersion'],
-        TrainingStrength=model['trainingStrength'],
-        User=UserInfo(
-          Id=model['user']['id'],
-          Name=model['user']['username'],
-          Token=None,
-        ),
-        PreviewImage=getPreviewImage(model)
-      )
-      for model in response
-    ]
+    result = []
+    for customModel in response['custom_models']:
+      model = _buildModel(customModel)
+      model.PreviewImage = getPreviewImage(customModel)
+      result.append(model)
+
+    return result
 
   def getElements(self, query: str = "%%", baseModel: str | None = None, offset: int = 0, limit: int = 64) -> List[Element]:
     response = self._doGraphqlCall(
@@ -317,44 +364,72 @@ fragment ModelParts on custom_models {
     response = self._doGraphqlCall(
       "GetAIGenerationFeed",
       """query GetAIGenerationFeed($where: generations_bool_exp = {}) {
-  generations(
-    limit: 1
-    where: $where
-  ) {
-    id
-    createdAt
-    imageHeight
-    imageWidth
-    seed
-    status
-    prompt
-    negativePrompt
-    sdVersion
-    generated_images(order_by: [{url: desc}]) {
-      id
-      url
-    }
-  }
-}
-""",
+  generations(limit: 1, where: $where) """ + GQL_GENERATION + """
+}""",
       {"where": {"id": {"_eq": generationId}}}
     )
 
     response = response['generations'][0]
-    return Generation(
-      Id=response['id'],
-      CreatedAt=datetime.fromisoformat(response['createdAt']),
-      GeneratedImages=[Image(Id=i['id'], Url=i['url']) for i in response['generated_images']],
-      ImageHeight=response['imageHeight'],
-      ImageWidth=response['imageWidth'],
-      Seed=response['seed'],
-      Status=response['status'],
-      Prompt=response['prompt'],
-      NegativePrompt=response['negativePrompt'],
-      SDVersion=response['sdVersion'],
+    return _buildGeneration(response)
+
+  def getGenerations(self,
+                     prompt: str | None = None,
+                     negativePrompt: str | None = None,
+                     modelId: str | None = None,
+                     minImageHeight: int | None = None,
+                     maxImageHeight: int | None = None,
+                     minImageWidth: int | None = None,
+                     maxImageWidth: int | None = None,
+                     minCreatedAt: datetime | None = None,
+                     maxCreatedAt: datetime | None = None,
+                     status: JobStatus | None = None,
+                     orderByCreatedAsc: bool | None = None,
+                     offset: int = 0,
+                     limit: int = 50) -> List[Generation]:
+
+    orderBy = "asc" if orderByCreatedAsc is True else "desc"
+    where = { "userId": { "_eq": self.userId }, "generation": {  } }
+
+    if prompt is not None: where["generation"].update({ "prompt": { "_ilike": f"""%{prompt}%""" } })
+    if negativePrompt is not None: where["generation"].update({ "negativePrompt": { "_ilike": f"""%{negativePrompt}%""" } })
+    if modelId is not None: where["generation"].update({ "modelId": { "_eq": modelId } })
+    if status is not None: where["generation"].update({"status": {"_eq": status}})
+
+    if minImageHeight is not None or maxImageHeight is not None:
+      where["generation"].update({ "imageHeight": {  } })
+      if minImageHeight is not None: where["generation"]["imageHeight"].update({ "_gte": minImageHeight })
+      if maxImageHeight is not None: where["generation"]["imageHeight"].update({ "_lte": maxImageHeight })
+
+    if minImageWidth is not None or maxImageWidth is not None:
+      where["generation"].update({ "imageWidth": {  } })
+      if minImageWidth is not None: where["generation"]["imageWidth"].update({ "_gte": minImageWidth })
+      if maxImageWidth is not None: where["generation"]["imageWidth"].update({ "_lte": maxImageWidth })
+
+    if minCreatedAt is not None or maxCreatedAt is not None:
+      where["generation"].update({ "createdAt": {  } })
+      if minCreatedAt is not None: where["generation"]["createdAt"].update({ "_gte": minCreatedAt.isoformat() })
+      if maxCreatedAt is not None: where["generation"]["createdAt"].update({ "_lte": maxCreatedAt.isoformat() })
+
+    response = self._doGraphqlCall(
+      "GetFeedImages",
+      """query GetFeedImages($where: generated_images_bool_exp, $offset: Int, $limit: Int) {
+    generated_images(where: $where, offset: $offset, limit: $limit, order_by: [{ createdAt: """ + orderBy + """ }]) {
+      generation """ + GQL_GENERATION + """
+    }
+}""",
+      {
+        "where": where,
+        "offset": offset,
+        "limit": limit,
+      }
     )
 
-  @abstractmethod
+    result = []
+    for generatedImage in response['generated_images']:
+      result.append(_buildGeneration(generatedImage['generation']))
+
+    return result
+
   def removeBackground(self, generationId: str) -> str:
     response = self._doGraphqlCall(
       "CreateNoBGJob",
@@ -399,8 +474,6 @@ fragment ModelParts on custom_models {
     buffer.open(QIODevice.WriteOnly)
     image.save(buffer, "PNG", 100)
     buffer.close()
-
-    image.save("/tmp/" + name)
 
     return requests.post(url, files={
       **{key: (None, value) for key, value in fields.items()},

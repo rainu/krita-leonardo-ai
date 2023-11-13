@@ -40,19 +40,6 @@ class PoseToImageType(str, Enum):
 
 
 @dataclass
-class Generation:
-  Id: str
-  CreatedAt: datetime
-  GeneratedImages: List[Image]
-  ImageHeight: int
-  ImageWidth: int
-  Seed: int
-  Status: JobStatus
-  Prompt: str
-  NegativePrompt: str
-  SDVersion: str
-
-@dataclass
 class Model:
   Id: str
   Name: str
@@ -65,6 +52,20 @@ class Model:
   User: UserInfo
   TrainingStrength: str
   StableDiffusionVersion: str
+
+@dataclass
+class Generation:
+  Id: str
+  CreatedAt: datetime
+  GeneratedImages: List[Image]
+  ImageHeight: int
+  ImageWidth: int
+  Seed: int
+  Status: JobStatus
+  Prompt: str
+  NegativePrompt: str
+  SDVersion: str
+  CustomModel: Model | None
 
 @dataclass
 class Element:
@@ -104,6 +105,23 @@ class AbstractClient:
 
   @abstractmethod
   def getGenerationById(self, generationId: str) -> Generation | None:
+    pass
+
+  @abstractmethod
+  def getGenerations(self,
+                     prompt: str | None = None,
+                     negativePrompt: str | None = None,
+                     modelId: str | None = None,
+                     minImageHeight: int | None = None,
+                     maxImageHeight: int | None = None,
+                     minImageWidth: int | None = None,
+                     maxImageWidth: int | None = None,
+                     minCreatedAt: datetime | None = None,
+                     maxCreatedAt: datetime | None = None,
+                     status: JobStatus | None = None,
+                     orderByCreatedAsc: bool | None = None,
+                     offset: int = 0,
+                     limit: int = 50) -> List[Generation]:
     pass
 
   @abstractmethod
