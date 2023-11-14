@@ -125,6 +125,10 @@ class AbstractClient:
     pass
 
   @abstractmethod
+  def deleteGenerationById(self, generationId: str) -> None:
+    pass
+
+  @abstractmethod
   def removeBackground(self, generationId: str) -> str:
     pass
 

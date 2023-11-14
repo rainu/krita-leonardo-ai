@@ -6,8 +6,9 @@ from krita import DockWidget
 from ...view.dock import Ui_LeonardoAI
 from .ui_settings import Settings
 from .ui_modelSearch import ModelSearch
+from .ui_generationSearch import GenerationSearch
 from .model_item import ModelItem
-from ...client.abstract import Model, AbstractClient
+from ...client.abstract import Generation, Model, AbstractClient
 
 class BaseDock(DockWidget):
   sigAddModel = QtCore.pyqtSignal(Model)
@@ -43,6 +44,14 @@ class BaseDock(DockWidget):
     self.ui.btnGenerate.clicked.connect(self.onGenerate)
     self.ui.btnInterrupt.clicked.connect(self.onInterrupt)
     self.ui.btnInterrupt.setVisible(False)
+
+    self.ui.generationSearch = GenerationSearch(self.getLeonardoAI, self.onLoadGeneration)
+
+    def onGenerationSearchClick():
+      self.ui.generationSearch.show()
+      self.ui.generationSearch.setVisible(True)
+
+    self.ui.btnGenerateSearch.clicked.connect(onGenerationSearchClick)
 
     def onModeChange():
       self.ui.grpText2Image.setVisible(self.ui.cmbMode.currentIndex() == 0)
@@ -82,6 +91,9 @@ class BaseDock(DockWidget):
     self.ui.btnInterrupt.setVisible(False)
 
   def onSettingsChanged(self):
+    pass
+
+  def onLoadGeneration(self, generation: Generation, selectedImages: dict[int, bool] | None):
     pass
 
   @property

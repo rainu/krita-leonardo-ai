@@ -23,12 +23,14 @@ class GenerationLoader(QThread):
                document: Document,
                selection: Selection,
                generation: Generation,
-               afterLoad: Callable[[Document, Selection], None] | None = None):
+               afterLoad: Callable[[Document, Selection], None] | None = None,
+               selectedImages: dict[int, bool] | None = None):
     super().__init__()
 
     self.document = document
     self.selection = selection
     self.generation = generation
+    self.selectedImages = selectedImages
     self.images = {}
 
     self.afterLoad = afterLoad if afterLoad is not None else self._doNothing
@@ -41,7 +43,10 @@ class GenerationLoader(QThread):
     imgLoader = []
 
     # load image in own thread
-    for generatedImage in self.generation.GeneratedImages:
+    for i, generatedImage in enumerate(self.generation.GeneratedImages):
+      # skip images which should not be loaded
+      if self.selectedImages is not None and i in self.selectedImages and not self.selectedImages[i]: continue
+
       il = imageLoader(generatedImage)
       imgLoader.append(il)
       il.start()
@@ -59,6 +64,8 @@ class GenerationLoader(QThread):
     self.document.rootNode().addChildNode(grpLayer, None)
 
     for generatedImage in self.generation.GeneratedImages:
+      if generatedImage.Id not in self.images: continue
+
       image = self.images[generatedImage.Id]
       layer = self.document.createNode(generatedImage.Id, "paintlayer")
       grpLayer.addChildNode(layer, None)

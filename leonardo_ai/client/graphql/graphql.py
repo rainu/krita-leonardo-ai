@@ -430,6 +430,17 @@ fragment ModelParts on custom_models """ + GQL_MODEL,
 
     return result
 
+  def deleteGenerationById(self, generationId: str) -> None:
+    self._doGraphqlCall(
+      "DeleteGeneration",
+      """mutation DeleteGeneration($id: uuid!) {
+  delete_generations_by_pk(id: $id) {
+    id
+  }
+}""",
+      { "id": generationId }
+    )
+
   def removeBackground(self, generationId: str) -> str:
     response = self._doGraphqlCall(
       "CreateNoBGJob",

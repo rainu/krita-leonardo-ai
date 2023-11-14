@@ -118,6 +118,11 @@ class LeonardoDock(Sketch2Image):
     if self.generationThread is not None:
       self.generationThread.requestInterruption()
 
+  def onLoadGeneration(self, generation: Generation, selectedImages: dict[int, bool] | None):
+    super().onLoadGeneration(generation, selectedImages)
+
+    self.onGenerationDoneText2Image(generation, selectedImages)
+
   def generate(self, genFunc: Callable[[...], str], genArgs: dict, signal: QtCore.pyqtBoundSignal):
     self.ui.btnGenerate.setEnabled(False)
 
@@ -184,11 +189,11 @@ class LeonardoDock(Sketch2Image):
     print("Generation failed!", error)
 
   @QtCore.pyqtSlot(Generation)
-  def onGenerationDoneText2Image(self, generation: Generation):
+  def onGenerationDoneText2Image(self, generation: Generation, selectedImages: dict[int, bool] | None = None):
     def afterLoad(document: Document, selection: Selection):
       document.crop(0, 0, max(document.width(), generation.ImageWidth), max(document.height(), generation.ImageHeight))
 
-    self.generationLoadingThread = GenerationLoader(Krita.instance().activeDocument(),None, generation, afterLoad)
+    self.generationLoadingThread = GenerationLoader(Krita.instance().activeDocument(),None, generation, afterLoad, selectedImages)
     self.generationLoadingThread.start()
 
   def onInpaint(self):
