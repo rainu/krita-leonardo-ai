@@ -185,7 +185,7 @@ class Ui_LeonardoAI(object):
         self.grpText2Image.setWidgetResizable(True)
         self.grpText2Image.setObjectName("grpText2Image")
         self.grpText2Image_3 = QtWidgets.QWidget()
-        self.grpText2Image_3.setGeometry(QtCore.QRect(0, -131, 265, 733))
+        self.grpText2Image_3.setGeometry(QtCore.QRect(0, 0, 265, 733))
         self.grpText2Image_3.setObjectName("grpText2Image_3")
         self.verticalLayout_14 = QtWidgets.QVBoxLayout(self.grpText2Image_3)
         self.verticalLayout_14.setContentsMargins(2, -1, 2, 0)

@@ -45,7 +45,7 @@ class BaseDock(DockWidget):
     self.ui.btnInterrupt.clicked.connect(self.onInterrupt)
     self.ui.btnInterrupt.setVisible(False)
 
-    self.ui.generationSearch = GenerationSearch(self.getLeonardoAI, self.onLoadGeneration)
+    self.ui.generationSearch = GenerationSearch(self.getLeonardoAI, self.ui.lstModel, self.onLoadGeneration)
 
     def onGenerationSearchClick():
       self.ui.generationSearch.show()

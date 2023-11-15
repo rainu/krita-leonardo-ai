@@ -1,17 +1,25 @@
+import math
 from typing import Callable
 from datetime import datetime
 from PyQt5 import QtCore
 from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QListWidget
 
-from ...client.abstract import Generation, AbstractClient, JobStatus
+from ...client.abstract import Generation, AbstractClient, JobStatus, Model
 from ...view.generation_search import Ui_GenerationSearch
 from ...util.thread import Thread
 from .generation_search_item import GenerationSearchItem
+from .model_item import ModelItem
 
 class GenerationSearch(QtWidgets.QDialog):
+  userId = None
+
   sigAddGenerationResultItems = QtCore.pyqtSignal(list)
 
-  def __init__(self, getLeonardoAI: Callable[[], AbstractClient], choseGenerationCallback: Callable[[Generation, dict[int, bool] | None], None]):
+  def __init__(self,
+               getLeonardoAI: Callable[[], AbstractClient],
+               refModels: QListWidget,
+               choseGenerationCallback: Callable[[Generation, dict[int, bool] | None], None]):
     super().__init__()
     self.setWindowTitle("Leonardo AI - Generation")
 
@@ -22,6 +30,7 @@ class GenerationSearch(QtWidgets.QDialog):
 
     self.ui = Ui_GenerationSearch()
     self.ui.setupUi(self)
+    self.refModels = refModels
 
     def onHeightChanges():
       self.ui.inHeightMin.setEnabled(self.ui.chkHeight.isChecked())
@@ -34,6 +43,12 @@ class GenerationSearch(QtWidgets.QDialog):
       self.ui.inWidthMax.setEnabled(self.ui.chkWidth.isChecked())
 
     self.ui.chkWidth.stateChanged.connect(onWidthChanges)
+
+    def onLikesChanges():
+      self.ui.inLikesMin.setEnabled(self.ui.chkLikes.isChecked())
+      self.ui.inLikesMax.setEnabled(self.ui.chkLikes.isChecked())
+
+    self.ui.chkLikes.stateChanged.connect(onLikesChanges)
 
     now = datetime.now()
     self.ui.inCreatedAtMin.setDateTime(now)
@@ -63,6 +78,39 @@ class GenerationSearch(QtWidgets.QDialog):
     self.ui.btnPageNext.clicked.connect(onPageNext)
     self.ui.grpPage.setVisible(False)
 
+  def showEvent(self, event):
+    super().showEvent(event)
+
+    # need to decide if generation is owned by the user
+    self.userId = self.getLeonardoAI().getUserInfo().Id
+
+    columnCount = self.ui.tblModel.columnCount()
+    self.ui.tblModel.setRowCount(math.ceil(self.refModels.count() / columnCount))
+    for i in range(self.refModels.count()):
+      tRow = i // columnCount
+      tCol = i % columnCount
+
+      # skip models which are already known
+      if self.ui.tblModel.cellWidget(tRow, tCol) is not None: continue
+
+      foreignItem = self.refModels.itemWidget(self.refModels.item(i))
+      item = ModelItem(foreignItem.model)
+      self.ui.tblModel.setCellWidget(tRow, tCol, item)
+      self.ui.tblModel.setColumnWidth(tCol, item.width())
+      self.ui.tblModel.setRowHeight(tRow, item.height())
+
+  @property
+  def selectedModels(self) -> list[Model]:
+    selected_indexes = self.ui.tblModel.selectedIndexes()
+    selected_cells = [(index.row(), index.column()) for index in selected_indexes]
+
+    models = []
+    for [cRow, cCol] in selected_cells:
+      widget = self.ui.tblModel.cellWidget(cRow, cCol)
+      if widget is not None: models.append(widget.model)
+
+    return models
+
   def onGenerationSearchClicked(self):
     if self.searchThread is not None and self.searchThread.isRunning():
       return
@@ -77,17 +125,28 @@ class GenerationSearch(QtWidgets.QDialog):
   def search(self):
     args = {
       "status": JobStatus.COMPLETE,
-      "orderByCreatedAsc": self.ui.cmbCreatedAt.currentIndex() == 1,
+      "community": self.ui.radCommunity.isChecked(),
+      "modelIds": [model.Id for model in self.selectedModels],
       "offset": self.offset, "limit": self.limit,
     }
+
     if self.ui.inPrompt.text() != "": args.update({"prompt": self.ui.inPrompt.text()})
     if self.ui.inNegativePrompt.text() != "": args.update({"negativePrompt": self.ui.inNegativePrompt.text()})
     if self.ui.chkWidth.isChecked():
       args.update({"minImageWidth": self.ui.inWidthMin.value(), "maxImageWidth": self.ui.inWidthMax.value()})
     if self.ui.chkHeight.isChecked():
       args.update({"minImageHeight": self.ui.inHeightMin.value(), "maxImageHeight": self.ui.inHeightMax.value()})
+    if self.ui.chkLikes.isChecked():
+      args.update({"minLikeCount": self.ui.inLikesMin.value(), "maxLikeCount": self.ui.inLikesMax.value()})
+    if not self.ui.radNSFWBoth.isChecked():
+      args.update({"notSafeForWork": self.ui.radNSFWNotSafe.isChecked()})
     if self.ui.grpCreatedAt.isChecked():
       args.update({"minCreatedAt": self.ui.inCreatedAtMin.dateTime().toPyDateTime(), "maxCreatedAt": self.ui.inCreatedAtMax.dateTime().toPyDateTime()})
+
+    if self.ui.cmbOrderBy.currentIndex() == 0: args.update({ "orderByCreatedAsc": False })
+    elif self.ui.cmbOrderBy.currentIndex() == 1: args.update({ "orderByCreatedAsc": True })
+    elif self.ui.cmbOrderBy.currentIndex() == 2: args.update({ "orderByLikesAsc": False })
+    elif self.ui.cmbOrderBy.currentIndex() == 3: args.update({ "orderByLikesAsc": True })
 
     return self.getLeonardoAI().getGenerations(**args)
 
@@ -101,7 +160,7 @@ class GenerationSearch(QtWidgets.QDialog):
   @QtCore.pyqtSlot(list)
   def _addResultItems(self, generations: list[Generation]):
     for generation in generations:
-      item = GenerationSearchItem(generation)
+      item = GenerationSearchItem(self.userId, generation)
       item.connectLoad(self.onGenerationSearchItemLoad)
       item.connectDelete(self.onGenerationSearchItemDelete)
       item.setDoubleClickListener(self.onGenerationSelected)

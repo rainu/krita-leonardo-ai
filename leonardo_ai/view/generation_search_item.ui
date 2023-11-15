@@ -173,6 +173,13 @@
               </property>
              </widget>
             </item>
+            <item alignment="Qt::AlignRight">
+             <widget class="QLabel" name="lblCreator">
+              <property name="text">
+               <string>by Rainu</string>
+              </property>
+             </widget>
+            </item>
            </layout>
           </widget>
          </item>
@@ -280,17 +287,51 @@
             <property name="bottomMargin">
              <number>0</number>
             </property>
-            <item alignment="Qt::AlignTop">
-             <widget class="QCommandLinkButton" name="btnGfxLoad0">
-              <property name="text">
-               <string>Load</string>
+            <item>
+             <widget class="QFrame" name="frame_11">
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
               </property>
-              <property name="icon">
-               <iconset theme="edit-copy"/>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
               </property>
-              <property name="checkable">
-               <bool>true</bool>
-              </property>
+              <layout class="QHBoxLayout" name="horizontalLayout_3">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QCommandLinkButton" name="btnGfxLoad0">
+                 <property name="text">
+                  <string>Load</string>
+                 </property>
+                 <property name="icon">
+                  <iconset theme="edit-copy"/>
+                 </property>
+                 <property name="checkable">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="lblLikeCount0">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </widget>
             </item>
             <item>
@@ -336,17 +377,51 @@
             <property name="bottomMargin">
              <number>0</number>
             </property>
-            <item alignment="Qt::AlignTop">
-             <widget class="QCommandLinkButton" name="btnGfxLoad1">
-              <property name="text">
-               <string>Load</string>
+            <item>
+             <widget class="QFrame" name="frame_12">
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
               </property>
-              <property name="icon">
-               <iconset theme="edit-copy"/>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
               </property>
-              <property name="checkable">
-               <bool>true</bool>
-              </property>
+              <layout class="QHBoxLayout" name="horizontalLayout_4">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QCommandLinkButton" name="btnGfxLoad1">
+                 <property name="text">
+                  <string>Load</string>
+                 </property>
+                 <property name="icon">
+                  <iconset theme="edit-copy"/>
+                 </property>
+                 <property name="checkable">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="lblLikeCount1">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </widget>
             </item>
             <item>
@@ -392,17 +467,51 @@
             <property name="bottomMargin">
              <number>0</number>
             </property>
-            <item alignment="Qt::AlignTop">
-             <widget class="QCommandLinkButton" name="btnGfxLoad2">
-              <property name="text">
-               <string>Load</string>
+            <item>
+             <widget class="QFrame" name="frame_13">
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
               </property>
-              <property name="icon">
-               <iconset theme="edit-copy"/>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
               </property>
-              <property name="checkable">
-               <bool>true</bool>
-              </property>
+              <layout class="QHBoxLayout" name="horizontalLayout_5">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QCommandLinkButton" name="btnGfxLoad2">
+                 <property name="text">
+                  <string>Load</string>
+                 </property>
+                 <property name="icon">
+                  <iconset theme="edit-copy"/>
+                 </property>
+                 <property name="checkable">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="lblLikeCount2">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </widget>
             </item>
             <item>
@@ -448,17 +557,51 @@
             <property name="bottomMargin">
              <number>0</number>
             </property>
-            <item alignment="Qt::AlignTop">
-             <widget class="QCommandLinkButton" name="btnGfxLoad3">
-              <property name="text">
-               <string>Load</string>
+            <item>
+             <widget class="QFrame" name="frame_14">
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
               </property>
-              <property name="icon">
-               <iconset theme="edit-copy"/>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
               </property>
-              <property name="checkable">
-               <bool>true</bool>
-              </property>
+              <layout class="QHBoxLayout" name="horizontalLayout_6">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QCommandLinkButton" name="btnGfxLoad3">
+                 <property name="text">
+                  <string>Load</string>
+                 </property>
+                 <property name="icon">
+                  <iconset theme="edit-copy"/>
+                 </property>
+                 <property name="checkable">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="lblLikeCount3">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </widget>
             </item>
             <item>

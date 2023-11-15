@@ -11,21 +11,26 @@ class GenerationSearchItem(QWidget):
   sigImageChange = QtCore.pyqtSignal(int, QPixmap)
   dcCallback: Callable[[Generation, int], None] = None
 
-  def __init__(self, generation: Generation):
+  def __init__(self, userId: str, generation: Generation):
     super(GenerationSearchItem, self).__init__()
 
+    self.userId = userId
     self.generation = generation
     self.ui = Ui_GenerationSearchItem()
     self.ui.setupUi(self)
 
     self.ui.lblPrompt.setText(generation.Prompt)
     self.ui.lblNegativePrompt.setText(generation.NegativePrompt)
-    self.ui.lblImageDim.setText(f"""{generation.ImageWidth}x{generation.ImageHeight}px""")
+    self.ui.lblImageDim.setText(f"""Dimension: {generation.ImageWidth}x{generation.ImageHeight}px""")
 
     if generation.CustomModel is not None:
-      self.ui.lblModelName.setText(generation.CustomModel.Name)
+      self.ui.lblModelName.setText(f"""Model: {generation.CustomModel.Name}""")
     else:
-      self.ui.lblModelName.setText(f"""StableDiffusion {generation.SDVersion.replace("_",".")}""")
+      self.ui.lblModelName.setText(f"""Model: StableDiffusion {generation.SDVersion.replace("_",".")}""")
+
+    if len(generation.GeneratedImages) > 0:
+      self.ui.lblCreator.setText(f"""Creator: {generation.GeneratedImages[0].Creator.Name}""")
+      self.ui.btnDelete.setVisible(generation.GeneratedImages[0].Creator.Id == userId)
 
     self.selectedImages: dict[int, bool] = {}
 
@@ -44,8 +49,12 @@ class GenerationSearchItem(QWidget):
 
       btn.clicked.connect(onToggleFactory(btn, i))
 
-    for i, _ in enumerate(generation.GeneratedImages):
-      self.ui.__dict__.get(f"""gfx{i}""").setText("loading...")
+    for i, image in enumerate(generation.GeneratedImages):
+      gfx = self.ui.__dict__.get(f"""gfx{i}""")
+      if gfx is not None: gfx.setText("loading...")
+
+      lblLikes = self.ui.__dict__.get(f"""lblLikeCount{i}""")
+      if lblLikes is not None: lblLikes.setText(f"""{image.LikeCount} likes""")
 
     self.sigImageChange.connect(self._onImageChange)
 

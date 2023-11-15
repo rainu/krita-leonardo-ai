@@ -164,7 +164,7 @@ class LeonardoDock(Sketch2Image):
     args = {
       "modelId": self.model.Id, "sdVersion": self.model.StableDiffusionVersion, "presetStyle": self.presetStyle,
       "prompt": self.prompt, "negativePrompt": self.negativePrompt,
-      "notSaveForWork": self.nsfw, "public": self.public, "numberOfImages": self.numberOfImages,
+      "notSafeForWork": self.nsfw, "public": self.public, "numberOfImages": self.numberOfImages,
       "width": self.dimWidth, "height": self.dimHeight,
       "tiling": self.t2iTiling,
     }
@@ -206,7 +206,7 @@ class LeonardoDock(Sketch2Image):
     args = {
       "modelId": self.model.Id, "sdVersion": self.model.StableDiffusionVersion, "presetStyle": self.presetStyle,
       "prompt": self.prompt, "negativePrompt": self.negativePrompt,
-      "notSaveForWork": self.nsfw, "public": self.public, "numberOfImages": self.numberOfImages,
+      "notSafeForWork": self.nsfw, "public": self.public, "numberOfImages": self.numberOfImages,
       "imageStrength": 1.0 - self.inpaintStrength,
       "image": img, "mask": mask,
     }
@@ -233,7 +233,7 @@ class LeonardoDock(Sketch2Image):
     args = {
       "modelId": self.model.Id, "sdVersion": self.model.StableDiffusionVersion, "presetStyle": self.presetStyle,
       "prompt": self.prompt, "negativePrompt": self.negativePrompt,
-      "notSaveForWork": self.nsfw, "public": self.public, "numberOfImages": self.numberOfImages,
+      "notSafeForWork": self.nsfw, "public": self.public, "numberOfImages": self.numberOfImages,
       "imageStrength": 0.1,
       "image": img
     }
@@ -268,7 +268,7 @@ class LeonardoDock(Sketch2Image):
     args = {
       "modelId": self.model.Id, "sdVersion": self.model.StableDiffusionVersion, "presetStyle": self.presetStyle,
       "prompt": self.prompt, "negativePrompt": self.negativePrompt,
-      "notSaveForWork": self.nsfw, "public": self.public, "numberOfImages": self.numberOfImages,
+      "notSafeForWork": self.nsfw, "public": self.public, "numberOfImages": self.numberOfImages,
       "image": img,
       "imageStrength": self.imageStrength, "tiling": self.tiling,
     }
@@ -305,7 +305,7 @@ class LeonardoDock(Sketch2Image):
     args = {
       "modelId": self.model.Id, "sdVersion": self.model.StableDiffusionVersion, "presetStyle": self.presetStyle,
       "prompt": self.prompt, "negativePrompt": self.negativePrompt,
-      "notSaveForWork": self.nsfw, "public": self.public, "numberOfImages": self.numberOfImages,
+      "notSafeForWork": self.nsfw, "public": self.public, "numberOfImages": self.numberOfImages,
       "image": img, "mask": mask,
     }
     if self.ui.chkOverrideDefaults.isChecked():

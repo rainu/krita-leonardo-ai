@@ -16,6 +16,32 @@ else:
   from ..utils import *
   from .model import *
 
+GQL_USER = """{
+  id
+  username
+}"""
+
+def _buildUser(response: dict):
+  return UserInfo(
+    Id=response['id'],
+    Name=response['username'],
+  )
+
+GQL_IMAGE = """{
+  id
+  url
+  user """ + GQL_USER + """
+  likeCount
+}"""
+
+def _buildImage(response: dict):
+  return Image(
+    Id=response['id'],
+    Url=response['url'],
+    Creator=_buildUser(response['user']),
+    LikeCount=response['likeCount'],
+  )
+
 GQL_MODEL = """{
   id
   name
@@ -29,14 +55,8 @@ GQL_MODEL = """{
   nsfw
   public
   trainingStrength
-  user {
-    id
-    username
-  }
-  generated_image {
-    id
-    url
-  }
+  user """ + GQL_USER + """
+  generated_image """ + GQL_IMAGE + """
 }"""
 
 def _buildModel(response: dict):
@@ -44,17 +64,13 @@ def _buildModel(response: dict):
     Id=response['id'],
     Name=response['name'],
     Description=response['description'],
-    NotSaveForWork=response['nsfw'],
+    NotSafeForWork=response['nsfw'],
     Public=response['public'],
     Height=response['modelHeight'],
     Width=response['modelWidth'],
     StableDiffusionVersion=response['sdVersion'],
     TrainingStrength=response['trainingStrength'],
-    User=UserInfo(
-      Id=response['user']['id'],
-      Name=response['user']['username'],
-      Token=None,
-    ),
+    User=_buildUser(response['user']),
     PreviewImage=None
   )
 
@@ -68,10 +84,8 @@ GQL_GENERATION = """{
   prompt
   negativePrompt
   sdVersion
-  generated_images(order_by: [{url: desc}]) {
-    id
-    url
-  }
+  nsfw
+  generated_images(order_by: [{url: desc}]) """ + GQL_IMAGE + """
   custom_model """ + GQL_MODEL + """
 }"""
 
@@ -79,7 +93,7 @@ def _buildGeneration(response: dict) -> Generation:
   return Generation(
     Id=response['id'],
     CreatedAt=datetime.fromisoformat(response['createdAt']),
-    GeneratedImages=[Image(Id=i['id'], Url=i['url']) for i in response['generated_images']],
+    GeneratedImages=[_buildImage(i) for i in response['generated_images']],
     ImageHeight=response['imageHeight'],
     ImageWidth=response['imageWidth'],
     Seed=response['seed'],
@@ -87,7 +101,8 @@ def _buildGeneration(response: dict) -> Generation:
     Prompt=response['prompt'],
     NegativePrompt=response['negativePrompt'],
     SDVersion=response['sdVersion'],
-    CustomModel=_buildModel(response['custom_model']) if response['custom_model'] is not None else None
+    CustomModel=_buildModel(response['custom_model']) if response['custom_model'] is not None else None,
+    NotSafeForWork=response['nsfw']
   )
 
 class GraphqlClient(AbstractClient):
@@ -161,10 +176,7 @@ class GraphqlClient(AbstractClient):
     response = self._doGraphqlCall(
       "GetUserDetails",
       """query GetUserDetails($userSub: String) {
-  users(where: {user_details: {cognitoId: {_eq: $userSub}}}) {
-    id
-    username
-  }
+  users(where: {user_details: {cognitoId: {_eq: $userSub}}}) """ + GQL_USER + """
   user_details(where: {cognitoId: { _eq: $userSub }}) {
     subscriptionGptTokens
     subscriptionModelTokens
@@ -178,16 +190,15 @@ class GraphqlClient(AbstractClient):
     if self._userId is None:
       self._userId = response['users'][0]['id']
 
-    return UserInfo(
-      response['users'][0]['id'],
-      response['users'][0]['username'],
-      TokenBalance(
+    user = _buildUser(response['users'][0])
+    user.Token = TokenBalance(
         response['user_details'][0]['subscriptionGptTokens'],
         response['user_details'][0]['subscriptionModelTokens'],
         response['user_details'][0]['subscriptionTokens'],
         response['user_details'][0]['paidTokens'],
-      ),
-    )
+      )
+
+    return user
 
   def getModels(self,
                 query: str = "%%",
@@ -197,7 +208,7 @@ class GraphqlClient(AbstractClient):
                 favorites: bool | None = None,
                 own: bool | None = None,
                 category: str | None = None,
-                notSaveForWork: bool | None = None,
+                notSafeForWork: bool | None = None,
                 orderByCreatedAsc: bool | None = None,
                 orderByNameAsc: bool | None = None,
                 offset: int = 0,
@@ -219,7 +230,7 @@ class GraphqlClient(AbstractClient):
           "public": {"_eq": True},
           "name": {"_like": query},
           **({"official": {"_eq": official}} if official is not None else {}),
-          **({"nsfw": {"_eq": notSaveForWork}} if notSaveForWork is not None else {}),
+          **({"nsfw": {"_eq": notSafeForWork}} if notSafeForWork is not None else {}),
           **({"status": {
             **({"_eq": "COMPLETE"} if complete else {"_ne": "COMPLETE"})
           }} if complete is not None else {}),
@@ -278,10 +289,7 @@ class GraphqlClient(AbstractClient):
   custom_models(order_by: $order_by, where: $where, limit: $limit, offset: $offset) {
     ...ModelParts
     generations(where: $generationsWhere, limit: 1, order_by: [{ createdAt: asc }]) {
-      generated_images(limit: 1, order_by: [{ likeCount: desc }]) {
-        id
-        url
-      }
+      generated_images(limit: 1, order_by: [{ likeCount: desc }]) """ + GQL_IMAGE + """
     }
   }
 }
@@ -292,18 +300,11 @@ fragment ModelParts on custom_models """ + GQL_MODEL,
 
     def getPreviewImage(model):
       if model['generated_image'] is not None:
-        return Image(
-          Id=model['generated_image']['id'],
-          Url=model['generated_image']['url'],
-        )
+        return _buildImage(model['generated_image'])
       if model['generations'] is not None and len(model['generations']) > 0:
         firstGen = model['generations'][0]
         if firstGen['generated_images'] is not None and len(firstGen['generated_images']) > 0:
-          firstGen = firstGen['generated_images'][0]
-          return Image(
-            Id=firstGen['id'],
-            Url=firstGen['url'],
-          )
+          return _buildImage(firstGen['generated_images'][0])
 
       return None
 
@@ -373,27 +374,34 @@ fragment ModelParts on custom_models """ + GQL_MODEL,
     return _buildGeneration(response)
 
   def getGenerations(self,
+                     community: bool = False,
                      prompt: str | None = None,
                      negativePrompt: str | None = None,
-                     modelId: str | None = None,
+                     modelIds: list[str] | None = None,
                      minImageHeight: int | None = None,
                      maxImageHeight: int | None = None,
                      minImageWidth: int | None = None,
                      maxImageWidth: int | None = None,
+                     notSafeForWork: bool | None = None,
                      minCreatedAt: datetime | None = None,
                      maxCreatedAt: datetime | None = None,
+                     minLikeCount: int | None = None,
+                     maxLikeCount: int | None = None,
                      status: JobStatus | None = None,
                      orderByCreatedAsc: bool | None = None,
+                     orderByLikesAsc: bool | None = None,
                      offset: int = 0,
                      limit: int = 50) -> List[Generation]:
 
-    orderBy = "asc" if orderByCreatedAsc is True else "desc"
-    where = { "userId": { "_eq": self.userId }, "generation": {  } }
+    orderBy = []
+    where = { "generation": {  } }
 
+    if not community: where.update({"userId": { "_eq": self.userId }})
     if prompt is not None: where["generation"].update({ "prompt": { "_ilike": f"""%{prompt}%""" } })
     if negativePrompt is not None: where["generation"].update({ "negativePrompt": { "_ilike": f"""%{negativePrompt}%""" } })
-    if modelId is not None: where["generation"].update({ "modelId": { "_eq": modelId } })
+    if modelIds is not None and len(modelIds) > 0: where["generation"].update({ "modelId": { "_in": modelIds } })
     if status is not None: where["generation"].update({"status": {"_eq": status}})
+    if notSafeForWork is not None: where["generation"].update({ "nsfw": { "_eq": notSafeForWork } })
 
     if minImageHeight is not None or maxImageHeight is not None:
       where["generation"].update({ "imageHeight": {  } })
@@ -410,15 +418,24 @@ fragment ModelParts on custom_models """ + GQL_MODEL,
       if minCreatedAt is not None: where["generation"]["createdAt"].update({ "_gte": minCreatedAt.isoformat() })
       if maxCreatedAt is not None: where["generation"]["createdAt"].update({ "_lte": maxCreatedAt.isoformat() })
 
+    if minLikeCount is not None or maxLikeCount is not None:
+      where.update({ "likeCount": {  } })
+      if minLikeCount is not None: where["likeCount"].update({ "_gte": minLikeCount })
+      if maxLikeCount is not None: where["likeCount"].update({ "_lte": maxLikeCount })
+
+    if orderByLikesAsc is not None: orderBy.append({ "likeCount": ("asc" if orderByLikesAsc else "desc") })
+    if orderByCreatedAsc is not None: orderBy.append({ "createdAt": ("asc" if orderByCreatedAsc else "desc") })
+
     response = self._doGraphqlCall(
       "GetFeedImages",
-      """query GetFeedImages($where: generated_images_bool_exp, $offset: Int, $limit: Int) {
-    generated_images(where: $where, offset: $offset, limit: $limit, order_by: [{ createdAt: """ + orderBy + """ }]) {
+      """query GetFeedImages($where: generated_images_bool_exp, $offset: Int, $limit: Int, $order_by: [generated_images_order_by!] = [{createdAt: desc}]) {
+    generated_images(where: $where, offset: $offset, limit: $limit, order_by: $order_by) {
       generation """ + GQL_GENERATION + """
     }
 }""",
       {
         "where": where,
+        "order_by": orderBy if len(orderBy) > 0 else None,
         "offset": offset,
         "limit": limit,
       }
@@ -510,7 +527,7 @@ fragment ModelParts on custom_models """ + GQL_MODEL,
                             width: int,
                             height: int,
                             negativePrompt: str = "",
-                            notSaveForWork: bool = True,
+                            notSafeForWork: bool = True,
                             numberOfImages: int = 4,
                             inferenceSteps: int = 10,
                             guidanceScale: int = 7,
@@ -539,7 +556,7 @@ fragment ModelParts on custom_models """ + GQL_MODEL,
       ImageCount=numberOfImages,
       ImageWidth=multipleOf(width, 8), ImageHeight=multipleOf(height, 8),
       InferenceSteps=inferenceSteps, GuidanceScale=guidanceScale,
-      Scheduler=scheduler, Seed=seed, NotSaveForWork=notSaveForWork, Public=public,
+      Scheduler=scheduler, Seed=seed, NotSafeForWork=notSafeForWork, Public=public,
     )
     if photoRealStrength is not None:
       gp.PhotoReal = photoRealParameter(
@@ -570,7 +587,7 @@ fragment ModelParts on custom_models """ + GQL_MODEL,
                               image: QImage,
                               mask: QImage | None = None,
                               negativePrompt: str = "",
-                              notSaveForWork: bool = True,
+                              notSafeForWork: bool = True,
                               numberOfImages: int = 4,
                               inferenceSteps: int = 10,
                               guidanceScale: int = 7,
@@ -611,14 +628,14 @@ fragment ModelParts on custom_models """ + GQL_MODEL,
         InitId=iImage.Id, MaskId=iMask.Id, Strength=imageStrength, RequestType="INPAINT",
       ),
       InferenceSteps=inferenceSteps, GuidanceScale=guidanceScale,
-      Scheduler=scheduler, Seed=seed, NotSaveForWork=notSaveForWork, Public=public,
+      Scheduler=scheduler, Seed=seed, NotSafeForWork=notSafeForWork, Public=public,
     ))
 
   def createImage2ImageGeneration(self,
                                   prompt: str,
                                   image: QImage,
                                   negativePrompt: str = "",
-                                  notSaveForWork: bool = True,
+                                  notSafeForWork: bool = True,
                                   numberOfImages: int = 4,
                                   inferenceSteps: int = 10,
                                   guidanceScale: int = 7,
@@ -654,7 +671,7 @@ fragment ModelParts on custom_models """ + GQL_MODEL,
       ),
       Tiling=tiling,
       InferenceSteps=inferenceSteps, GuidanceScale=guidanceScale,
-      Scheduler=scheduler, Seed=seed, NotSaveForWork=notSaveForWork, Public=public,
+      Scheduler=scheduler, Seed=seed, NotSafeForWork=notSafeForWork, Public=public,
     )
     if poseToImage is not None:
       gp.ControlNet = controlNetParameter(Type=poseToImage, Weight=controlnetWeight)
@@ -673,7 +690,7 @@ fragment ModelParts on custom_models """ + GQL_MODEL,
                                    image: QImage,
                                    mask: QImage | None = None,
                                    negativePrompt: str = "",
-                                   notSaveForWork: bool = True,
+                                   notSafeForWork: bool = True,
                                    numberOfImages: int = 4,
                                    inferenceSteps: int = 10,
                                    guidanceScale: int = 7,
@@ -714,7 +731,7 @@ fragment ModelParts on custom_models """ + GQL_MODEL,
         InitId=iImage.Id, MaskId=iMask.Id, Strength=imageStrength, RequestType="SKETCH2IMG",
       ),
       InferenceSteps=inferenceSteps, GuidanceScale=guidanceScale,
-      Scheduler=scheduler, Seed=seed, NotSaveForWork=notSaveForWork, Public=public,
+      Scheduler=scheduler, Seed=seed, NotSafeForWork=notSafeForWork, Public=public,
     )
 
     return self._createGenerationJob(gp)

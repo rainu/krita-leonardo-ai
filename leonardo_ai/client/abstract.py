@@ -24,6 +24,8 @@ class UserInfo:
 class Image:
   Id: str
   Url: str
+  Creator: UserInfo
+  LikeCount: int | None = None
 
 
 class JobStatus(str, Enum):
@@ -44,7 +46,7 @@ class Model:
   Id: str
   Name: str
   Description: str
-  NotSaveForWork: bool
+  NotSafeForWork: bool
   Public: bool
   Height: int
   Width: int
@@ -66,6 +68,7 @@ class Generation:
   NegativePrompt: str
   SDVersion: str
   CustomModel: Model | None
+  NotSafeForWork: bool
 
 @dataclass
 class Element:
@@ -92,7 +95,7 @@ class AbstractClient:
                 favorites: bool | None = None,
                 own: bool | None = None,
                 category: str | None = None,
-                notSaveForWork: bool | None = None,
+                notSafeForWork: bool | None = None,
                 orderByCreatedAsc: bool | None = None,
                 orderByNameAsc: bool | None = None,
                 offset: int = 0,
@@ -109,13 +112,15 @@ class AbstractClient:
 
   @abstractmethod
   def getGenerations(self,
+                     community: bool = False,
                      prompt: str | None = None,
                      negativePrompt: str | None = None,
-                     modelId: str | None = None,
+                     modelIds: list[str] | None = None,
                      minImageHeight: int | None = None,
                      maxImageHeight: int | None = None,
                      minImageWidth: int | None = None,
                      maxImageWidth: int | None = None,
+                     notSafeForWork: bool | None = None,
                      minCreatedAt: datetime | None = None,
                      maxCreatedAt: datetime | None = None,
                      status: JobStatus | None = None,
@@ -138,7 +143,7 @@ class AbstractClient:
                             width: int,
                             height: int,
                             negativePrompt: str = "",
-                            notSaveForWork: bool = True,
+                            notSafeForWork: bool = True,
                             numberOfImages: int = 4,
                             inferenceSteps: int = 10,
                             guidanceScale: int = 7,
@@ -167,7 +172,7 @@ class AbstractClient:
                               image: QImage,
                               mask: QImage | None = None,
                               negativePrompt: str = "",
-                              notSaveForWork: bool = True,
+                              notSafeForWork: bool = True,
                               numberOfImages: int = 4,
                               inferenceSteps: int = 10,
                               guidanceScale: int = 7,
@@ -186,7 +191,7 @@ class AbstractClient:
                                   prompt: str,
                                   image: QImage,
                                   negativePrompt: str = "",
-                                  notSaveForWork: bool = True,
+                                  notSafeForWork: bool = True,
                                   numberOfImages: int = 4,
                                   inferenceSteps: int = 10,
                                   guidanceScale: int = 7,
@@ -212,7 +217,7 @@ class AbstractClient:
                                    image: QImage,
                                    mask: QImage | None = None,
                                    negativePrompt: str = "",
-                                   notSaveForWork: bool = True,
+                                   notSafeForWork: bool = True,
                                    numberOfImages: int = 4,
                                    inferenceSteps: int = 10,
                                    guidanceScale: int = 7,

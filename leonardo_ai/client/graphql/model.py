@@ -67,7 +67,7 @@ class generationParameter:
   InferenceSteps: int
   GuidanceScale: int
   Public: bool
-  NotSaveForWork: bool
+  NotSafeForWork: bool
   LeonardoMagic: bool | None = None
   Tiling: bool | None = None
   Canvas: canvasParameter | None = None
@@ -83,7 +83,7 @@ class generationParameter:
     content = {
       "prompt": self.Prompt,
       "negative_prompt": self.NegativePrompt,
-      "nsfw": self.NotSaveForWork,
+      "nsfw": self.NotSafeForWork,
       "num_images": self.ImageCount,
       "width": self.ImageWidth,
       "height": self.ImageHeight,
