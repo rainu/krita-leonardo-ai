@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QListWidget
 
 from ...client.abstract import Generation, AbstractClient, JobStatus, Model
 from ...view.generation_search import Ui_GenerationSearch
-from ...util.thread import Thread
+from ...util.threads import GeneralThread
 from .generation_search_item import GenerationSearchItem
 from .model_item import ModelItem
 
@@ -117,12 +117,10 @@ class GenerationSearch(QtWidgets.QDialog):
 
     self._clearResults()
 
-    def run(q): self.sigAddGenerationResultItems.emit(self.search())
-
-    self.searchThread = Thread(run)
+    self.searchThread = GeneralThread(self.search, self.sigAddGenerationResultItems)
     self.searchThread.start()
 
-  def search(self):
+  def search(self, q: GeneralThread) -> list[Generation]:
     args = {
       "status": JobStatus.COMPLETE,
       "community": self.ui.radCommunity.isChecked(),

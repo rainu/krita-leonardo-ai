@@ -3,35 +3,22 @@ from typing import Callable
 
 from PyQt5 import QtCore
 from PyQt5.QtGui import QImage
-from PyQt5.QtCore import  QThread
 
 from krita import DockWidget, Node, Document, Selection, GroupLayer
 
 from .ui_sketch2image import Sketch2Image
-from ...client.abstract import JobStatus, AbstractClient, Generation
+from ...client.abstract import JobStatus, Generation, TokenBalance
 from ...client.graphql.graphql import GraphqlClient
 from ...client.restClient import RestClient
-from ...view.dock import Ui_LeonardoAI
 from ...config import Config, ConfigRegistry
-from ...util.thread import Thread
+from ...util.threads import GeneralThread
 from ...util.generationLoader import GenerationLoader
 
 
-class BalanceUpdater(QThread):
-
-  def __init__(self, leonardoClient: Callable[[], AbstractClient], ui: Ui_LeonardoAI):
-    super().__init__()
-
-    self.getLeonardoAI = leonardoClient
-    self.ui = ui
-
-  def run(self):
-    leonardoAI = self.getLeonardoAI()
-    if leonardoAI is not None:
-      self.ui.lcdBalance.display(str(leonardoAI.getUserInfo().Token.General))
-
 class LeonardoDock(Sketch2Image):
-  generationThread: Thread = None
+  generationThread: GeneralThread = None
+  balanceUpdaterThread: GeneralThread = None
+
   sigGenerationDone = QtCore.pyqtSignal()
   sigGenerationFailed = QtCore.pyqtSignal(Exception)
   sigGenerationDoneText2Image = QtCore.pyqtSignal(Generation)
@@ -59,11 +46,13 @@ class LeonardoDock(Sketch2Image):
     if self.leonardoAI is None:
       self.ui.btnSettings.click()
 
-    self.balanceUpdater = BalanceUpdater(self.getLeonardoAI, self.ui)
     self.updateBalance()
 
   def getLeonardoAI(self):
     return self.leonardoAI
+
+  def _getBalance(self, q: GeneralThread) -> TokenBalance:
+    return self.getLeonardoAI().getUserInfo().Token
 
   def _initialiseSDK(self):
     clientType = self.config.get(ConfigRegistry.LEONARDO_CLIENT_TYPE)
@@ -87,7 +76,7 @@ class LeonardoDock(Sketch2Image):
       models = self.leonardoAI.getModels(official=True)
       for model in models: self.sigAddModel.emit(model)
 
-    self.modelLoadingThread = Thread(loadModels)
+    self.modelLoadingThread = GeneralThread(loadModels)
     self.modelLoadingThread.start()
 
   def canvasChanged(self, canvas):
@@ -100,8 +89,10 @@ class LeonardoDock(Sketch2Image):
 
 
   def updateBalance(self):
-    if self.balanceUpdater.isRunning() and not self.balanceUpdater.isFinished(): return
-    self.balanceUpdater.start()
+    if self.balanceUpdaterThread is not None and self.balanceUpdaterThread.isRunning(): return
+
+    self.balanceUpdaterThread = GeneralThread(self._getBalance, self.sigBalanceUpdate)
+    self.balanceUpdaterThread.start()
 
   def onGenerate(self):
     super().onGenerate()
@@ -129,7 +120,7 @@ class LeonardoDock(Sketch2Image):
     if self.generationThread is not None and self.generationThread.isRunning():
       self.generationThread.terminate()
 
-    def run(t: QThread):
+    def run(t: GeneralThread):
       try:
         genId = genFunc(**genArgs)
       except Exception as e:
@@ -151,7 +142,7 @@ class LeonardoDock(Sketch2Image):
       self.sigGenerationDone.emit()
       self.updateBalance()
 
-    self.generationThread = Thread(run)
+    self.generationThread = GeneralThread(run)
     self.generationThread.start()
 
   @QtCore.pyqtSlot()
@@ -194,7 +185,7 @@ class LeonardoDock(Sketch2Image):
       document.crop(0, 0, max(document.width(), generation.ImageWidth), max(document.height(), generation.ImageHeight))
 
     self.generationLoadingThread = GenerationLoader(Krita.instance().activeDocument(),None, generation, afterLoad, selectedImages)
-    self.generationLoadingThread.start()
+    self.generationLoadingThread.load()
 
   def onInpaint(self):
     document = Krita.instance().activeDocument()
@@ -222,7 +213,7 @@ class LeonardoDock(Sketch2Image):
     document = Krita.instance().activeDocument()
     selection = document.selection()
     self.generationLoadingThread = GenerationLoader(document, selection, generation)
-    self.generationLoadingThread.start()
+    self.generationLoadingThread.load()
 
   def onOutpaint(self):
     document = Krita.instance().activeDocument()
@@ -257,7 +248,7 @@ class LeonardoDock(Sketch2Image):
     document = Krita.instance().activeDocument()
     selection = document.selection()
     self.generationLoadingThread = GenerationLoader(document, selection, generation, afterLoad)
-    self.generationLoadingThread.start()
+    self.generationLoadingThread.load()
 
   def onImage2Image(self):
     document = Krita.instance().activeDocument()
@@ -293,7 +284,7 @@ class LeonardoDock(Sketch2Image):
     document = Krita.instance().activeDocument()
     selection = document.selection()
     self.generationLoadingThread = GenerationLoader(document, selection, generation)
-    self.generationLoadingThread.start()
+    self.generationLoadingThread.load()
 
   def onSketch2Image(self):
     document = Krita.instance().activeDocument()
@@ -324,7 +315,7 @@ class LeonardoDock(Sketch2Image):
     document = Krita.instance().activeDocument()
     selection = document.selection()
     self.generationLoadingThread = GenerationLoader(document, selection, generation)
-    self.generationLoadingThread.start()
+    self.generationLoadingThread.load()
 
   def maskFromSelection(self, selection: Selection | None = None) -> QImage:
     selection = selection if selection is not None else Krita.instance().activeDocument().selection()

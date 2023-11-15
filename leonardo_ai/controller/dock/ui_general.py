@@ -8,10 +8,11 @@ from .ui_settings import Settings
 from .ui_modelSearch import ModelSearch
 from .ui_generationSearch import GenerationSearch
 from .model_item import ModelItem
-from ...client.abstract import Generation, Model, AbstractClient
+from ...client.abstract import Generation, Model, AbstractClient, TokenBalance
 
 class BaseDock(DockWidget):
   sigAddModel = QtCore.pyqtSignal(Model)
+  sigBalanceUpdate = QtCore.pyqtSignal(TokenBalance)
 
   def __init__(self):
     super().__init__()
@@ -19,6 +20,7 @@ class BaseDock(DockWidget):
 
     self._modelIdSet = {}
     self.sigAddModel.connect(self._addModel)
+    self.sigBalanceUpdate.connect(self._onBalanceUpdate)
 
     self.ui = Ui_LeonardoAI()
     self.ui.setupUi(self)
@@ -152,6 +154,10 @@ class BaseDock(DockWidget):
     wItem.setSizeHint(QSize(item.sizeHint().width(), item.height()))
     self.ui.lstModel.addItem(wItem)
     self.ui.lstModel.setItemWidget(wItem, item)
+
+  @QtCore.pyqtSlot(TokenBalance)
+  def _onBalanceUpdate(self, balance: TokenBalance):
+    self.ui.lcdBalance.display(str(balance.General))
 
   def onMandatoryInputChanges(self):
     self.ui.btnGenerate.setEnabled(self.prompt != "" and self.model is not None)

@@ -1,14 +1,13 @@
-import requests
 from typing import Callable
 from PyQt5 import QtCore
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget
 from ...client.abstract import Generation
 from ...view.generation_search_item import Ui_GenerationSearchItem
-from ...util.thread import Thread
+from ...util.threads import ImageRequestThread
 
 class GenerationSearchItem(QWidget):
-  sigImageChange = QtCore.pyqtSignal(int, QPixmap)
+  sigImageChange = QtCore.pyqtSignal(QPixmap, int)
   dcCallback: Callable[[Generation, int], None] = None
 
   def __init__(self, userId: str, generation: Generation):
@@ -58,8 +57,8 @@ class GenerationSearchItem(QWidget):
 
     self.sigImageChange.connect(self._onImageChange)
 
-    self.loadingThread = Thread(target=self._loadImages)
-    self.loadingThread.start()
+    for i, image in enumerate(self.generation.GeneratedImages):
+      ImageRequestThread(image.Url, self.sigImageChange, metaData=i).start()
 
   def connectDelete(self, clb: Callable):
     def onClick(): clb(self)
@@ -69,19 +68,8 @@ class GenerationSearchItem(QWidget):
     def onClick(): clb(self)
     self.ui.btnLoad.clicked.connect(onClick)
 
-  def _loadImages(self, t):
-    try:
-      for i, image in enumerate(self.generation.GeneratedImages):
-        data = requests.get(image.Url).content
-        pixmap = QPixmap()
-        pixmap.loadFromData(data)
-
-        self.sigImageChange.emit(i, pixmap)
-    except Exception as e:
-      print("Unable to load image: ", e)
-
-  @QtCore.pyqtSlot(int, QPixmap)
-  def _onImageChange(self, pos: int, data: QPixmap):
+  @QtCore.pyqtSlot(QPixmap, int)
+  def _onImageChange(self, data: QPixmap, pos: int):
     lblTarget = self.ui.__dict__.get(f"""gfx{pos}""")
     if lblTarget is not None:
       lblTarget.setPixmap(data.scaled(250, data.size().height(), QtCore.Qt.AspectRatioMode.KeepAspectRatio))

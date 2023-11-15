@@ -1,23 +1,14 @@
-import requests
 from typing import Callable
 from PyQt5 import QtCore
-from PyQt5.QtCore import QThread, QByteArray
-from PyQt5.QtGui import QImage
+from PyQt5.QtCore import QByteArray, QObject
+from PyQt5.QtGui import QImage, QPixmap
 from krita import Document, Selection
+
+from .threads import ImageRequestThread
 from ..client.abstract import Generation, Image
 
-class imageLoader(QThread):
-  def __init__(self, image: Image):
-    super().__init__()
-
-    self.image = image
-    self.qimage = None
-
-  def run(self):
-    self.qimage = QImage.fromData(requests.get(self.image.Url).content)
-
-class GenerationLoader(QThread):
-  sigDone = QtCore.pyqtSignal()
+class GenerationLoader(QObject):
+  sigImageLoaded = QtCore.pyqtSignal(QPixmap, Image)
 
   def __init__(self,
                document: Document,
@@ -33,61 +24,56 @@ class GenerationLoader(QThread):
     self.selectedImages = selectedImages
     self.images = {}
 
+    self.grpLayer = self.document.createGroupLayer(f"""AI - {self.generation.Prompt} - {self.generation.Id}""")
+    self.document.rootNode().addChildNode(self.grpLayer, None)
+
     self.afterLoad = afterLoad if afterLoad is not None else self._doNothing
-    self.sigDone.connect(self._onDone)
+    self.sigImageLoaded.connect(self._onImageLoaded)
 
   def _doNothing(self, document: Document, selection: Selection):
     pass
 
-  def run(self):
-    imgLoader = []
+  def load(self):
+    self.imageLoaded = 0
+    self.imageToLoad = 0
 
     # load image in own thread
     for i, generatedImage in enumerate(self.generation.GeneratedImages):
       # skip images which should not be loaded
       if self.selectedImages is not None and i in self.selectedImages and not self.selectedImages[i]: continue
 
-      il = imageLoader(generatedImage)
-      imgLoader.append(il)
+      self.imageToLoad += 1
+      il = ImageRequestThread(generatedImage.Url, self.sigImageLoaded, metaData=generatedImage)
       il.start()
 
-    # wait for all images to load
-    for il in imgLoader:
-      il.wait()
-      self.images.update({ il.image.Id: il.qimage })
+  @QtCore.pyqtSlot(QPixmap, Image)
+  def _onImageLoaded(self, data: QPixmap, image: Image):
+    self.imageLoaded += 1
 
-    self.sigDone.emit()
+    layer = self.document.createNode(image.Id, "paintlayer")
+    image = QImage(data)
+    self.grpLayer.addChildNode(layer, None)
 
-  @QtCore.pyqtSlot()
-  def _onDone(self):
-    grpLayer = self.document.createGroupLayer(f"""AI - {self.generation.Prompt} - {self.generation.Id}""")
-    self.document.rootNode().addChildNode(grpLayer, None)
+    ptr = image.bits()
+    ptr.setsize(image.byteCount())
+    layer.setPixelData(
+      QByteArray(ptr.asstring()),
+      0 if self.selection is None else self.selection.x(),
+      0 if self.selection is None else self.selection.y(),
+      image.width(),
+      image.height(),
+    )
 
-    for generatedImage in self.generation.GeneratedImages:
-      if generatedImage.Id not in self.images: continue
+    if self.selection is not None:
+      layer.cropNode(self.selection.x(), self.selection.y(), self.selection.width(), self.selection.height())
 
-      image = self.images[generatedImage.Id]
-      layer = self.document.createNode(generatedImage.Id, "paintlayer")
-      grpLayer.addChildNode(layer, None)
+      invertedSelection = self.selection.duplicate()
+      invertedSelection.invert()
+      invertedSelection.cut(layer)
 
-      ptr = image.bits()
-      ptr.setsize(image.byteCount())
-      layer.setPixelData(
-        QByteArray(ptr.asstring()),
-        0 if self.selection is None else self.selection.x(),
-        0 if self.selection is None else self.selection.y(),
-        image.width(),
-        image.height(),
-      )
+    # check if we are done
+    if self.imageLoaded == self.imageToLoad:
+      # call callback
+      self.afterLoad(self.document, self.selection)
 
-      if self.selection is not None:
-        layer.cropNode(self.selection.x(), self.selection.y(), self.selection.width(), self.selection.height())
-
-        invertedSelection = self.selection.duplicate()
-        invertedSelection.invert()
-        invertedSelection.cut(layer)
-
-    # call callback
-    self.afterLoad(self.document, self.selection)
-
-    self.document.refreshProjection()
+      self.document.refreshProjection()

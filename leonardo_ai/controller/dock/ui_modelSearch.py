@@ -5,7 +5,7 @@ from PyQt5 import QtWidgets
 
 from ...client.abstract import Model, AbstractClient
 from ...view.model_search import Ui_ModelSearch
-from ...util.thread import Thread
+from ...util.threads import GeneralThread
 from .model_search_item import ModelSearchItem
 
 class ModelSearch(QtWidgets.QDialog):
@@ -65,7 +65,7 @@ class ModelSearch(QtWidgets.QDialog):
       models = self.search()
       for model in models: self.sigAddModelResultItem.emit(model)
 
-    self.searchThread = Thread(run)
+    self.searchThread = GeneralThread(run)
     self.searchThread.start()
 
   def search(self):

@@ -1,11 +1,10 @@
-import requests
 from typing import Callable
 from PyQt5 import QtCore
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget
 from ...client.abstract import Model
 from ...view.model_search_item import Ui_ModelSearchItem
-from ...util.thread import Thread
+from ...util.threads import ImageRequestThread
 
 class ModelSearchItem(QWidget):
   sigImageChange = QtCore.pyqtSignal(QPixmap)
@@ -24,18 +23,8 @@ class ModelSearchItem(QWidget):
 
     self.sigImageChange.connect(self._onImageChange)
 
-    self.loadingThread = Thread(target=self._loadImage)
+    self.loadingThread = ImageRequestThread(self.model.PreviewImage.Url, self.sigImageChange)
     self.loadingThread.start()
-
-  def _loadImage(self, t):
-    try:
-      data = requests.get(self.model.PreviewImage.Url).content
-      pixmap = QPixmap()
-      pixmap.loadFromData(data)
-
-      self.sigImageChange.emit(pixmap)
-    except Exception as e:
-      print("Unable to load image: ", e)
 
   @QtCore.pyqtSlot(QPixmap)
   def _onImageChange(self, data: QPixmap):
