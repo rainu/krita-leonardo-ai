@@ -19,6 +19,19 @@ class __globalThreadPool__:
 
     return cls.__instance
 
+class __imageThreadPool__:
+  __instance: QThreadPool = None
+
+  def __init__(self):
+    raise RuntimeError('Call instance() instead')
+
+  @classmethod
+  def instance(cls) -> QThreadPool:
+    if cls.__instance is None:
+      cls.__instance = QThreadPool()
+
+    return cls.__instance
+
 class GeneralThread(QRunnable):
   def __init__(self, target: Callable[[any], any], signalDone = None, signalError = None, metaData = None):
     QRunnable.__init__(self)
@@ -29,6 +42,9 @@ class GeneralThread(QRunnable):
     self.signalDone = signalDone
     self.signalError = signalError
     self.metaData = metaData
+
+  def __getThreadPool__(self) -> QThreadPool:
+    return __globalThreadPool__.instance()
 
   @property
   def hasReturnDefined(self):
@@ -45,7 +61,13 @@ class GeneralThread(QRunnable):
     return self.running
 
   def terminate(self):
-    __globalThreadPool__.instance().tryTake(self)
+    try:
+      self.__getThreadPool__().tryTake(self)
+    except: pass
+
+    self.sigInt = True
+    self.signalDone = None
+    self.signalError = None
 
   @pyqtSlot()
   def run(self):
@@ -62,7 +84,7 @@ class GeneralThread(QRunnable):
 
   def start(self):
     self.sigInt = False
-    __globalThreadPool__.instance().start(self)
+    self.__getThreadPool__().start(self)
 
   def _emitSignal(self, data):
     if self.signalDone is not None:
@@ -102,10 +124,19 @@ class ImageRequestThread(GetRequestThread):
   def __init__(self, url: str, signalDone, signalError = None, metaData = None):
     GetRequestThread.__init__(self, url, signalDone, signalError, metaData)
 
+  def __getThreadPool__(self) -> QThreadPool:
+    return __imageThreadPool__.instance()
+
   def _onResponse(self, response: Response):
+    if response.status_code != 200:
+      self._onException(Exception(f"""received invalid status code: {response.status_code}"""))
+      return
+
     data = response.content
     pixmap = QPixmap()
     pixmap.loadFromData(data)
 
-    self._emitSignal(pixmap)
-
+    try:
+      self._emitSignal(pixmap)
+    except Exception as e:
+      traceback.print_exc()

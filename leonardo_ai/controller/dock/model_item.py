@@ -26,6 +26,11 @@ class ModelItem(QWidget):
     self.loadingThread = ImageRequestThread(aiModel.PreviewImage.Url, self.sigImageChange)
     self.loadingThread.start()
 
+  def deleteLater(self):
+    self.loadingThread.terminate()
+
+    super().deleteLater()
+
   @QtCore.pyqtSlot(QPixmap)
   def _onImageChange(self, data: QPixmap):
     ms = self.ui.gfxIcon.maximumSize()

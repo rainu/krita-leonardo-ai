@@ -57,8 +57,16 @@ class GenerationSearchItem(QWidget):
 
     self.sigImageChange.connect(self._onImageChange)
 
+    self.imageThreads = []
     for i, image in enumerate(self.generation.GeneratedImages):
-      ImageRequestThread(image.Url, self.sigImageChange, metaData=i).start()
+      t = ImageRequestThread(image.Url, self.sigImageChange, metaData=i)
+      t.start()
+      self.imageThreads.append(t)
+
+  def deleteLater(self):
+    for it in self.imageThreads: it.terminate()
+
+    super().deleteLater()
 
   def connectDelete(self, clb: Callable):
     def onClick(): clb(self)

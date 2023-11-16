@@ -26,6 +26,11 @@ class ModelSearchItem(QWidget):
     self.loadingThread = ImageRequestThread(self.model.PreviewImage.Url, self.sigImageChange)
     self.loadingThread.start()
 
+  def deleteLater(self):
+    self.loadingThread.terminate()
+
+    super().deleteLater()
+
   @QtCore.pyqtSlot(QPixmap)
   def _onImageChange(self, data: QPixmap):
     self.ui.lblImage.setPixmap(data.scaled(250, data.size().height(), QtCore.Qt.AspectRatioMode.KeepAspectRatio))
