@@ -1,3 +1,4 @@
+import tempfile
 from PyQt5 import QtWidgets
 
 from ...view.settings import Ui_Settings
@@ -30,6 +31,12 @@ class Settings(QtWidgets.QDialog):
     self.ui.inClientUsername.setText(self.config.get(ConfigRegistry.LEONARDO_CLIENT_GQL_USERNAME))
     self.ui.inClientPassword.setText(self.config.get(ConfigRegistry.LEONARDO_CLIENT_GQL_PASSWORD))
     self.ui.inClientKey.setText(self.config.get(ConfigRegistry.LEONARDO_CLIENT_REST_KEY))
+
+    def onCacheDirSelecting():
+      self.ui.inCacheDir.setText(QtWidgets.QFileDialog.getExistingDirectory())
+
+    self.ui.btnCacheDir.clicked.connect(onCacheDirSelecting)
+    self.ui.inCacheDir.setText(self.config.get(ConfigRegistry.IMAGE_CACHE_DIRECTORY, tempfile.gettempdir()))
 
     self.ui.chkNSFW.setChecked(self.config.get(ConfigRegistry.GENERAL_NSFW, False))
     self.ui.chkPublic.setChecked(self.config.get(ConfigRegistry.GENERAL_PUBLIC, True))
@@ -79,6 +86,7 @@ class Settings(QtWidgets.QDialog):
     self.config.set(ConfigRegistry.LEONARDO_CLIENT_GQL_USERNAME, self.ui.inClientUsername.text())
     self.config.set(ConfigRegistry.LEONARDO_CLIENT_GQL_PASSWORD, self.ui.inClientPassword.text())
     self.config.set(ConfigRegistry.LEONARDO_CLIENT_REST_KEY, self.ui.inClientKey.text())
+    self.config.set(ConfigRegistry.IMAGE_CACHE_DIRECTORY, self.ui.inCacheDir.text())
     self.config.set(ConfigRegistry.GENERAL_NSFW, self.nsfw)
     self.config.set(ConfigRegistry.GENERAL_PUBLIC, self.public)
 

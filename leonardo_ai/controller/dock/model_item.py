@@ -3,7 +3,7 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget
 from ...client.abstract import Model
 from ...view.model_item import Ui_modelItem
-from ...util.threads import ImageRequestThread
+from ...util.threads import imageThread
 
 
 class ModelItem(QWidget):
@@ -23,7 +23,7 @@ class ModelItem(QWidget):
 
     self.sigImageChange.connect(self._onImageChange)
 
-    self.loadingThread = ImageRequestThread(aiModel.PreviewImage.Url, self.sigImageChange)
+    self.loadingThread = imageThread(aiModel.PreviewImage.Url, self.sigImageChange)
     self.loadingThread.start()
 
   def deleteLater(self):

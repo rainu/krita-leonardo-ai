@@ -4,7 +4,7 @@ from PyQt5.QtCore import QByteArray, QObject
 from PyQt5.QtGui import QImage, QPixmap
 from krita import Document, Selection
 
-from .threads import ImageRequestThread
+from .threads import imageThread
 from ..client.abstract import Generation, Image
 
 class GenerationLoader(QObject):
@@ -43,7 +43,7 @@ class GenerationLoader(QObject):
       if self.selectedImages is not None and i in self.selectedImages and not self.selectedImages[i]: continue
 
       self.imageToLoad += 1
-      il = ImageRequestThread(generatedImage.Url, self.sigImageLoaded, metaData=generatedImage)
+      il = imageThread(generatedImage.Url, self.sigImageLoaded, metaData=generatedImage)
       il.start()
 
   @QtCore.pyqtSlot(QPixmap, Image)

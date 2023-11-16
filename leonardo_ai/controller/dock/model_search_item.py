@@ -4,7 +4,8 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget
 from ...client.abstract import Model
 from ...view.model_search_item import Ui_ModelSearchItem
-from ...util.threads import ImageRequestThread
+from ...util.threads import imageThread
+
 
 class ModelSearchItem(QWidget):
   sigImageChange = QtCore.pyqtSignal(QPixmap)
@@ -23,7 +24,7 @@ class ModelSearchItem(QWidget):
 
     self.sigImageChange.connect(self._onImageChange)
 
-    self.loadingThread = ImageRequestThread(self.model.PreviewImage.Url, self.sigImageChange)
+    self.loadingThread = imageThread(self.model.PreviewImage.Url, self.sigImageChange)
     self.loadingThread.start()
 
   def deleteLater(self):

@@ -4,7 +4,8 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget
 from ...client.abstract import Generation
 from ...view.generation_search_item import Ui_GenerationSearchItem
-from ...util.threads import ImageRequestThread
+from ...util.threads import imageThread
+
 
 class GenerationSearchItem(QWidget):
   sigImageChange = QtCore.pyqtSignal(QPixmap, int)
@@ -59,7 +60,7 @@ class GenerationSearchItem(QWidget):
 
     self.imageThreads = []
     for i, image in enumerate(self.generation.GeneratedImages):
-      t = ImageRequestThread(image.Url, self.sigImageChange, metaData=i)
+      t = imageThread(image.Url, self.sigImageChange, metaData=i)
       t.start()
       self.imageThreads.append(t)
 

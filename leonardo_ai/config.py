@@ -12,6 +12,8 @@ class ConfigRegistry(Enum):
   GENERAL_NSFW = "general.nsfw"
   GENERAL_PUBLIC = "general.public"
 
+  IMAGE_CACHE_DIRECTORY = "image.cache.directory"
+
 class Config:
   __instance = None
   __configLocation = None

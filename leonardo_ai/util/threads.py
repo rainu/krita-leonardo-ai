@@ -6,6 +6,8 @@ from PyQt5.QtCore import QThreadPool, QRunnable, pyqtSlot
 from PyQt5.QtGui import QPixmap
 from requests import Request, Response, Session
 
+from .cache import ImageCache
+
 class __globalThreadPool__:
   __instance: QThreadPool = None
 
@@ -98,6 +100,14 @@ class GeneralThread(QRunnable):
     if self.signalError is not None:
       self.signalError.emit(e)
 
+class CacheImageThread(GeneralThread):
+  def __init__(self, url: str, signalResponse, signalError = None, metaData = None):
+    GeneralThread.__init__(self, self._run, signalResponse, signalError, metaData)
+    self.url = url
+
+  def _run(self, t: QRunnable) -> QPixmap:
+    return ImageCache.instance().load(self.url)
+
 class RequestThread(GeneralThread):
   def __init__(self, request: Request, signalResponse, signalError = None, metaData = None):
     GeneralThread.__init__(self, self._run, signalResponse, signalError, metaData)
@@ -136,7 +146,17 @@ class ImageRequestThread(GetRequestThread):
     pixmap = QPixmap()
     pixmap.loadFromData(data)
 
+    # save image in cache
+    ImageCache.instance().sigImageSave.emit(response.request.url, data)
+
     try:
       self._emitSignal(pixmap)
     except Exception as e:
       traceback.print_exc()
+
+def imageThread(url: str, signalDone, signalError = None, metaData = None):
+  # load image from cache if exists
+  if ImageCache.instance().exists(url):
+    return CacheImageThread(url, signalDone, signalError, metaData)
+  else:
+    return ImageRequestThread(url, signalDone, signalError, metaData)
