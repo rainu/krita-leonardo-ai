@@ -29,7 +29,7 @@ class GenerationSearchItem(QWidget):
       self.ui.lblModelName.setText(f"""Model: StableDiffusion {generation.SDVersion.replace("_",".")}""")
 
     if len(generation.GeneratedImages) > 0:
-      self.ui.lblCreator.setText(f"""Creator: {generation.GeneratedImages[0].Creator.Name}""")
+      self.ui.lblCreator.setText(f"""Creator: {generation.GeneratedImages[0].Creator.Name} ({ "public" if generation.Public else "private" })""")
       self.ui.btnDelete.setVisible(generation.GeneratedImages[0].Creator.Id == userId)
 
     self.selectedImages: dict[int, bool] = {}

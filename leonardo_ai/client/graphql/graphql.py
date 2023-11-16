@@ -85,6 +85,7 @@ GQL_GENERATION = """{
   negativePrompt
   sdVersion
   nsfw
+  public
   generated_images(order_by: [{url: desc}]) """ + GQL_IMAGE + """
   custom_model """ + GQL_MODEL + """
 }"""
@@ -102,7 +103,8 @@ def _buildGeneration(response: dict) -> Generation:
     NegativePrompt=response['negativePrompt'],
     SDVersion=response['sdVersion'],
     CustomModel=_buildModel(response['custom_model']) if response['custom_model'] is not None else None,
-    NotSafeForWork=response['nsfw']
+    Public=response['public'],
+    NotSafeForWork=response['nsfw'],
   )
 
 class GraphqlClient(AbstractClient):

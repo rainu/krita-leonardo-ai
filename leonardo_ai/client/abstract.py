@@ -68,6 +68,7 @@ class Generation:
   NegativePrompt: str
   SDVersion: str
   CustomModel: Model | None
+  Public: bool
   NotSafeForWork: bool
 
 @dataclass
