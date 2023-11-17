@@ -25,7 +25,7 @@ class BaseDock(DockWidget):
     self.ui = Ui_LeonardoAI()
     self.ui.setupUi(self)
 
-    self.ui.lstModel.itemSelectionChanged.connect(self.onMandatoryInputChanges)
+    self.ui.lstModel.itemSelectionChanged.connect(self.onModelSelect)
 
     def onModelSearchSelect(model: Model):
       self._addModel(model)
@@ -71,6 +71,9 @@ class BaseDock(DockWidget):
       self.ui.settings.setVisible(True)
 
     self.ui.btnSettings.clicked.connect(onSettingsClick)
+
+  def onModelSelect(self):
+    self.onMandatoryInputChanges()
 
   def selectModelById(self, modelId: str):
     for i in range(self.ui.lstModel.count()):

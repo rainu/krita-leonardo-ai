@@ -62,6 +62,14 @@ class Text2Image(AdvancedSettings):
     def onMagicPromptV3StrengthChange(): self.ui.lblAlchemyPromptMagicStrengthV3.setText(str(self.alchemyPromptMagicV3Strength))
     self.ui.slAlchemyPromptMagicStrengthV3.valueChanged.connect(onMagicPromptV3StrengthChange)
 
+  def onModelSelect(self):
+    super().onModelSelect()
+
+    if self.model is not None:
+      self.ui.inDimWidth.setValue(self.model.Width)
+      self.ui.inDimHeight.setValue(self.model.Height)
+
+
   def onChangeDimension(self):
     width, height = re.search(self._dimButtonPattern, self.sender().objectName()).groups()
     width = int(width)
