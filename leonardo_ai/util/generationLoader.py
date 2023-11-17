@@ -35,14 +35,13 @@ class GenerationLoader(QObject):
 
   def load(self):
     self.imageLoaded = 0
-    self.imageToLoad = 0
+    self.imageToLoad = sum(value for value in self.selectedImages.values() if value)
 
     # load image in own thread
     for i, generatedImage in enumerate(self.generation.GeneratedImages):
       # skip images which should not be loaded
       if self.selectedImages is not None and i in self.selectedImages and not self.selectedImages[i]: continue
 
-      self.imageToLoad += 1
       il = imageThread(generatedImage.Url, self.sigImageLoaded, metaData=generatedImage)
       il.start()
 
