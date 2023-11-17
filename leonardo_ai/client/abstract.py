@@ -19,6 +19,36 @@ class UserInfo:
   Name: str
   Token: TokenBalance | None = None
 
+class JobStatus(str, Enum):
+  PENDING = 'PENDING'
+  COMPLETE = 'COMPLETE'
+  FAILED = 'FAILED'
+
+class TransformationType(str, Enum):
+  UPSCALE = 'UPSCALE'
+  UNZOOM = 'UNZOOM'
+  NO_BACKGROUND = 'NOBG'
+
+class UpscaleType(str, Enum):
+  ALCHEMY_REFINER = 'ALCHEMY_REFINER'
+  ALTERNATIVE = 'ALTERNATIVE'
+  DEFAULT = 'DEFAULT'
+  SMOOTH = 'SMOOTH'
+  HD = 'HD'
+
+@dataclass
+class AlchemyRefinerSettings:
+  Creative: bool
+  Strength: float
+
+@dataclass
+class ImageVariation:
+  Id: str
+  Url: str
+  Status: JobStatus
+  TransformationType: TransformationType
+  UpscaleType: UpscaleType = None
+  AlchemyRefinerSettings: AlchemyRefinerSettings = None
 
 @dataclass
 class Image:
@@ -26,20 +56,13 @@ class Image:
   Url: str
   Creator: UserInfo
   LikeCount: int | None = None
-
-
-class JobStatus(str, Enum):
-  PENDING = 'PENDING'
-  COMPLETE = 'COMPLETE'
-  FAILED = 'FAILED'
-
+  Variations: list[ImageVariation] | None = None
 
 class PoseToImageType(str, Enum):
   POSE_TO_IMAGE = 'POSE'
   EDGE_TO_IMAGE = 'CANNY'
   DEPTH_TO_IMAGE = 'DEPTH'
   PATTERN_TO_IMAGE = 'QR'
-
 
 @dataclass
 class Model:
@@ -135,7 +158,27 @@ class AbstractClient:
     pass
 
   @abstractmethod
-  def removeBackground(self, generationId: str) -> str:
+  def removeImageBackground(self, imageId: str) -> str:
+    pass
+
+  @abstractmethod
+  def removeImageVariationBackground(self, variationId: str) -> str:
+    pass
+
+  @abstractmethod
+  def unzoomImage(self, imageId: str) -> str:
+    pass
+
+  @abstractmethod
+  def unzoomImageVariation(self, imageVariationId: str) -> str:
+    pass
+
+  @abstractmethod
+  def upscaleImage(self, imageId: str, upscaleType: UpscaleType, alchemyRefinerSettings: AlchemyRefinerSettings | None = None) -> str:
+    pass
+
+  @abstractmethod
+  def upscaleImageVariation(self, imageVariationId: str, upscaleType: UpscaleType, alchemyRefinerSettings: AlchemyRefinerSettings | None = None) -> str:
     pass
 
   @abstractmethod

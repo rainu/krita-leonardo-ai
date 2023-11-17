@@ -32,7 +32,35 @@ GQL_IMAGE = """{
   url
   user """ + GQL_USER + """
   likeCount
+  generated_image_variation_generics(order_by: [{createdAt: desc}]) {
+    id
+    url
+    status
+    transformType
+    upscale_details {
+      alchemyRefinerCreative
+      alchemyRefinerStrength
+      oneClicktype
+    }
+  }
 }"""
+
+def _buildImageVariation(response: dict):
+  v = ImageVariation(
+    Id=response['id'],
+    Url=response['url'],
+    Status=response['status'],
+    TransformationType=response['transformType']
+  )
+  if v.TransformationType == TransformationType.UPSCALE:
+    v.UpscaleType = response['upscale_details'][0]['oneClicktype']
+    if v.UpscaleType == UpscaleType.ALCHEMY_REFINER:
+      v.AlchemyRefinerSettings = AlchemyRefinerSettings(
+        Creative=response['upscale_details'][0]['alchemyRefinerCreative'],
+        Strength=response['upscale_details'][0]['alchemyRefinerStrength'],
+      )
+
+  return v
 
 def _buildImage(response: dict):
   return Image(
@@ -40,6 +68,7 @@ def _buildImage(response: dict):
     Url=response['url'],
     Creator=_buildUser(response['user']),
     LikeCount=response['likeCount'],
+    Variations=[_buildImageVariation(i) for i in response['generated_image_variation_generics']]
   )
 
 GQL_MODEL = """{
@@ -460,18 +489,80 @@ fragment ModelParts on custom_models """ + GQL_MODEL,
       { "id": generationId }
     )
 
-  def removeBackground(self, generationId: str) -> str:
+  def _removeBackground(self, id: str, isVariation: bool) -> str:
     response = self._doGraphqlCall(
       "CreateNoBGJob",
       """mutation CreateNoBGJob($arg1: SDNobgJobInput!) {
-    sdNobgJob(arg1: $arg1) {
-        id
-    }
+  sdNobgJob(arg1: $arg1) {
+    id
+  }
 }""",
-      {"id": generationId},
+      {"id": id, "isVariation": isVariation },
     )
 
     return response['sdNobgJob']['id']
+
+  def removeImageBackground(self, imageId: str) -> str:
+    return self._removeBackground(imageId, False)
+
+  def removeImageVariationBackground(self, imageVariationId: str) -> str:
+    return self._removeBackground(imageVariationId, True)
+
+  def _unzoom(self, id: str, isVariation: bool = False) -> str:
+    response = self._doGraphqlCall(
+      "CreateUnzoomJob",
+      """mutation CreateUnzoomJob($arg1: SDUnzoomInput!) {
+  sdUnzoomJob(arg1: $arg1) {
+    id
+  }
+}""",
+      {
+        "arg1": {
+          "id": id,
+          "isVariation": isVariation,
+        },
+      },
+    )
+
+    return response['sdUnzoomJob']['id']
+
+  def unzoomImage(self, imageId: str):
+    return self._unzoom(imageId, False)
+
+  def unzoomImageVariation(self, imageVariationId: str):
+    return self._unzoom(imageVariationId, True)
+
+  def _upscale(self, id: str, isVariation: bool, upscaleType: UpscaleType, alchemyRefinerSettings: AlchemyRefinerSettings | None = None) -> str:
+    variables = {"id": id , "isVariation": isVariation}
+
+    if upscaleType == UpscaleType.DEFAULT: variables.update({})
+    elif upscaleType == UpscaleType.ALTERNATIVE: variables.update({ "alternativeUpscale": True })
+    elif upscaleType == UpscaleType.SMOOTH: variables.update({ "smoothUpscale": True })
+    elif upscaleType == UpscaleType.HD: variables.update({ "hdUpscale": True })
+    elif upscaleType == UpscaleType.ALCHEMY_REFINER: variables.update({
+      "alchemyRefiner": True,
+      "alchemyRefinerCreative": alchemyRefinerSettings.Creative,
+      "alchemyRefinerStrength": alchemyRefinerSettings.Strength,
+    })
+    else: return None
+
+    response = self._doGraphqlCall(
+      "CreateUpscaleJob",
+      """mutation CreateUpscaleJob($arg1: SDUpscaleJobInput!) {
+  sdUpscaleJob(arg1: $arg1) {
+    id
+  }
+}""",
+      { "arg1": variables },
+    )
+
+    return response['sdUpscaleJob']['id']
+
+  def upscaleImage(self, imageId: str, upscaleType: UpscaleType, alchemyRefinerSettings: AlchemyRefinerSettings | None = None) -> str:
+    return self._upscale(imageId, False, upscaleType, alchemyRefinerSettings)
+
+  def upscaleImageVariation(self, imageVariationId: str, upscaleType: UpscaleType, alchemyRefinerSettings: AlchemyRefinerSettings | None = None) -> str:
+    return self._upscale(imageVariationId, True, upscaleType, alchemyRefinerSettings)
 
   def _prepareUpload(self, includeMask: bool) -> (uploadImageInfo, uploadImageInfo | None):
     response = self._doGraphqlCall(
