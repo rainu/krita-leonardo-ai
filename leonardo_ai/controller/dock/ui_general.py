@@ -58,6 +58,7 @@ class BaseDock(DockWidget):
     def onModeChange():
       self.ui.grpText2Image.setVisible(self.ui.cmbMode.currentIndex() == 0)
       self.ui.grpInpaint.setVisible(self.ui.cmbMode.currentIndex() == 1)
+      self.ui.grpOutpaint.setVisible(self.ui.cmbMode.currentIndex() == 2)
       self.ui.grpImage2Image.setVisible(self.ui.cmbMode.currentIndex() == 3)
       self.ui.grpSketch2Image.setVisible(self.ui.cmbMode.currentIndex() == 4)
 
