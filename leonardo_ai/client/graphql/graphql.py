@@ -401,8 +401,11 @@ fragment ModelParts on custom_models """ + GQL_MODEL,
       {"where": {"id": {"_eq": generationId}}}
     )
 
-    response = response['generations'][0]
-    return _buildGeneration(response)
+    if len(response['generations']) > 0:
+      response = response['generations'][0]
+      return _buildGeneration(response)
+    else:
+      return None
 
   def getGenerations(self,
                      community: bool = False,
