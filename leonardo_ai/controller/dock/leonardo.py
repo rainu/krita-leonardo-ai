@@ -26,6 +26,11 @@ class LeonardoDock(Sketch2Image):
   sigGenerationDoneOutpaint = QtCore.pyqtSignal(Generation)
   sigGenerationDoneImage2Image = QtCore.pyqtSignal(Generation)
   sigGenerationDoneSketch2Image = QtCore.pyqtSignal(Generation)
+  sigLoadingDoneText2Image = QtCore.pyqtSignal(Document, Selection, Generation)
+  sigLoadingDoneInpaint = QtCore.pyqtSignal(Document, Selection, Generation)
+  sigLoadingDoneOutpaint = QtCore.pyqtSignal(Document, Selection, Generation)
+  sigLoadingDoneImage2Image = QtCore.pyqtSignal(Document, Selection, Generation)
+  sigLoadingDoneSketch2Image = QtCore.pyqtSignal(Document, Selection, Generation)
 
   def __init__(self):
     super().__init__()
@@ -38,6 +43,11 @@ class LeonardoDock(Sketch2Image):
     self.sigGenerationDoneOutpaint.connect(self.onGenerationDoneOutpaint)
     self.sigGenerationDoneImage2Image.connect(self.onGenerationDoneImage2Image)
     self.sigGenerationDoneSketch2Image.connect(self.onGenerationDoneSketch2Image)
+    self.sigLoadingDoneText2Image.connect(self.onLoadingDoneText2Image)
+    self.sigLoadingDoneInpaint.connect(self.onLoadingDoneInpaint)
+    self.sigLoadingDoneOutpaint.connect(self.onLoadingDoneOutpaint)
+    self.sigLoadingDoneImage2Image.connect(self.onLoadingDoneImage2Image)
+    self.sigLoadingDoneSketch2Image.connect(self.onLoadingDoneSketch2Image)
 
     self.modelLoadingThread = None
     self.generationLoadingThread = None
@@ -181,11 +191,13 @@ class LeonardoDock(Sketch2Image):
 
   @QtCore.pyqtSlot(Generation)
   def onGenerationDoneText2Image(self, generation: Generation, selectedImages: dict[int, bool] | None = None):
-    def afterLoad(document: Document, selection: Selection):
-      document.crop(0, 0, max(document.width(), generation.ImageWidth), max(document.height(), generation.ImageHeight))
-
-    self.generationLoadingThread = GenerationLoader(Krita.instance().activeDocument(),None, generation, afterLoad, selectedImages)
+    self.generationLoadingThread = GenerationLoader(Krita.instance().activeDocument(), None, generation, self.sigLoadingDoneText2Image, selectedImages)
     self.generationLoadingThread.load()
+
+  @QtCore.pyqtSlot(Document, Selection, Generation)
+  def onLoadingDoneText2Image(self, document: Document, selection: Selection, generation: Generation):
+    document.crop(0, 0, max(document.width(), generation.ImageWidth), max(document.height(), generation.ImageHeight))
+    document.refreshProjection()
 
   def onInpaint(self):
     document = Krita.instance().activeDocument()
@@ -212,8 +224,12 @@ class LeonardoDock(Sketch2Image):
   def onGenerationDoneInpaint(self, generation: Generation):
     document = Krita.instance().activeDocument()
     selection = document.selection()
-    self.generationLoadingThread = GenerationLoader(document, selection, generation)
+    self.generationLoadingThread = GenerationLoader(document, selection, generation, self.sigLoadingDoneInpaint)
     self.generationLoadingThread.load()
+
+  @QtCore.pyqtSlot(Document, Selection, Generation)
+  def onLoadingDoneInpaint(self, document: Document, selection: Selection, generation: Generation):
+    document.refreshProjection()
 
   def onOutpaint(self):
     document = Krita.instance().activeDocument()
@@ -237,18 +253,20 @@ class LeonardoDock(Sketch2Image):
 
   @QtCore.pyqtSlot(Generation)
   def onGenerationDoneOutpaint(self, generation: Generation):
-    def afterLoad(document: Document, selection: Selection):
-      document.crop(
-        min(selection.x(), 0),
-        min(selection.y(), 0),
-        max(selection.x() + selection.width(), document.width() + abs(min(selection.x(), 0))),
-        max(selection.y() + selection.height(), document.height() + abs(min(selection.y(), 0))),
-      )
-
     document = Krita.instance().activeDocument()
     selection = document.selection()
-    self.generationLoadingThread = GenerationLoader(document, selection, generation, afterLoad)
+    self.generationLoadingThread = GenerationLoader(document, selection, generation, self.sigLoadingDoneOutpaint)
     self.generationLoadingThread.load()
+
+  @QtCore.pyqtSlot(Document, Selection, Generation)
+  def onLoadingDoneOutpaint(self, document: Document, selection: Selection, generation: Generation):
+    document.crop(
+      min(selection.x(), 0),
+      min(selection.y(), 0),
+      max(selection.x() + selection.width(), document.width() + abs(min(selection.x(), 0))),
+      max(selection.y() + selection.height(), document.height() + abs(min(selection.y(), 0))),
+    )
+    document.refreshProjection()
 
   def onImage2Image(self):
     document = Krita.instance().activeDocument()
@@ -283,8 +301,12 @@ class LeonardoDock(Sketch2Image):
   def onGenerationDoneImage2Image(self, generation: Generation):
     document = Krita.instance().activeDocument()
     selection = document.selection()
-    self.generationLoadingThread = GenerationLoader(document, selection, generation)
+    self.generationLoadingThread = GenerationLoader(document, selection, generation, self.sigLoadingDoneImage2Image)
     self.generationLoadingThread.load()
+
+  @QtCore.pyqtSlot(Document, Selection, Generation)
+  def onLoadingDoneImage2Image(self, document: Document, selection: Selection, generation: Generation):
+    document.refreshProjection()
 
   def onSketch2Image(self):
     document = Krita.instance().activeDocument()
@@ -314,8 +336,12 @@ class LeonardoDock(Sketch2Image):
   def onGenerationDoneSketch2Image(self, generation: Generation):
     document = Krita.instance().activeDocument()
     selection = document.selection()
-    self.generationLoadingThread = GenerationLoader(document, selection, generation)
+    self.generationLoadingThread = GenerationLoader(document, selection, generation, self.sigLoadingDoneSketch2Image)
     self.generationLoadingThread.load()
+
+  @QtCore.pyqtSlot(Document, Selection, Generation)
+  def onLoadingDoneSketch2Image(self, document: Document, selection: Selection, generation: Generation):
+    document.refreshProjection()
 
   def maskFromSelection(self, selection: Selection | None = None) -> QImage:
     selection = selection if selection is not None else Krita.instance().activeDocument().selection()

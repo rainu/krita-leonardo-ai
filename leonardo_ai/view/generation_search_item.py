@@ -92,6 +92,7 @@ class Ui_GenerationSearchItem(object):
         self.verticalLayout_5.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_5.setObjectName("verticalLayout_5")
         self.btnLoad = QtWidgets.QCommandLinkButton(self.frame_6)
+        self.btnLoad.setEnabled(False)
         icon = QtGui.QIcon.fromTheme("edit-copy")
         self.btnLoad.setIcon(icon)
         self.btnLoad.setChecked(False)

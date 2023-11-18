@@ -59,6 +59,7 @@ class GenerationSearchItem(QWidget):
     self.sigImageChange.connect(self._onImageChange)
 
     self.imageThreads = []
+    self.loadedImages = 0
     for i, image in enumerate(self.generation.GeneratedImages):
       t = imageThread(image.Url, self.sigImageChange, metaData=i)
       t.start()
@@ -91,6 +92,10 @@ class GenerationSearchItem(QWidget):
     btnTarget = self.ui.__dict__.get(f"""btnGfxLoad{pos}""")
     if btnTarget is not None:
       btnTarget.setVisible(True)
+
+    # enable load-button after all images are loaded
+    self.loadedImages += 1
+    self.ui.btnLoad.setEnabled(self.loadedImages == len(self.generation.GeneratedImages))
 
   def setDoubleClickListener(self, callback: Callable[[Generation, int], None]):
     self.dcCallback = callback

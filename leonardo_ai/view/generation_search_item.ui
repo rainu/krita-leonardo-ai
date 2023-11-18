@@ -206,6 +206,9 @@
             </property>
             <item>
              <widget class="QCommandLinkButton" name="btnLoad">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="text">
                <string>Load selected images</string>
               </property>

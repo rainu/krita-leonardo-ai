@@ -14,7 +14,7 @@ class GenerationLoader(QObject):
                document: Document,
                selection: Selection,
                generation: Generation,
-               afterLoad: Callable[[Document, Selection], None] | None = None,
+               sigDone: QtCore.pyqtBoundSignal | None = None,
                selectedImages: dict[int, bool] | None = None):
     super().__init__()
 
@@ -23,19 +23,17 @@ class GenerationLoader(QObject):
     self.generation = generation
     self.selectedImages = selectedImages
     self.images = {}
+    self.imageLoadingThreads = []
 
     self.grpLayer = self.document.createGroupLayer(f"""AI - {self.generation.Prompt} - {self.generation.Id}""")
     self.document.rootNode().addChildNode(self.grpLayer, None)
 
-    self.afterLoad = afterLoad if afterLoad is not None else self._doNothing
+    self.sigDone = sigDone
     self.sigImageLoaded.connect(self._onImageLoaded)
-
-  def _doNothing(self, document: Document, selection: Selection):
-    pass
 
   def load(self):
     self.imageLoaded = 0
-    self.imageToLoad = sum(value for value in self.selectedImages.values() if value)
+    self.imageToLoad = len(self.generation.GeneratedImages)
 
     # load image in own thread
     for i, generatedImage in enumerate(self.generation.GeneratedImages):
@@ -43,6 +41,7 @@ class GenerationLoader(QObject):
       if self.selectedImages is not None and i in self.selectedImages and not self.selectedImages[i]: continue
 
       il = imageThread(generatedImage.Url, self.sigImageLoaded, metaData=generatedImage)
+      self.imageLoadingThreads.append(il)
       il.start()
 
   @QtCore.pyqtSlot(QPixmap, Image)
@@ -50,9 +49,9 @@ class GenerationLoader(QObject):
     self.imageLoaded += 1
 
     layer = self.document.createNode(image.Id, "paintlayer")
-    image = QImage(data)
     self.grpLayer.addChildNode(layer, None)
 
+    image = QImage(data)
     ptr = image.bits()
     ptr.setsize(image.byteCount())
     layer.setPixelData(
@@ -73,6 +72,4 @@ class GenerationLoader(QObject):
     # check if we are done
     if self.imageLoaded == self.imageToLoad:
       # call callback
-      self.afterLoad(self.document, self.selection)
-
-      self.document.refreshProjection()
+      if self.sigDone is not None: self.sigDone.emit(self.document, self.selection, self.generation)
