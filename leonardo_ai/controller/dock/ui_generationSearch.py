@@ -6,6 +6,7 @@ from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QListWidget
 
 from ...client.abstract import Generation, AbstractClient, JobStatus, Model
+from ...util.generationLoader import SelectiveGeneration
 from ...view.generation_search import Ui_GenerationSearch
 from ...util.threads import GeneralThread
 from .generation_search_item import GenerationSearchItem
@@ -19,7 +20,7 @@ class GenerationSearch(QtWidgets.QDialog):
   def __init__(self,
                getLeonardoAI: Callable[[], AbstractClient],
                refModels: QListWidget,
-               choseGenerationCallback: Callable[[Generation, dict[int, bool] | None], None]):
+               choseGenerationCallback: Callable[[SelectiveGeneration], None]):
     super().__init__()
     self.setWindowTitle("Leonardo AI - Generation")
 
@@ -170,7 +171,7 @@ class GenerationSearch(QtWidgets.QDialog):
     self.ui.btnPageNext.setEnabled(len(generations) >= self.limit)
 
   def onGenerationSearchItemLoad(self, item: GenerationSearchItem):
-    self.choseGenerationCallback(item.generation, item.selectedImages)
+    self.choseGenerationCallback(item.selectiveGeneration)
 
   def onGenerationSearchItemDelete(self, item: GenerationSearchItem):
     self.getLeonardoAI().deleteGenerationById(item.generation.Id)
@@ -178,10 +179,6 @@ class GenerationSearch(QtWidgets.QDialog):
     item.setParent(None)
     item.deleteLater()
 
-  def onGenerationSelected(self, generation: Generation, imgIndex: int):
-    selectedImages = {}
-    for i in range(len(generation.GeneratedImages)): selectedImages[i] = False
-    selectedImages[imgIndex] = True
-
-    self.choseGenerationCallback(generation, selectedImages)
+  def onGenerationSelected(self, sGeneration: SelectiveGeneration):
+    self.choseGenerationCallback(sGeneration)
     self.setVisible(False)

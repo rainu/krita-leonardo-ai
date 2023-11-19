@@ -12,7 +12,7 @@ from ...client.graphql.graphql import GraphqlClient
 from ...client.restClient import RestClient
 from ...config import Config, ConfigRegistry
 from ...util.threads import GeneralThread
-from ...util.generationLoader import GenerationLoader
+from ...util.generationLoader import GenerationLoader, SelectiveGeneration
 
 
 class LeonardoDock(Sketch2Image):
@@ -26,11 +26,12 @@ class LeonardoDock(Sketch2Image):
   sigGenerationDoneOutpaint = QtCore.pyqtSignal(Generation)
   sigGenerationDoneImage2Image = QtCore.pyqtSignal(Generation)
   sigGenerationDoneSketch2Image = QtCore.pyqtSignal(Generation)
-  sigLoadingDoneText2Image = QtCore.pyqtSignal(Document, Selection, Generation)
-  sigLoadingDoneInpaint = QtCore.pyqtSignal(Document, Selection, Generation)
-  sigLoadingDoneOutpaint = QtCore.pyqtSignal(Document, Selection, Generation)
-  sigLoadingDoneImage2Image = QtCore.pyqtSignal(Document, Selection, Generation)
-  sigLoadingDoneSketch2Image = QtCore.pyqtSignal(Document, Selection, Generation)
+  sigLoadingDoneExistingGeneration = QtCore.pyqtSignal(Document, Selection, SelectiveGeneration, int, int)
+  sigLoadingDoneText2Image = QtCore.pyqtSignal(Document, Selection, Generation, int, int)
+  sigLoadingDoneInpaint = QtCore.pyqtSignal(Document, Selection, Generation, int, int)
+  sigLoadingDoneOutpaint = QtCore.pyqtSignal(Document, Selection, Generation, int, int)
+  sigLoadingDoneImage2Image = QtCore.pyqtSignal(Document, Selection, Generation, int, int)
+  sigLoadingDoneSketch2Image = QtCore.pyqtSignal(Document, Selection, Generation, int, int)
 
   def __init__(self):
     super().__init__()
@@ -43,6 +44,7 @@ class LeonardoDock(Sketch2Image):
     self.sigGenerationDoneOutpaint.connect(self.onGenerationDoneOutpaint)
     self.sigGenerationDoneImage2Image.connect(self.onGenerationDoneImage2Image)
     self.sigGenerationDoneSketch2Image.connect(self.onGenerationDoneSketch2Image)
+    self.sigLoadingDoneExistingGeneration.connect(self.onLoadingDoneExistingGeneration)
     self.sigLoadingDoneText2Image.connect(self.onLoadingDoneText2Image)
     self.sigLoadingDoneInpaint.connect(self.onLoadingDoneInpaint)
     self.sigLoadingDoneOutpaint.connect(self.onLoadingDoneOutpaint)
@@ -119,10 +121,11 @@ class LeonardoDock(Sketch2Image):
     if self.generationThread is not None:
       self.generationThread.requestInterruption()
 
-  def onLoadGeneration(self, generation: Generation, selectedImages: dict[int, bool] | None):
-    super().onLoadGeneration(generation, selectedImages)
+  def onLoadGeneration(self, sGeneration: SelectiveGeneration):
+    super().onLoadGeneration(sGeneration)
 
-    self.onGenerationDoneText2Image(generation, selectedImages)
+    self.generationLoadingThread = GenerationLoader(Krita.instance().activeDocument(), None, sGeneration, self.sigLoadingDoneExistingGeneration)
+    self.generationLoadingThread.load()
 
   def generate(self, genFunc: Callable[[...], str], genArgs: dict, signal: QtCore.pyqtBoundSignal):
     self.ui.btnGenerate.setEnabled(False)
@@ -190,13 +193,17 @@ class LeonardoDock(Sketch2Image):
     print("Generation failed!", error)
 
   @QtCore.pyqtSlot(Generation)
-  def onGenerationDoneText2Image(self, generation: Generation, selectedImages: dict[int, bool] | None = None):
-    self.generationLoadingThread = GenerationLoader(Krita.instance().activeDocument(), None, generation, self.sigLoadingDoneText2Image, selectedImages)
+  def onGenerationDoneText2Image(self, generation: Generation):
+    self.generationLoadingThread = GenerationLoader(Krita.instance().activeDocument(), None, generation, self.sigLoadingDoneText2Image)
     self.generationLoadingThread.load()
 
-  @QtCore.pyqtSlot(Document, Selection, Generation)
-  def onLoadingDoneText2Image(self, document: Document, selection: Selection, generation: Generation):
-    document.crop(0, 0, max(document.width(), generation.ImageWidth), max(document.height(), generation.ImageHeight))
+  @QtCore.pyqtSlot(Document, Selection, SelectiveGeneration, int, int)
+  def onLoadingDoneExistingGeneration(self, document: Document, selection: Selection, sGeneration: SelectiveGeneration, maxImageWidth: int, mayImageHeight: int):
+    document.crop(0, 0, max(document.width(), maxImageWidth), max(document.height(), mayImageHeight))
+
+  @QtCore.pyqtSlot(Document, Selection, Generation, int, int)
+  def onLoadingDoneText2Image(self, document: Document, selection: Selection, generation: Generation, maxImageWidth: int, mayImageHeight: int):
+    document.crop(0, 0, max(document.width(), maxImageWidth), max(document.height(), mayImageHeight))
     document.refreshProjection()
 
   def onInpaint(self):
@@ -227,8 +234,8 @@ class LeonardoDock(Sketch2Image):
     self.generationLoadingThread = GenerationLoader(document, selection, generation, self.sigLoadingDoneInpaint)
     self.generationLoadingThread.load()
 
-  @QtCore.pyqtSlot(Document, Selection, Generation)
-  def onLoadingDoneInpaint(self, document: Document, selection: Selection, generation: Generation):
+  @QtCore.pyqtSlot(Document, Selection, Generation, int, int)
+  def onLoadingDoneInpaint(self, document: Document, selection: Selection, generation: Generation, maxImageWidth: int, mayImageHeight: int):
     document.refreshProjection()
 
   def onOutpaint(self):
@@ -258,8 +265,8 @@ class LeonardoDock(Sketch2Image):
     self.generationLoadingThread = GenerationLoader(document, selection, generation, self.sigLoadingDoneOutpaint)
     self.generationLoadingThread.load()
 
-  @QtCore.pyqtSlot(Document, Selection, Generation)
-  def onLoadingDoneOutpaint(self, document: Document, selection: Selection, generation: Generation):
+  @QtCore.pyqtSlot(Document, Selection, Generation, int, int)
+  def onLoadingDoneOutpaint(self, document: Document, selection: Selection, generation: Generation, maxImageWidth: int, mayImageHeight: int):
     document.crop(
       min(selection.x(), 0),
       min(selection.y(), 0),
@@ -304,8 +311,8 @@ class LeonardoDock(Sketch2Image):
     self.generationLoadingThread = GenerationLoader(document, selection, generation, self.sigLoadingDoneImage2Image)
     self.generationLoadingThread.load()
 
-  @QtCore.pyqtSlot(Document, Selection, Generation)
-  def onLoadingDoneImage2Image(self, document: Document, selection: Selection, generation: Generation):
+  @QtCore.pyqtSlot(Document, Selection, Generation, int, int)
+  def onLoadingDoneImage2Image(self, document: Document, selection: Selection, generation: Generation, maxImageWidth: int, mayImageHeight: int):
     document.refreshProjection()
 
   def onSketch2Image(self):
@@ -339,8 +346,8 @@ class LeonardoDock(Sketch2Image):
     self.generationLoadingThread = GenerationLoader(document, selection, generation, self.sigLoadingDoneSketch2Image)
     self.generationLoadingThread.load()
 
-  @QtCore.pyqtSlot(Document, Selection, Generation)
-  def onLoadingDoneSketch2Image(self, document: Document, selection: Selection, generation: Generation):
+  @QtCore.pyqtSlot(Document, Selection, Generation, int, int)
+  def onLoadingDoneSketch2Image(self, document: Document, selection: Selection, generation: Generation, maxImageWidth: int, mayImageHeight: int):
     document.refreshProjection()
 
   def maskFromSelection(self, selection: Selection | None = None) -> QImage:

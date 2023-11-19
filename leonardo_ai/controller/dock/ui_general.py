@@ -3,6 +3,7 @@ from PyQt5.QtCore import QSize
 from PyQt5.QtWidgets import QListWidgetItem
 from krita import DockWidget
 
+from ...util.generationLoader import SelectiveGeneration
 from ...view.dock import Ui_LeonardoAI
 from .ui_settings import Settings
 from .ui_modelSearch import ModelSearch
@@ -99,7 +100,7 @@ class BaseDock(DockWidget):
   def onSettingsChanged(self):
     pass
 
-  def onLoadGeneration(self, generation: Generation, selectedImages: dict[int, bool] | None):
+  def onLoadGeneration(self, generation: SelectiveGeneration):
     pass
 
   @property
