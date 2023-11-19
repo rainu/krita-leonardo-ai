@@ -348,6 +348,9 @@
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
+              <property name="tabPosition">
+               <enum>QTabWidget::South</enum>
+              </property>
               <property name="currentIndex">
                <number>0</number>
               </property>
@@ -482,6 +485,9 @@
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
+              <property name="tabPosition">
+               <enum>QTabWidget::South</enum>
+              </property>
               <property name="currentIndex">
                <number>0</number>
               </property>
@@ -610,6 +616,9 @@
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
+              <property name="tabPosition">
+               <enum>QTabWidget::South</enum>
+              </property>
               <property name="currentIndex">
                <number>0</number>
               </property>
@@ -737,6 +746,9 @@
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
+              </property>
+              <property name="tabPosition">
+               <enum>QTabWidget::South</enum>
               </property>
               <property name="currentIndex">
                <number>0</number>

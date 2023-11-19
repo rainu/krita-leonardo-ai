@@ -43,7 +43,7 @@ class SelectiveGeneration:
 
     self.images = {variation.Id: _image(variation.Id, variation.Url)}
 
-  def toggleImage(self, imagePos: int):
+  def toggleImageAndVariations(self, imagePos: int):
     gi = self.generation.GeneratedImages[imagePos]
 
     # remove if given
@@ -59,6 +59,28 @@ class SelectiveGeneration:
     self.images.update({gi.Id: _image(gi.Id, gi.Url)})
     for v in gi.Variations:
       self.images.update({v.Id: _image(v.Id, v.Url)})
+
+  def toggleImage(self, imagePos: int):
+    gi = self.generation.GeneratedImages[imagePos]
+
+    # remove if given
+    if gi.Id in self.images:
+      self.images.pop(gi.Id)
+      return
+
+    # add if missing
+    self.images.update({gi.Id: _image(gi.Id, gi.Url)})
+
+  def toggleImageVariation(self, imagePos: int, variationPos: int):
+    gv = self.generation.GeneratedImages[imagePos].Variations[variationPos]
+
+    # remove if given
+    if gv.Id in self.images:
+      self.images.pop(gv.Id)
+      return
+
+    # add if missing
+    self.images.update({gv.Id: _image(gv.Id, gv.Url)})
 
 class GenerationLoader(QObject):
   sigImageLoaded = QtCore.pyqtSignal(QPixmap, _image)

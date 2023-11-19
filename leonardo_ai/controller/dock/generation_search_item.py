@@ -1,7 +1,7 @@
 from typing import Callable
 from dataclasses import dataclass
 from PyQt5 import QtCore
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QColor
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QTabWidget
 from ...client.abstract import Generation
 from ...util.generationLoader import SelectiveGeneration
@@ -46,7 +46,7 @@ class GenerationSearchItem(QWidget):
 
     def onToggleFactory(btn, index: int):
       def onToggle():
-        self.selectiveGeneration.toggleImage(index)
+        self.selectiveGeneration.toggleImageAndVariations(index)
         btn.setChecked(btn.isChecked())
 
       return onToggle
@@ -61,6 +61,7 @@ class GenerationSearchItem(QWidget):
       tabs = self.ui.__dict__.get(f"""tabVariations{i}""")
       tabs.setVisible(False)
       tabs.currentChanged.connect(self._buildOnTabChangedHandler(i, tabs))
+      tabs.tabCloseRequested.connect(self._buildOnTabCloseHandler(i, tabs))
 
     for i, image in enumerate(generation.GeneratedImages):
       if i >= MAX_IMAGE: break
@@ -125,6 +126,12 @@ class GenerationSearchItem(QWidget):
 
     return handle
 
+  def _buildOnTabCloseHandler(self, imagePos: int, tabs: QTabWidget):
+    def handle(index):
+      self.onTabClosed(imagePos, tabs, index)
+
+    return handle
+
   def onTabChanged(self, imagePos: int, tabs: QTabWidget):
     variation = tabs.currentIndex() - 1
     lblTarget = self.ui.__dict__.get(f"""gfx{imagePos}Variation{variation}""")
@@ -133,6 +140,15 @@ class GenerationSearchItem(QWidget):
                       self.sigImageVariationChange, metaData=ImageVariationMeta(imagePos, variation))
       t.start()
       self.imageThreads.append(t)
+
+  def onTabClosed(self, imagePos: int, tabs: QTabWidget, index: int):
+    if tabs.tabBar().tabTextColor(index) == QColor("red"): tabs.tabBar().setTabTextColor(index, QColor())
+    else: tabs.tabBar().setTabTextColor(index, QColor("red"))
+
+    if index == 0:
+      self.selectiveGeneration.toggleImage(imagePos)
+    else:
+      self.selectiveGeneration.toggleImageVariation(imagePos, index - 1)
 
   @QtCore.pyqtSlot(QPixmap, int)
   def _onImageChange(self, data: QPixmap, pos: int):
