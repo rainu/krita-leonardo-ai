@@ -1,0 +1,23 @@
+on:
+  push:
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+
+name: Create Zip Release
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Archive Release
+      id: archive_release
+      uses: thedoctor0/zip-release@0.7.5
+      with:
+        type: 'zip'
+        filename: 'leonardo_ai.zip'
+        exclusions: '*.git* README.md regenerateUi.sh requirements.txt'
+    - uses: ncipollo/release-action@v1.13.0
+      with:
+        artifacts: "leonardo_ai.zip"
+        token: ${{ secrets.GITHUB_TOKEN }}
