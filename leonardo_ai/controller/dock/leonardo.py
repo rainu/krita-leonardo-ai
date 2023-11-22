@@ -204,7 +204,6 @@ class LeonardoDock(Sketch2Image):
   @QtCore.pyqtSlot(Document, Selection, Generation, int, int)
   def onLoadingDoneText2Image(self, document: Document, selection: Selection, generation: Generation, maxImageWidth: int, mayImageHeight: int):
     document.crop(0, 0, max(document.width(), maxImageWidth), max(document.height(), mayImageHeight))
-    document.refreshProjection()
 
   def onInpaint(self):
     document = Krita.instance().activeDocument()
@@ -236,7 +235,7 @@ class LeonardoDock(Sketch2Image):
 
   @QtCore.pyqtSlot(Document, Selection, Generation, int, int)
   def onLoadingDoneInpaint(self, document: Document, selection: Selection, generation: Generation, maxImageWidth: int, mayImageHeight: int):
-    document.refreshProjection()
+    pass
 
   def onOutpaint(self):
     document = Krita.instance().activeDocument()
@@ -273,7 +272,6 @@ class LeonardoDock(Sketch2Image):
       max(selection.x() + selection.width(), document.width() + abs(min(selection.x(), 0))),
       max(selection.y() + selection.height(), document.height() + abs(min(selection.y(), 0))),
     )
-    document.refreshProjection()
 
   def onImage2Image(self):
     document = Krita.instance().activeDocument()
@@ -313,7 +311,7 @@ class LeonardoDock(Sketch2Image):
 
   @QtCore.pyqtSlot(Document, Selection, Generation, int, int)
   def onLoadingDoneImage2Image(self, document: Document, selection: Selection, generation: Generation, maxImageWidth: int, mayImageHeight: int):
-    document.refreshProjection()
+    pass
 
   def onSketch2Image(self):
     document = Krita.instance().activeDocument()
@@ -348,7 +346,7 @@ class LeonardoDock(Sketch2Image):
 
   @QtCore.pyqtSlot(Document, Selection, Generation, int, int)
   def onLoadingDoneSketch2Image(self, document: Document, selection: Selection, generation: Generation, maxImageWidth: int, mayImageHeight: int):
-    document.refreshProjection()
+    pass
 
   def maskFromSelection(self, selection: Selection | None = None) -> QImage:
     selection = selection if selection is not None else Krita.instance().activeDocument().selection()
