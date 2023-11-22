@@ -142,6 +142,9 @@ class GenerationLoader(QObject):
     if self.maxImageHeight < image.height(): self.maxImageHeight = image.height()
 
     if self.selection is not None:
+      layer = layer.duplicate()
+      self.grpLayer.addChildNode(layer, None)
+
       layer.cropNode(self.selection.x(), self.selection.y(), self.selection.width(), self.selection.height())
 
       invertedSelection = self.selection.duplicate()
