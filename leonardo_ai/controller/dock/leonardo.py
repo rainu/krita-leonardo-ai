@@ -3,16 +3,15 @@ from typing import Callable
 
 from PyQt5 import QtCore
 from PyQt5.QtGui import QImage
-
-from krita import DockWidget, Node, Document, Selection, GroupLayer
+from krita import Document, Selection
 
 from .ui_sketch2image import Sketch2Image
 from ...client.abstract import JobStatus, Generation, TokenBalance
 from ...client.graphql.graphql import GraphqlClient
 from ...client.restClient import RestClient
 from ...config import Config, ConfigRegistry
-from ...util.threads import GeneralThread
 from ...util.generationLoader import GenerationLoader, SelectiveGeneration
+from ...util.threads import GeneralThread
 
 
 class LeonardoDock(Sketch2Image):
@@ -230,7 +229,7 @@ class LeonardoDock(Sketch2Image):
   def onGenerationDoneInpaint(self, generation: Generation):
     document = Krita.instance().activeDocument()
     selection = document.selection()
-    self.generationLoadingThread = GenerationLoader(document, selection, generation, self.sigLoadingDoneInpaint)
+    self.generationLoadingThread = GenerationLoader(document, selection, generation, self.sigLoadingDoneInpaint, True)
     self.generationLoadingThread.load()
 
   @QtCore.pyqtSlot(Document, Selection, Generation, int, int)

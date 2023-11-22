@@ -89,12 +89,14 @@ class GenerationLoader(QObject):
                document: Document,
                selection: Selection,
                generation: Generation | SelectiveGeneration,
-               sigDone: QtCore.pyqtBoundSignal | None = None):
+               sigDone: QtCore.pyqtBoundSignal | None = None,
+               duplicateOnSelection: bool = False):
     super().__init__()
 
     self.document = document
     self.selection = selection
     self.generation = generation
+    self.duplicateOnSelection = duplicateOnSelection
     self.maxImageWidth = 0
     self.maxImageHeight = 0
 
@@ -142,8 +144,9 @@ class GenerationLoader(QObject):
     if self.maxImageHeight < image.height(): self.maxImageHeight = image.height()
 
     if self.selection is not None:
-      layer = layer.duplicate()
-      self.grpLayer.addChildNode(layer, None)
+      if self.duplicateOnSelection:
+        layer = layer.duplicate()
+        self.grpLayer.addChildNode(layer, None)
 
       layer.cropNode(self.selection.x(), self.selection.y(), self.selection.width(), self.selection.height())
 
