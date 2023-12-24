@@ -62,6 +62,7 @@ class BaseDock(DockWidget):
       self.ui.grpOutpaint.setVisible(self.ui.cmbMode.currentIndex() == 2)
       self.ui.grpImage2Image.setVisible(self.ui.cmbMode.currentIndex() == 3)
       self.ui.grpSketch2Image.setVisible(self.ui.cmbMode.currentIndex() == 4)
+      self.ui.grpSketch2ImageRealtime.setVisible(self.ui.cmbMode.currentIndex() == 5)
 
     self.ui.cmbMode.currentIndexChanged.connect(onModeChange)
     onModeChange()

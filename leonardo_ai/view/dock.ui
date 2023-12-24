@@ -434,7 +434,12 @@
          </item>
          <item>
           <property name="text">
-           <string>Sketch -&gt; Imag</string>
+           <string>Sketch -&gt; Image</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Sketch -&gt; Image (Realtime)</string>
           </property>
          </item>
         </widget>
@@ -1865,6 +1870,228 @@
               </widget>
              </item>
             </layout>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QFrame" name="grpSketch2ImageRealtime">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_5">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QGroupBox" name="groupBox_4">
+            <property name="title">
+             <string/>
+            </property>
+            <layout class="QFormLayout" name="formLayout_11">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_22">
+               <property name="text">
+                <string>Creativity Strenth</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QFrame" name="frame_18">
+               <property name="frameShape">
+                <enum>QFrame::NoFrame</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Raised</enum>
+               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_17">
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>0</number>
+                </property>
+                <item>
+                 <widget class="QSlider" name="slSketch2ImageRTStrenth">
+                  <property name="minimum">
+                   <number>10</number>
+                  </property>
+                  <property name="maximum">
+                   <number>90</number>
+                  </property>
+                  <property name="value">
+                   <number>80</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="lblSketch2ImageRTStrength">
+                  <property name="text">
+                   <string>0.8</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_23">
+               <property name="text">
+                <string>Guidance</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QFrame" name="frame_19">
+               <property name="frameShape">
+                <enum>QFrame::NoFrame</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Raised</enum>
+               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_18">
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>0</number>
+                </property>
+                <item>
+                 <widget class="QSlider" name="slSketch2ImageRTGuidance">
+                  <property name="minimum">
+                   <number>10</number>
+                  </property>
+                  <property name="maximum">
+                   <number>40</number>
+                  </property>
+                  <property name="value">
+                   <number>14</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="lblSketch2ImageRTGuidance">
+                  <property name="text">
+                   <string>1.4</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="cmbSketch2ImageRTStyle">
+            <item>
+             <property name="text">
+              <string>Anime</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Cinematic</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Concept Art</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Dynamic</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Environment</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Fantasy Art</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Painting</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Photography</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Product</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Raytraced</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Sketch B/W</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Sketch Color</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Vibrant</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>None</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="chkSketch2ImageRTRefine">
+            <property name="text">
+             <string>Instant Refine</string>
+            </property>
            </widget>
           </item>
          </layout>

@@ -1,3 +1,5 @@
+import base64
+
 import requests
 import json
 from concurrent import futures
@@ -831,6 +833,48 @@ fragment ModelParts on custom_models """ + GQL_MODEL,
     )
 
     return self._createGenerationJob(gp)
+
+  def createLcmSketch2Image(self,
+                            prompt: str,
+                            image: QImage,
+                            negativePrompt: str = "",
+                            strength: float = 0.8,
+                            guidance: int = 7,
+                            style: str | None = None,
+                            instantRefine: bool | None = None,
+                            seed: int | None = None,
+                            ) -> QImage:
+
+    buffer = QByteArray()
+    qbuffer = QBuffer(buffer)
+    qbuffer.open(QIODevice.WriteOnly)
+    image.save(qbuffer, "JPEG")
+
+    dataurl = "data:image/jpeg;base64," + buffer.toBase64().data().decode()
+
+    response = self._doGraphqlCall(
+      "CreateLCMGenerationJob",
+      """mutation CreateLCMGenerationJob($arg1: LcmGenerationInput!) {
+  lcmGenerationJob(arg1: $arg1) {
+    imageDataUrl
+  }
+}""",
+      {
+        "arg1": {
+          "prompt": prompt,
+          "negativePrompt": negativePrompt,
+          "strength": strength,
+          "guidance": guidance,
+          "style": style,
+          "seed": seed,
+          "instantRefine": instantRefine,
+          "imageDataUrl": dataurl,
+        }
+      }
+    )
+
+    _, dataB64 = response['lcmGenerationJob']['imageDataUrl'][0].split(',', 1)
+    return QImage.fromData(base64.b64decode(dataB64))
 
 if __name__ == '__main__':
   import os

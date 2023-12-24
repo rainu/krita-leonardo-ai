@@ -274,3 +274,16 @@ class AbstractClient:
                                    seed: int | None = None,
                                    ) -> str:
     pass
+
+  @abstractmethod
+  def createLcmSketch2Image(self,
+                            prompt: str,
+                            image: QImage,
+                            negativePrompt: str = "",
+                            strength: float = 0.8,
+                            guidance: int = 7,
+                            style: str | None = None,
+                            instantRefine: bool | None = None,
+                            seed: int | None = None,
+                            ) -> QImage:
+    pass

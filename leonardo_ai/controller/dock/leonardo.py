@@ -5,7 +5,7 @@ from PyQt5 import QtCore
 from PyQt5.QtGui import QImage
 from krita import Document, Selection
 
-from .ui_sketch2image import Sketch2Image
+from .ui_sketch2imageRealTime import Sketch2ImageRealTime
 from ...client.abstract import JobStatus, Generation, TokenBalance
 from ...client.graphql.graphql import GraphqlClient
 from ...client.restClient import RestClient
@@ -14,7 +14,7 @@ from ...util.generationLoader import GenerationLoader, SelectiveGeneration
 from ...util.threads import GeneralThread
 
 
-class LeonardoDock(Sketch2Image):
+class LeonardoDock(Sketch2ImageRealTime):
   generationThread: GeneralThread = None
   balanceUpdaterThread: GeneralThread = None
 
