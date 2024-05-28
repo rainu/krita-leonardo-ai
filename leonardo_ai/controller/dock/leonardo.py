@@ -8,7 +8,6 @@ from krita import Document, Selection
 from .ui_sketch2imageRealTime import Sketch2ImageRealTime
 from ...client.abstract import JobStatus, Generation, TokenBalance
 from ...client.graphql.graphql import GraphqlClient
-from ...client.restClient import RestClient
 from ...config import Config, ConfigRegistry
 from ...util.generationLoader import GenerationLoader, SelectiveGeneration
 from ...util.threads import GeneralThread
@@ -73,6 +72,8 @@ class LeonardoDock(Sketch2ImageRealTime):
         self.config.get(ConfigRegistry.LEONARDO_CLIENT_GQL_PASSWORD),
       )
     elif clientType == "rest":
+      from ...client.rest.rest import RestClient
+
       self.leonardoAI = RestClient(self.config.get(ConfigRegistry.LEONARDO_CLIENT_REST_KEY))
     else:
       self.leonardoAI = None

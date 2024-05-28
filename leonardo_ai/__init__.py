@@ -1,8 +1,6 @@
-from .dependency import checkPipLib
+from .dependencies import installDependencies
 
-checkPipLib([
-  {"leonardoaisdk": "Leonardo-Ai-SDK"},
-])
+installDependencies()
 
 from krita import DockWidgetFactory, DockWidgetFactoryBase, Krita
 

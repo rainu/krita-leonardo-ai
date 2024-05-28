@@ -22,6 +22,14 @@ git clone https://github.com/rainu/krita-leonardo-ai.git leonardo_ai
 ln -s ./leonardo_ai/leonardo_ai.desktop
 ```
 
+## Windows
+
+1. Download the latest [leonardo_ai.zip](https://github.com/rainu/krita-leonardo-ai/releases)
+2. Unpack the whole content into the Krita-Plugin Directory
+```
+C:\Users\YOUR_USERNAME\AppData\Roaming\krita\pykrita
+```
+
 # Settings
 
 Of course, you will need a Leonardo AI-Account first. After you have some you can configure your credentials in the 

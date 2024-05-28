@@ -69,3 +69,4 @@ target/
 .idea
 venv
 leonardo_ai/config.json
+leonardo_ai/packages

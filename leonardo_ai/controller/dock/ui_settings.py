@@ -1,10 +1,11 @@
 import tempfile
+import traceback
+
 from PyQt5 import QtWidgets
 
 from ...view.settings import Ui_Settings
 from ...config import Config, ConfigRegistry
 from ...client.graphql.graphql import GraphqlClient
-from ...client.restClient import RestClient
 
 class Settings(QtWidgets.QDialog):
 
@@ -56,13 +57,16 @@ class Settings(QtWidgets.QDialog):
 
   def onTestGql(self):
     self.ui.lblTestGQL.setText("")
+    self.ui.lblTestREST.setToolTip("")
 
     try:
       if GraphqlClient(self.ui.inClientUsername.text(), self.ui.inClientPassword.text()).getUserInfo().Id is not None:
         self.ui.lblTestGQL.setText("Successful")
         self.ui.lblTestGQL.setStyleSheet("QLabel { color : green; }")
         return
-    except Exception:
+    except Exception as e:
+      print(traceback.format_exc())
+      self.ui.lblTestREST.setToolTip(traceback.format_exc())
       pass
 
     self.ui.lblTestGQL.setText("Unsuccessful")
@@ -71,15 +75,22 @@ class Settings(QtWidgets.QDialog):
 
   def onTestRest(self):
     self.ui.lblTestREST.setText("")
+    self.ui.lblTestREST.setToolTip("")
 
     try:
+      from ...client.rest.rest import RestClient
+
       if RestClient(self.ui.inClientKey.text()).getUserInfo().Id is not None:
-        self.ui.lblTestREST.setText("Successful").setStyleSheet("QLabel { color : green; }")
+        self.ui.lblTestREST.setText("Successful")
+        self.ui.lblTestREST.setStyleSheet("QLabel { color : green; }")
         return
     except Exception:
+      print(traceback.format_exc())
+      self.ui.lblTestREST.setToolTip(traceback.format_exc())
       pass
 
-    self.ui.lblTestREST.setText("Unsuccessful").setStyleSheet("QLabel { color : red; }")
+    self.ui.lblTestREST.setText("Unsuccessful")
+    self.ui.lblTestREST.setStyleSheet("QLabel { color : red; }")
 
   def onApply(self):
     self.config.set(ConfigRegistry.LEONARDO_CLIENT_TYPE, "gql" if self.ui.radClientGQL.isChecked() else "rest")

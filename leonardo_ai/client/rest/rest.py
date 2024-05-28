@@ -3,7 +3,7 @@ import leonardoaisdk
 if __name__ == '__main__':
   from abstract import *
 else:
-  from .abstract import *
+  from ..abstract import *
 
 
 class RestClient(AbstractClient):
